@@ -11,7 +11,14 @@ export const currencyFormatter = (currency: Currency): string => {
 	}
 };
 
-export const formatCurrency = (amount: number, currency: Currency): string => {
+export const formatCurrency = (
+	amountInMinorUnits: number,
+	currency: Currency,
+): string => {
+	const amount = amountInMinorUnits
+		? amountInMinorUnits / 100
+		: amountInMinorUnits;
+
 	if (currency === "GBP") {
 		return new Intl.NumberFormat("en-GB", {
 			style: "currency",

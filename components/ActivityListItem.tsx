@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, type ViewStyle } from "react-native";
 import type { ActivityItem } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { ThemedText } from "./themed-text";
@@ -9,12 +9,13 @@ import { ThemedView } from "./themed-view";
 interface ActivityListItemProps {
 	activity: ActivityItem;
 	children: React.ReactNode;
+	customStyle?: ViewStyle | ViewStyle[];
 }
 
-const activityContext = createContext<ActivityItem | null>(null);
+const ActivityContext = createContext<ActivityItem | null>(null);
 
 function useActivityContext() {
-	const context = useContext(activityContext);
+	const context = useContext(ActivityContext);
 	if (!context) {
 		throw new Error(
 			"useActivityContext must be used within an ActivityListItem",
@@ -26,12 +27,15 @@ function useActivityContext() {
 export function ActivityListItem({
 	activity,
 	children,
+	customStyle,
 }: ActivityListItemProps) {
 	return (
-		<activityContext.Provider value={activity}>
-			<View style={styles.container}>{children}</View>
+		<ActivityContext.Provider value={activity}>
+			<ThemedView style={[styles.container, customStyle]}>
+				{children}
+			</ThemedView>
 			<ThemedView style={styles.separator}></ThemedView>
-		</activityContext.Provider>
+		</ActivityContext.Provider>
 	);
 }
 

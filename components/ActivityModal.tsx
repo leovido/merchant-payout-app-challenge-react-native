@@ -44,14 +44,16 @@ export const ActivityModal = ({
 					data={activityData?.items}
 					renderItem={(item) => (
 						<ActivityListItem activity={item.item}>
-							<ThemedView style={styles.descriptionContainer}>
-								<ActivityListItem.ActivityType />
-								<ActivityListItem.Description />
-								<ActivityListItem.Date />
-							</ThemedView>
-							<ThemedView style={styles.amountContainer}>
-								<ActivityListItem.Amount />
-								<ActivityListItem.Status />
+							<ThemedView style={styles.activityContainer}>
+								<ThemedView style={styles.descriptionContainer}>
+									<ActivityListItem.ActivityType />
+									<ActivityListItem.Description />
+									<ActivityListItem.Date />
+								</ThemedView>
+								<ThemedView style={styles.amountContainer}>
+									<ActivityListItem.Amount />
+									<ActivityListItem.Status />
+								</ThemedView>
 							</ThemedView>
 						</ActivityListItem>
 					)}
@@ -77,6 +79,12 @@ const styles = StyleSheet.create({
 	separator: {
 		borderBottomColor: "gray",
 		borderBottomWidth: StyleSheet.hairlineWidth,
+	},
+	activityContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		alignItems: "center",
 	},
 	amountContainer: {
 		flexDirection: "column",

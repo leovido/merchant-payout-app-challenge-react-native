@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { ActivityIndicator, Button, FlatList, StyleSheet } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Pressable,
+	StyleSheet,
+} from "react-native";
 import { ActivityListItem } from "@/components/ActivityListItem";
 import { ActivityModal } from "@/components/ActivityModal";
 import { ThemedText } from "@/components/themed-text";
@@ -9,6 +14,8 @@ import {
 	useGetPaginatedActivityQuery,
 } from "../features/api/apiSlice";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { formatCurrency } from "@/utils/formatter";
+import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 
 export default function HomeScreen() {
 	const { data: balance, isLoading: isBalanceLoading } = useGetBalanceQuery();
@@ -30,12 +37,13 @@ export default function HomeScreen() {
 						accessibilityRole="text"
 						accessibilityValue={{ text: "Business Account" }}
 						type="title"
+						style={styles.headerTitle}
 					>
 						Business Account
 					</ThemedText>
 				</ThemedView>
 
-				<ThemedView style={styles.section}>
+				<ThemedView style={styles.accountBalanceSection}>
 					<ThemedText
 						accessibilityLabel="Account balance"
 						accessibilityRole="text"
@@ -43,41 +51,48 @@ export default function HomeScreen() {
 					>
 						Account Balance
 					</ThemedText>
-				</ThemedView>
+					<ThemedView style={styles.balanceContainer}>
+						<ThemedView style={styles.balances}>
+							<ThemedText
+								accessibilityLabel="Available balance"
+								accessibilityRole="text"
+								style={styles.balanceLabel}
+							>
+								Available
+							</ThemedText>
+							<ThemedText
+								accessibilityLabel="Available balance amount"
+								accessibilityRole="text"
+								type="subtitle"
+								style={styles.balanceAmount}
+							>
+								{formatCurrency(
+									balance?.available_balance ?? 0,
+									balance?.currency ?? "GBP",
+								)}
+							</ThemedText>
+						</ThemedView>
 
-				<ThemedView style={styles.balanceContainer}>
-					<ThemedView style={styles.balances}>
-						<ThemedText
-							accessibilityLabel="Available balance"
-							accessibilityRole="text"
-						>
-							Available
-						</ThemedText>
-						<ThemedText
-							accessibilityLabel="Available balance amount"
-							accessibilityRole="text"
-							type="subtitle"
-						>
-							{balance?.currency}
-							{balance?.available_balance}
-						</ThemedText>
-					</ThemedView>
-
-					<ThemedView style={styles.balances}>
-						<ThemedText
-							accessibilityLabel="Pending balance"
-							accessibilityRole="text"
-						>
-							Pending
-						</ThemedText>
-						<ThemedText
-							accessibilityLabel="Pending balance amount"
-							accessibilityRole="text"
-							type="subtitle"
-						>
-							{balance?.currency}
-							{balance?.pending_balance}
-						</ThemedText>
+						<ThemedView style={styles.balances}>
+							<ThemedText
+								accessibilityLabel="Pending balance"
+								accessibilityRole="text"
+								style={styles.balanceLabel}
+							>
+								Pending
+							</ThemedText>
+							<ThemedText
+								accessibilityLabel="Pending balance amount"
+								accessibilityRole="text"
+								type="subtitle"
+								style={styles.balanceAmount}
+							>
+								{formatCurrency(
+									balance?.pending_balance ?? 0,
+									balance?.currency ?? "GBP",
+								)}
+							</ThemedText>
+						</ThemedView>
 					</ThemedView>
 				</ThemedView>
 
@@ -92,7 +107,10 @@ export default function HomeScreen() {
 					<FlatList
 						data={activity?.items}
 						renderItem={(item) => (
-							<ActivityListItem activity={item.item}>
+							<ActivityListItem
+								activity={item.item}
+								customStyle={styles.activityListItem}
+							>
 								<ActivityListItem.Description />
 								<ActivityListItem.Amount />
 							</ActivityListItem>
@@ -101,11 +119,15 @@ export default function HomeScreen() {
 					></FlatList>
 				</ThemedView>
 
-				<Button
-					accessibilityLabel="Show more"
-					title="Show more"
+				<Pressable
+					accessibilityLabel="Show more activity"
+					accessibilityRole="button"
+					accessibilityValue={{ text: "Show more" }}
 					onPress={() => setIsModalOpen(true)}
-				></Button>
+					style={styles.showMoreButton}
+				>
+					<ThemedText type="link">Show more</ThemedText>
+				</Pressable>
 
 				<ActivityModal
 					isModalOpen={isModalOpen}
@@ -120,31 +142,56 @@ const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
 	},
+	activityListItem: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+	},
+	headerTitle: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+	},
 	separator: {
 		backgroundColor: "black",
 	},
 	balanceContainer: {
 		flexDirection: "row",
-		justifyContent: "space-around",
 		width: "100%",
-		gap: 8,
-		padding: 16,
+		gap: 16,
+		paddingVertical: 16,
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		marginBottom: 24,
 	},
-	button: {
-		backgroundColor: "blue",
-		padding: 16,
+	accountBalanceSection: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingLeft: 16,
+	},
+	balanceLabel: {
+		color: "gray",
+	},
+	balanceAmount: {
+		fontWeight: "700",
+		color: "black",
+	},
+	showMoreButton: {
+		backgroundColor: "lightblue",
+		padding: 12,
 		borderRadius: 8,
-		margin: 16,
+		fontSize: 18,
+		fontWeight: "600",
+		alignItems: "center",
+		justifyContent: "center",
 	},
-	balances: {},
+	balances: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+	},
 	container: {
 		flex: 1,
 		padding: 16,
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
 	},
 	header: {
 		marginBottom: 24,
 	},
 	section: {
 		marginBottom: 24,
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
 	},
 });
