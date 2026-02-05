@@ -9,7 +9,8 @@ import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useMSW } from "../mocks/useMSW";
-import store from "./store";
+import { store } from "./store";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function RootNavigator() {
 	return (
@@ -34,7 +35,9 @@ export default function RootLayout() {
 	return (
 		<Provider store={store}>
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<RootNavigator />
+				<SafeAreaProvider>
+					<RootNavigator />
+				</SafeAreaProvider>
 				<StatusBar style="auto" />
 			</ThemeProvider>
 		</Provider>
