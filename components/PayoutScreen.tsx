@@ -1,21 +1,27 @@
-import { TextInput, StyleSheet, ViewStyle, Pressable } from "react-native";
+import { createContext, useContext, useState } from "react";
+import { Pressable, StyleSheet, TextInput, type ViewStyle } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
+import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import type { Currency } from "@/types/api";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
-import { createContext, useContext, useState } from "react";
-import { Currency } from "@/types/api";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
-import { Dropdown } from "react-native-element-dropdown";
 
 interface PayoutItem {
 	amount: string;
+	setAmount: (amount: string) => void;
 	currency: Currency;
+	setCurrency: (currency: Currency) => void;
 	iban: string;
+	setIban: (iban: string) => void;
 }
 
 const PayoutContext = createContext<PayoutItem>({
 	amount: "",
+	setAmount: () => {},
 	currency: "GBP",
+	setCurrency: () => {},
 	iban: "",
+	setIban: () => {},
 });
 
 function usePayoutContext() {
@@ -138,7 +144,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 PayoutScreen.ConfirmButton = function ConfirmButton() {
 	const { amount, currency, iban } = usePayoutContext();
 
-	const isDisabled = !amount || !currency || !iban;
+	const isDisabled = Number(amount) <= 0 || amount === "";
 
 	return (
 		<ThemedView style={styles.confirmButtonSection}>
