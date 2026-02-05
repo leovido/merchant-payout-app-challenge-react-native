@@ -26,25 +26,56 @@ export default function HomeScreen() {
 		<SafeAreaView style={styles.safeArea}>
 			<ThemedView style={styles.container}>
 				<ThemedView style={styles.header}>
-					<ThemedText type="title">Business Account</ThemedText>
+					<ThemedText
+						accessibilityLabel="Business account"
+						accessibilityRole="text"
+						accessibilityValue={{ text: "Business Account" }}
+						type="title"
+					>
+						Business Account
+					</ThemedText>
 				</ThemedView>
 
 				<ThemedView style={styles.section}>
-					<ThemedText type="subtitle">Account Balance</ThemedText>
+					<ThemedText
+						accessibilityLabel="Account balance"
+						accessibilityRole="text"
+						type="subtitle"
+					>
+						Account Balance
+					</ThemedText>
 				</ThemedView>
 
 				<ThemedView style={styles.balanceContainer}>
 					<ThemedView style={styles.balances}>
-						<ThemedText>Available</ThemedText>
-						<ThemedText type="subtitle">
+						<ThemedText
+							accessibilityLabel="Available balance"
+							accessibilityRole="text"
+						>
+							Available
+						</ThemedText>
+						<ThemedText
+							accessibilityLabel="Available balance amount"
+							accessibilityRole="text"
+							type="subtitle"
+						>
 							{balance?.currency}
 							{balance?.available_balance}
 						</ThemedText>
 					</ThemedView>
 
 					<ThemedView style={styles.balances}>
-						<ThemedText>Pending</ThemedText>
-						<ThemedText type="subtitle">
+						<ThemedText
+							accessibilityLabel="Pending balance"
+							accessibilityRole="text"
+						>
+							Pending
+						</ThemedText>
+						<ThemedText
+							accessibilityLabel="Pending balance amount"
+							accessibilityRole="text"
+							type="subtitle"
+						>
 							{balance?.currency}
 							{balance?.pending_balance}
 						</ThemedText>
@@ -52,7 +83,13 @@ export default function HomeScreen() {
 				</ThemedView>
 
 				<ThemedView style={styles.section}>
-					<ThemedText type="subtitle">Recent Activity</ThemedText>
+					<ThemedText
+						accessibilityLabel="Recent activity"
+						accessibilityRole="text"
+						type="subtitle"
+					>
+						Recent Activity
+					</ThemedText>
 					<FlatList
 						data={activity?.items}
 						renderItem={(item) => (
@@ -67,8 +104,8 @@ export default function HomeScreen() {
 				</ThemedView>
 
 				<Button
+					accessibilityLabel="Show more"
 					title="Show more"
-					color={"blue"}
 					onPress={() => setIsModalOpen(true)}
 				></Button>
 
@@ -91,6 +128,12 @@ const styles = StyleSheet.create({
 		width: "100%",
 		gap: 8,
 		padding: 16,
+	},
+	button: {
+		backgroundColor: "blue",
+		padding: 16,
+		borderRadius: 8,
+		margin: 16,
 	},
 	balances: {},
 	safeArea: {

@@ -26,13 +26,22 @@ export function ActivityListItem({
 
 	return (
 		<View style={styles.container}>
-			<ThemedText>{description}</ThemedText>
+			<ThemedText
+				accessibilityLabel="Activity description"
+				accessibilityRole="text"
+				accessibilityValue={{ text: description }}
+			>
+				{description}
+			</ThemedText>
 			<ThemedText
 				type="defaultSemiBold"
 				style={[
 					styles.amount,
 					amount > 0 ? styles.positiveAmount : styles.negativeAmount,
 				]}
+				accessibilityLabel="Activity amount"
+				accessibilityRole="text"
+				accessibilityValue={{ text: formattedAmount }}
 			>
 				{formattedCurrency}
 				{formattedAmount}
