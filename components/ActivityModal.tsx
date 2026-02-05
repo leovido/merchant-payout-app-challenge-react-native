@@ -1,4 +1,10 @@
-import { ActivityIndicator, FlatList, Modal, StyleSheet } from "react-native";
+import {
+	ActivityIndicator,
+	Button,
+	FlatList,
+	Modal,
+	StyleSheet,
+} from "react-native";
 import { useGetPaginatedActivityQuery } from "@/app/features/api/apiSlice";
 import { ActivityListItem } from "./ActivityListItem";
 import { ThemedText } from "./themed-text";
@@ -26,7 +32,14 @@ export const ActivityModal = ({
 			onRequestClose={() => setIsModalOpen(false)}
 		>
 			<ThemedView style={styles.modalContainer}>
-				<ThemedText type="title">Activity</ThemedText>
+				<ThemedView>
+					<ThemedView style={styles.header}>
+						<ThemedText type="title">Recent Activity</ThemedText>
+
+						<Button title="Done" onPress={() => setIsModalOpen(false)} />
+					</ThemedView>
+					<ThemedView style={styles.separator}></ThemedView>
+				</ThemedView>
 				<FlatList
 					data={activityData?.items}
 					renderItem={(item) => (
@@ -47,5 +60,16 @@ const styles = StyleSheet.create({
 	modalContainer: {
 		flex: 1,
 		padding: 16,
+	},
+	header: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 16,
+		paddingVertical: 16,
+	},
+	separator: {
+		borderBottomColor: "gray",
+		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
 });
