@@ -1,4 +1,4 @@
-import { Currency } from "@/types/api";
+import type { Currency } from "@/types/api";
 
 export const currencyFormatter = (currency: Currency): string => {
 	switch (currency) {

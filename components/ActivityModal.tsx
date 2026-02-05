@@ -1,8 +1,8 @@
-import { StyleSheet, FlatList, Modal, ActivityIndicator } from "react-native";
-import { ThemedView } from "./themed-view";
-import { ThemedText } from "./themed-text";
-import { ActivityListItem } from "./ActivityListItem";
+import { ActivityIndicator, FlatList, Modal, StyleSheet } from "react-native";
 import { useGetPaginatedActivityQuery } from "@/app/features/api/apiSlice";
+import { ActivityListItem } from "./ActivityListItem";
+import { ThemedText } from "./themed-text";
+import { ThemedView } from "./themed-view";
 
 export const ActivityModal = ({
 	isModalOpen,
@@ -20,6 +20,7 @@ export const ActivityModal = ({
 
 	return (
 		<Modal
+			presentationStyle="formSheet"
 			visible={isModalOpen}
 			animationType="slide"
 			onRequestClose={() => setIsModalOpen(false)}

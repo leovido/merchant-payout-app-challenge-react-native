@@ -1,5 +1,5 @@
-import { ActivityItem } from "@/types/api";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { ActivityItem } from "@/types/api";
 
 const initialState = {
 	items: [

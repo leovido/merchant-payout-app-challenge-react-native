@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
-import { ThemedText } from "./themed-text";
+import type { Currency } from "@/types/api";
 import { currencyFormatter } from "@/utils/formatter";
-import { Currency } from "@/types/api";
+import { ThemedText } from "./themed-text";
 
 interface ActivityListItemProps {
 	description: string;

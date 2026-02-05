@@ -1,5 +1,5 @@
-import { BalanceResponse } from "@/types/api";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { BalanceResponse } from "@/types/api";
 
 const initialState: BalanceResponse = {
 	available_balance: 0,

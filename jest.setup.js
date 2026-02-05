@@ -1,7 +1,7 @@
-import { server } from './mocks/server.test';
+import { server } from "./mocks/server.test";
 
 // Establish API mocking before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 // Reset any request handlers that are declared as a part of our tests
 afterEach(() => server.resetHandlers());
