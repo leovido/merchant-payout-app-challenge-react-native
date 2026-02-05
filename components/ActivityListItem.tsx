@@ -4,6 +4,7 @@ import { formatCurrency } from "@/utils/formatter";
 import { ThemedText } from "./themed-text";
 import { createContext, useContext } from "react";
 import { dateFormatter } from "@/utils/dateFormatter";
+import { ThemedView } from "./themed-view";
 
 interface ActivityListItemProps {
 	activity: ActivityItem;
@@ -29,9 +30,26 @@ export function ActivityListItem({
 	return (
 		<activityContext.Provider value={activity}>
 			<View style={styles.container}>{children}</View>
+			<ThemedView style={styles.separator}></ThemedView>
 		</activityContext.Provider>
 	);
 }
+
+ActivityListItem.ActivityType = function ActivityType() {
+	const { type } = useActivityContext();
+	const formattedType = type.charAt(0).toUpperCase() + type.slice(1);
+
+	return (
+		<ThemedText
+			accessibilityLabel="Activity type"
+			accessibilityRole="text"
+			accessibilityValue={{ text: formattedType }}
+			style={styles.activityType}
+		>
+			{formattedType}
+		</ThemedText>
+	);
+};
 
 ActivityListItem.Description = function Description() {
 	const activity = useActivityContext();
@@ -114,5 +132,15 @@ const styles = StyleSheet.create({
 		color: "gray",
 		fontSize: 12,
 		fontWeight: "400",
+	},
+	activityType: {
+		color: "black",
+		fontSize: 18,
+		fontWeight: "600",
+		paddingBottom: 4,
+	},
+	separator: {
+		borderBottomColor: "gray",
+		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
 });

@@ -45,6 +45,7 @@ export const ActivityModal = ({
 					renderItem={(item) => (
 						<ActivityListItem activity={item.item}>
 							<ThemedView style={styles.descriptionContainer}>
+								<ActivityListItem.ActivityType />
 								<ActivityListItem.Description />
 								<ActivityListItem.Date />
 							</ThemedView>
