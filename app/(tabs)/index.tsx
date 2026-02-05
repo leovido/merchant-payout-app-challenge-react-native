@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ActivityIndicator, Button, FlatList, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityListItem } from "@/components/ActivityListItem";
 import { ActivityModal } from "@/components/ActivityModal";
 import { ThemedText } from "@/components/themed-text";
@@ -9,6 +8,7 @@ import {
 	useGetBalanceQuery,
 	useGetPaginatedActivityQuery,
 } from "../features/api/apiSlice";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
 	const { data: balance, isLoading: isBalanceLoading } = useGetBalanceQuery();
@@ -118,6 +118,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+	safeArea: {
+		flex: 1,
+	},
 	separator: {
 		backgroundColor: "black",
 	},
@@ -135,9 +138,6 @@ const styles = StyleSheet.create({
 		margin: 16,
 	},
 	balances: {},
-	safeArea: {
-		flex: 1,
-	},
 	container: {
 		flex: 1,
 		padding: 16,
