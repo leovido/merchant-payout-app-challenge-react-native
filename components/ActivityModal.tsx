@@ -9,6 +9,7 @@ import { useGetPaginatedActivityQuery } from "@/app/features/api/apiSlice";
 import { ActivityListItem } from "./ActivityListItem";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
+import { useState } from "react";
 
 export const ActivityModal = ({
 	isModalOpen,
@@ -17,12 +18,20 @@ export const ActivityModal = ({
 	isModalOpen: boolean;
 	setIsModalOpen: (isModalOpen: boolean) => void;
 }) => {
-	const { data: activityData, isLoading: isActivityLoading } =
-		useGetPaginatedActivityQuery({ limit: 100, cursor: "" });
+	const [cursor, setCursor] = useState<string | null>(null);
+	const {
+		data: activityData,
+		isLoading: isActivityLoading,
+		isFetching: isActivityFetching,
+		isError,
+		refetch,
+	} = useGetPaginatedActivityQuery({ cursor: cursor ?? undefined });
 
-	if (isActivityLoading) {
+	if (!activityData && isActivityLoading) {
 		return <ActivityIndicator size="large" color="blue" />;
 	}
+
+	const isLoadingMore = activityData?.has_more && isActivityLoading;
 
 	return (
 		<Modal
@@ -57,8 +66,23 @@ export const ActivityModal = ({
 							</ThemedView>
 						</ActivityListItem>
 					)}
-					keyExtractor={(item) => item.id}
+					keyExtractor={(item, index) => `${item.id}-${index}`}
+					initialNumToRender={10}
+					onEndReached={() => {
+						if (activityData?.has_more) {
+							setCursor(activityData.next_cursor);
+							refetch();
+						}
+					}}
 				></FlatList>
+				{isActivityFetching && (
+					<ThemedView style={styles.loadingContainer}>
+						<ActivityIndicator size="small" />
+						<ThemedText style={styles.loadingText}>
+							{"Loading more..."}
+						</ThemedText>
+					</ThemedView>
+				)}
 			</ThemedView>
 		</Modal>
 	);
@@ -85,6 +109,18 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		width: "100%",
 		alignItems: "center",
+	},
+	loadingText: {
+		color: "gray",
+		fontSize: 14,
+		fontWeight: "400",
+	},
+	loadingContainer: {
+		flexDirection: "column",
+		justifyContent: "center",
+		gap: 8,
+		alignItems: "center",
+		marginTop: 16,
 	},
 	amountContainer: {
 		flexDirection: "column",

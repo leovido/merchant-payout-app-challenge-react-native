@@ -15,6 +15,20 @@ export const apiSlice = createApi({
 			PaginatedActivityResponse,
 			{ limit?: number; cursor?: string }
 		>({
+			serializeQueryArgs: (args) => {
+				return `activity-${args.queryArgs.limit}-${args.endpointName}`;
+			},
+			merge(currentCacheData, responseData) {
+				if (!currentCacheData) {
+					return responseData;
+				}
+				return {
+					...currentCacheData,
+					items: [...currentCacheData.items, ...responseData.items],
+					next_cursor: responseData.next_cursor,
+					has_more: responseData.has_more,
+				};
+			},
 			query: ({ limit = 15, cursor = "" }) =>
 				`/api/merchant/activity?limit=${limit}&cursor=${cursor}`,
 			transformResponse: (response: PaginatedActivityResponse) => {
