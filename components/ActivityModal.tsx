@@ -43,11 +43,16 @@ export const ActivityModal = ({
 				<FlatList
 					data={activityData?.items}
 					renderItem={(item) => (
-						<ActivityListItem
-							description={item.item.description}
-							currency={item.item.currency}
-							amount={item.item.amount}
-						/>
+						<ActivityListItem activity={item.item}>
+							<ThemedView style={styles.descriptionContainer}>
+								<ActivityListItem.Description />
+								<ActivityListItem.Date />
+							</ThemedView>
+							<ThemedView style={styles.amountContainer}>
+								<ActivityListItem.Amount />
+								<ActivityListItem.Status />
+							</ThemedView>
+						</ActivityListItem>
 					)}
 					keyExtractor={(item) => item.id}
 				></FlatList>
@@ -71,5 +76,12 @@ const styles = StyleSheet.create({
 	separator: {
 		borderBottomColor: "gray",
 		borderBottomWidth: StyleSheet.hairlineWidth,
+	},
+	amountContainer: {
+		flexDirection: "column",
+		alignItems: "flex-end",
+	},
+	descriptionContainer: {
+		flexDirection: "column",
 	},
 });

@@ -1,10 +1,13 @@
-import { server } from "./mocks/server.test";
+// Only set up MSW when available so unit tests can run without it
+let server;
+try {
+	server = require("./mocks/server.test").server;
+} catch {
+	server = null;
+}
 
-// Establish API mocking before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-
-// Reset any request handlers that are declared as a part of our tests
-afterEach(() => server.resetHandlers());
-
-// Clean up after the tests are finished
-afterAll(() => server.close());
+if (server) {
+	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+	afterEach(() => server.resetHandlers());
+	afterAll(() => server.close());
+}

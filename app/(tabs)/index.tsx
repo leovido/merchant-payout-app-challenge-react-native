@@ -92,11 +92,10 @@ export default function HomeScreen() {
 					<FlatList
 						data={activity?.items}
 						renderItem={(item) => (
-							<ActivityListItem
-								description={item.item.description}
-								currency={item.item.currency}
-								amount={item.item.amount}
-							/>
+							<ActivityListItem activity={item.item}>
+								<ActivityListItem.Description />
+								<ActivityListItem.Amount />
+							</ActivityListItem>
 						)}
 						keyExtractor={(item) => item.id}
 					></FlatList>

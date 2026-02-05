@@ -1,58 +1,91 @@
 import { StyleSheet, View } from "react-native";
-import type { Currency } from "@/types/api";
+import type { ActivityItem } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { ThemedText } from "./themed-text";
+import { createContext, useContext } from "react";
+import { dateFormatter } from "@/utils/dateFormatter";
 
 interface ActivityListItemProps {
-	description: string;
-	currency: Currency;
-	amount: number;
+	activity: ActivityItem;
+	children: React.ReactNode;
+}
+
+const activityContext = createContext<ActivityItem | null>(null);
+
+function useActivityContext() {
+	const context = useContext(activityContext);
+	if (!context) {
+		throw new Error(
+			"useActivityContext must be used within an ActivityListItem",
+		);
+	}
+	return context;
 }
 
 export function ActivityListItem({
-	description,
-	currency,
-	amount,
+	activity,
+	children,
 }: ActivityListItemProps) {
-	const formattedAmount = formatCurrency(amount, currency);
-
 	return (
-		<View style={styles.container}>
-			<ActivityListItem.Description description={description} />
-			<ActivityListItem.Amount amount={formattedAmount} />
-		</View>
+		<activityContext.Provider value={activity}>
+			<View style={styles.container}>{children}</View>
+		</activityContext.Provider>
 	);
 }
 
-ActivityListItem.Description = function Description({
-	description,
-}: {
-	description: string;
-}) {
+ActivityListItem.Description = function Description() {
+	const activity = useActivityContext();
+
 	return (
 		<ThemedText
 			accessibilityLabel="Activity description"
 			accessibilityRole="text"
-			accessibilityValue={{ text: description }}
+			accessibilityValue={{ text: activity.description }}
 		>
-			{description}
+			{activity.description}
 		</ThemedText>
 	);
 };
 
-ActivityListItem.Amount = function Amount({ amount }: { amount: string }) {
+ActivityListItem.Amount = function Amount() {
+	const activity = useActivityContext();
+	const formattedAmount = formatCurrency(activity.amount, activity.currency);
+
 	return (
 		<ThemedText
 			type="defaultSemiBold"
 			style={[
 				styles.amount,
-				Number(amount) > 0 ? styles.positiveAmount : styles.negativeAmount,
+				activity.amount > 0 ? styles.positiveAmount : styles.negativeAmount,
 			]}
 			accessibilityLabel="Activity amount"
 			accessibilityRole="text"
-			accessibilityValue={{ text: amount }}
+			accessibilityValue={{ text: formattedAmount }}
 		>
-			{amount}
+			{formattedAmount}
+		</ThemedText>
+	);
+};
+
+ActivityListItem.Status = function Status() {
+	const activity = useActivityContext();
+	const formattedStatus =
+		activity.status.charAt(0).toUpperCase() + activity.status.slice(1);
+
+	return (
+		<ThemedText type="defaultSemiBold" style={styles.status}>
+			{formattedStatus}
+		</ThemedText>
+	);
+};
+
+ActivityListItem.Date = function ActivityDate() {
+	const activity = useActivityContext();
+	const formattedDate = dateFormatter(activity.date);
+
+	return (
+		<ThemedText type="default" style={styles.date}>
+			{formattedDate}
 		</ThemedText>
 	);
 };
@@ -71,5 +104,15 @@ const styles = StyleSheet.create({
 	},
 	negativeAmount: {
 		color: "red",
+	},
+	status: {
+		color: "gray",
+		fontSize: 12,
+		fontWeight: "400",
+	},
+	date: {
+		color: "gray",
+		fontSize: 12,
+		fontWeight: "400",
 	},
 });
