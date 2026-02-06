@@ -6,11 +6,11 @@ import {
 	Modal,
 	StyleSheet,
 } from "react-native";
+import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
-import { useGetPaginatedActivityQuery } from "@/features/api/apiSlice";
 
 export const ActivityModal = ({
 	isModalOpen,

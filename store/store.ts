@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { apiSlice } from "@/api/apiSlice";
 import activityReducer from "@/features/activity/activitySlice";
-import { apiSlice } from "@/features/api/apiSlice";
 import balanceReducer from "@/features/balances/balanceSlice";
 import payoutReducer from "@/features/payout/payoutSlice";
 

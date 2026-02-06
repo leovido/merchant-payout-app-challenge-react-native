@@ -9,10 +9,10 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useDispatch, useSelector } from "react-redux";
+import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
-import { useCreatePayoutMutation } from "@/features/api/apiSlice";
 import { setPayout } from "@/features/payout/payoutSlice";
 import type { RootState } from "@/store/store";
 import type { Currency } from "@/types/api";
