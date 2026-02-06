@@ -9,8 +9,8 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useMSW } from "../mocks/useMSW";
-import { store } from "./store";
+import { useMSW } from "@/mocks/useMSW";
+import { store } from "@/store/store";
 
 function RootNavigator() {
 	return (

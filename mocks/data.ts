@@ -7,7 +7,7 @@ import type {
 	PaginatedActivityResponse,
 	PayoutResponse,
 	PayoutStatus,
-} from "../types/api";
+} from "@/types/api";
 
 // In-memory store for payout states
 const payoutStore = new Map<

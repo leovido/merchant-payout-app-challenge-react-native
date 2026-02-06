@@ -2,12 +2,7 @@
  * MSW Request Handlers
  */
 import { HttpResponse, http } from "msw";
-import { API_BASE_URL } from "../constants";
-import type {
-	CreatePayoutRequest,
-	MerchantDataResponse,
-	PaginatedActivityResponse,
-} from "../types/api";
+import { API_BASE_URL } from "@/constants";
 import {
 	createPayout,
 	generateMockActivity,
@@ -16,7 +11,12 @@ import {
 	getPaginatedActivity,
 	getPayoutById,
 	getPendingBalance,
-} from "./data";
+} from "@/mocks/data";
+import type {
+	CreatePayoutRequest,
+	MerchantDataResponse,
+	PaginatedActivityResponse,
+} from "@/types/api";
 
 /**
  * Helper function to log MSW requests with color coding

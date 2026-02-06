@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PayoutScreen } from "@/components/PayoutScreen";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { PayoutScreen } from "@/features/payout/PayoutScreen";
 
 export default function PayoutsScreen() {
 	const [isModalVisible, setIsModalVisible] = useState(false);

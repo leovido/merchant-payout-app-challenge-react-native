@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { ThemedView } from "./themed-view";
+import { ThemedView } from "@/components/themed-view";
 
 export function Divider() {
 	return <ThemedView style={styles.divider} />;
