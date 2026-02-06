@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
 	ActivityIndicator,
 	Button,
@@ -9,7 +10,6 @@ import { useGetPaginatedActivityQuery } from "@/app/features/api/apiSlice";
 import { ActivityListItem } from "./ActivityListItem";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
-import { useState } from "react";
 
 export const ActivityModal = ({
 	isModalOpen,
@@ -23,7 +23,6 @@ export const ActivityModal = ({
 		data: activityData,
 		isLoading: isActivityLoading,
 		isFetching: isActivityFetching,
-		isError,
 		refetch,
 	} = useGetPaginatedActivityQuery({ cursor: cursor ?? undefined });
 
@@ -31,7 +30,7 @@ export const ActivityModal = ({
 		return <ActivityIndicator size="large" color="blue" />;
 	}
 
-	const isLoadingMore = activityData?.has_more && isActivityLoading;
+	const _isLoadingMore = activityData?.has_more && isActivityLoading;
 
 	return (
 		<Modal

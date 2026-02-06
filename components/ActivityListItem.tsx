@@ -1,9 +1,9 @@
+import { createContext, useContext } from "react";
 import { StyleSheet, type ViewStyle } from "react-native";
 import type { ActivityItem } from "@/types/api";
+import { dateFormatter } from "@/utils/dateFormatter";
 import { formatCurrency } from "@/utils/formatter";
 import { ThemedText } from "./themed-text";
-import { createContext, useContext } from "react";
-import { dateFormatter } from "@/utils/dateFormatter";
 import { ThemedView } from "./themed-view";
 
 interface ActivityListItemProps {

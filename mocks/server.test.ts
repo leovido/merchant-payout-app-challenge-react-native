@@ -1,8 +1,11 @@
 /**
- * MSW Server Setup for Jest/Node.js Testing
- * Uses msw/node instead of msw/native for Jest environment
+ * MSW server tests (server is defined in server.jest.ts for Jest).
  */
-import { setupServer } from "msw/node";
-import { handlers } from "./handlers";
+import { server } from "./server.jest";
 
-export const server = setupServer(...handlers);
+describe("MSW server", () => {
+	it("exports a configured server", () => {
+		expect(server).toBeDefined();
+		expect(typeof server.listen).toBe("function");
+	});
+});
