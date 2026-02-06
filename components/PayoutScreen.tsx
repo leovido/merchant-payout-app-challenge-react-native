@@ -1,14 +1,26 @@
-import { createContext, useContext, useState } from "react";
-import { Pressable, StyleSheet, TextInput, type ViewStyle } from "react-native";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+	ActivityIndicator,
+	Pressable,
+	StyleSheet,
+	TextInput,
+	type ViewStyle,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import type { Currency } from "@/types/api";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setPayout } from "@/app/features/payout/payoutSlice";
+import type { RootState } from "@/app/store";
+import { useCreatePayoutMutation } from "@/app/features/api/apiSlice";
 
 interface PayoutItem {
-	amount: string;
-	setAmount: (amount: string) => void;
+	amount?: number;
+	formattedAmount: string;
+	setAmount: (amount: number | undefined) => void;
 	currency: Currency;
 	setCurrency: (currency: Currency) => void;
 	iban: string;
@@ -16,8 +28,9 @@ interface PayoutItem {
 }
 
 const PayoutContext = createContext<PayoutItem>({
-	amount: "",
+	amount: undefined,
 	setAmount: () => {},
+	formattedAmount: "",
 	currency: "GBP",
 	setCurrency: () => {},
 	iban: "",
@@ -38,12 +51,25 @@ interface PayoutScreenProps {
 }
 
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
+	const payout = useSelector((state: RootState) => state.payout);
+	const dispatch = useDispatch();
+
 	return (
 		<PayoutContext.Provider
 			value={{
-				amount: "",
-				currency: "GBP",
-				iban: "",
+				amount: payout.amount || undefined,
+				formattedAmount: payout.formattedAmount || "",
+				currency: payout.currency || "GBP",
+				iban: payout.iban || "",
+				setAmount: (amount: number | undefined) => {
+					dispatch(setPayout({ ...payout, amount }));
+				},
+				setCurrency: (currency: Currency) => {
+					dispatch(setPayout({ ...payout, currency }));
+				},
+				setIban: (iban: string) => {
+					dispatch(setPayout({ ...payout, iban }));
+				},
 			}}
 		>
 			<ThemedView style={[styles.container, customStyle]}>
@@ -64,10 +90,43 @@ PayoutScreen.Title = function Title() {
 };
 
 PayoutScreen.AmountTextField = function AmountTextField() {
-	const [amount, setAmount] = useState("");
+	const { setAmount } = usePayoutContext();
+	const payout = useSelector((state: RootState) => state.payout);
+	// Digits only: "1" → 1 cent, "12" → 12 cents; display is (cents/100).toFixed(2)
+	const [digitString, setDigitString] = useState("");
+	const [isFocused, setIsFocused] = useState(false);
 
-	const handleAmountChange = (text: string) => {
-		setAmount(text);
+	const cents = digitString === "" ? 0 : Number.parseInt(digitString, 10);
+	const displayValue = digitString === "" ? "" : (cents / 100).toFixed(2);
+
+	// Sync from Redux when not focused (e.g. form reset or initial load)
+	useEffect(() => {
+		if (!isFocused) {
+			setDigitString(
+				payout.amount != null &&
+					payout.amount !== undefined &&
+					payout.amount > 0
+					? String(payout.amount)
+					: "",
+			);
+		}
+	}, [isFocused, payout.amount]);
+
+	const onChangeText = (text: string) => {
+		const digits = text.replace(/\D/g, "");
+		const normalized = digits.replace(/^0+/, "") || "";
+		setDigitString(normalized);
+		const nextCents =
+			normalized === "" ? undefined : Number.parseInt(normalized, 10);
+		setAmount(nextCents);
+	};
+
+	const onFocus = () => {
+		setIsFocused(true);
+	};
+
+	const onBlur = () => {
+		setIsFocused(false);
 	};
 
 	return (
@@ -77,18 +136,24 @@ PayoutScreen.AmountTextField = function AmountTextField() {
 			</ThemedText>
 
 			<TextInput
+				accessibilityLabel="amount-input"
+				accessibilityRole="text"
+				accessibilityHint="Enter the amount to send"
+				accessibilityValue={{ text: displayValue || "0.00" }}
 				style={styles.input}
 				placeholder="0.00"
-				keyboardType="numeric"
-				value={amount}
-				onChangeText={handleAmountChange}
+				keyboardType="number-pad"
+				value={displayValue}
+				onChangeText={onChangeText}
+				onFocus={onFocus}
+				onBlur={onBlur}
 			/>
 		</ThemedView>
 	);
 };
 
 PayoutScreen.CurrencyDropdown = function CurrencyDropdown() {
-	const [currency, setCurrency] = useState<Currency>("GBP");
+	const { currency, setCurrency } = usePayoutContext();
 
 	return (
 		<ThemedView style={styles.currencyDropdownSection}>
@@ -143,8 +208,22 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 
 PayoutScreen.ConfirmButton = function ConfirmButton() {
 	const { amount, currency, iban } = usePayoutContext();
+	const [createPayout, { isLoading }] = useCreatePayoutMutation();
 
-	const isDisabled = Number(amount) <= 0 || amount === "";
+	const isDisabled = amount == null || amount <= 0;
+
+	const onPressConfirm = async () => {
+		if (amount == null || amount <= 0) {
+			return;
+		}
+		const response = await createPayout({ amount, currency, iban });
+
+		if (response.error) {
+			console.error("Create payout error", response.error);
+		} else {
+			console.log("Create payout response", response.data);
+		}
+	};
 
 	return (
 		<ThemedView style={styles.confirmButtonSection}>
@@ -153,14 +232,16 @@ PayoutScreen.ConfirmButton = function ConfirmButton() {
 					styles.confirmButton,
 					isDisabled && styles.confirmButtonDisabled,
 				]}
-				onPress={() => {
-					console.log("Confirm button pressed", amount, currency, iban);
-				}}
+				onPress={onPressConfirm}
 				disabled={isDisabled}
 			>
-				<ThemedText style={styles.confirmButtonText} type="default">
-					Confirm
-				</ThemedText>
+				{isLoading ? (
+					<ActivityIndicator size="small" color="white" />
+				) : (
+					<ThemedText style={styles.confirmButtonText} type="default">
+						Confirm
+					</ThemedText>
+				)}
 			</Pressable>
 		</ThemedView>
 	);
