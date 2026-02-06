@@ -7,15 +7,14 @@ import {
 	type ViewStyle,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import { useDispatch, useSelector } from "react-redux";
+import { useCreatePayoutMutation } from "@/app/features/api/apiSlice";
+import { setPayout } from "@/app/features/payout/payoutSlice";
+import type { RootState } from "@/app/store";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import type { Currency } from "@/types/api";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { setPayout } from "@/app/features/payout/payoutSlice";
-import type { RootState } from "@/app/store";
-import { useCreatePayoutMutation } from "@/app/features/api/apiSlice";
 
 interface PayoutItem {
 	amount?: number;

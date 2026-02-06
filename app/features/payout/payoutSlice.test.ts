@@ -54,7 +54,10 @@ describe("payoutSlice", () => {
 
 	it("updates iban without changing amount or formattedAmount", () => {
 		const withAmount = payoutReducer(undefined, setPayout({ amount: 100 }));
-		const state = payoutReducer(withAmount, setPayout({ iban: "DE89370400440532013000" }));
+		const state = payoutReducer(
+			withAmount,
+			setPayout({ iban: "DE89370400440532013000" }),
+		);
 		expect(state.amount).toBe(100);
 		expect(state.formattedAmount).toBe("1.00");
 		expect(state.iban).toBe("DE89370400440532013000");

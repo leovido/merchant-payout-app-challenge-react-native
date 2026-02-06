@@ -5,8 +5,8 @@ import { API_BASE_URL } from "@/constants";
 import type {
 	BalanceResponse,
 	CreatePayoutRequest,
-	PayoutResponse,
 	PaginatedActivityResponse,
+	PayoutResponse,
 } from "@/types/api";
 
 export const apiSlice = createApi({
