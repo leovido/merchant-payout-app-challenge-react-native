@@ -1,20 +1,23 @@
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemedText } from "@/components/themed-text";
+import { PayoutScreen } from "@/components/PayoutScreen";
 import { ThemedView } from "@/components/themed-view";
+import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 
 export default function PayoutsScreen() {
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			<ThemedView style={styles.container}>
-				<ThemedView style={styles.header}>
-					<ThemedText type="title">Initiate Payout</ThemedText>
+			<PayoutScreen>
+				<PayoutScreen.Title />
+				<ThemedView style={styles.headerContainer}>
+					<PayoutScreen.AmountTextField />
+					<PayoutScreen.CurrencyDropdown />
 				</ThemedView>
-
-				<ThemedView style={styles.section}>
-					<ThemedText type="subtitle">Payout Amount</ThemedText>
+				<ThemedView style={styles.headerContainer}>
+					<PayoutScreen.IBANTextField />
 				</ThemedView>
-			</ThemedView>
+				<PayoutScreen.ConfirmButton />
+			</PayoutScreen>
 		</SafeAreaView>
 	);
 }
@@ -32,5 +35,17 @@ const styles = StyleSheet.create({
 	},
 	section: {
 		marginBottom: 24,
+	},
+	input: {
+		borderWidth: 1,
+		borderColor: "gray",
+		padding: 8,
+		borderRadius: 4,
+	},
+	headerContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		width: "100%",
 	},
 });

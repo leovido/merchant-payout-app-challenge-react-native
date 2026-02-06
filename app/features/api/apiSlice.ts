@@ -2,7 +2,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { API_BASE_URL } from "@/constants";
-import type { BalanceResponse, PaginatedActivityResponse } from "@/types/api";
+import type {
+	BalanceResponse,
+	CreatePayoutRequest,
+	PaginatedActivityResponse,
+	PayoutResponse,
+} from "@/types/api";
 
 export const apiSlice = createApi({
 	reducerPath: "api",
@@ -41,7 +46,18 @@ export const apiSlice = createApi({
 				};
 			},
 		}),
+		createPayout: builder.mutation<PayoutResponse, CreatePayoutRequest>({
+			query: (body) => ({
+				url: "/api/payouts",
+				method: "POST",
+				body,
+			}),
+		}),
 	}),
 });
 
-export const { useGetBalanceQuery, useGetPaginatedActivityQuery } = apiSlice;
+export const {
+	useGetBalanceQuery,
+	useGetPaginatedActivityQuery,
+	useCreatePayoutMutation,
+} = apiSlice;
