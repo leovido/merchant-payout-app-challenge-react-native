@@ -3,6 +3,7 @@ import {
 	ActivityIndicator,
 	Pressable,
 	StyleSheet,
+	type TextStyle,
 	type ViewStyle,
 } from "react-native";
 import type { Currency } from "@/types/api";
@@ -81,6 +82,7 @@ PayoutModalContent.Content = function Content({
 interface PayoutModalConfirmButtonProps {
 	buttonTitle: string;
 	customStyle?: ViewStyle | ViewStyle[];
+	textStyle?: TextStyle | TextStyle[];
 	isLoading?: boolean;
 	onPressConfirm: () => void;
 }
@@ -89,6 +91,7 @@ PayoutModalContent.Button = function Button({
 	buttonTitle,
 	onPressConfirm,
 	customStyle,
+	textStyle,
 	isLoading,
 }: PayoutModalConfirmButtonProps) {
 	return (
@@ -96,7 +99,7 @@ PayoutModalContent.Button = function Button({
 			accessibilityRole="button"
 			accessibilityLabel={`${buttonTitle} button`}
 			accessibilityValue={{ text: buttonTitle }}
-			style={[styles.payoutModalContentButton, customStyle]}
+			style={customStyle}
 			onPress={onPressConfirm}
 			disabled={isLoading}
 		>
@@ -110,8 +113,8 @@ PayoutModalContent.Button = function Button({
 				<ThemedText
 					accessibilityLabel={`${buttonTitle} button`}
 					accessibilityValue={{ text: buttonTitle }}
-					style={styles.confirmButtonText}
-					type="default"
+					type="defaultSemiBold"
+					style={[styles.confirmButtonText, textStyle]}
 				>
 					{buttonTitle}
 				</ThemedText>
@@ -122,7 +125,6 @@ PayoutModalContent.Button = function Button({
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
 		padding: 16,
 	},
 	title: {
@@ -151,17 +153,5 @@ const styles = StyleSheet.create({
 		color: "white",
 		fontSize: 16,
 		fontWeight: "bold",
-	},
-	payoutModalContentButton: {
-		backgroundColor: "#0a7ea4",
-		width: "50%",
-		color: "white",
-		padding: 16,
-		borderRadius: 4,
-		textAlign: "center",
-		fontSize: 16,
-		height: 60,
-		justifyContent: "center",
-		alignItems: "center",
 	},
 });

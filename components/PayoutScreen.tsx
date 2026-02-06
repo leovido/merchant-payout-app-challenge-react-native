@@ -327,6 +327,7 @@ PayoutScreen.PayoutModal = function PayoutModal({
 							<PayoutModalContent.Button
 								buttonTitle="Cancel"
 								customStyle={styles.modalCancelButton}
+								textStyle={styles.modalCancelButtonText}
 								onPressConfirm={onCloseModal}
 								isLoading={isLoading}
 							/>
@@ -369,14 +370,15 @@ const styles = StyleSheet.create({
 		width: "50%",
 		height: 50,
 		backgroundColor: "lightgray",
+		padding: 8,
+		borderRadius: 4,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalCancelButtonText: {
 		color: "black",
 		fontSize: 16,
 		fontWeight: "bold",
-		padding: 8,
-		borderRadius: 4,
-		textAlign: "center",
-		justifyContent: "center",
-		alignItems: "center",
 	},
 	modalConfirmButton: {
 		width: "50%",
@@ -393,7 +395,7 @@ const styles = StyleSheet.create({
 	},
 	modalBox: {
 		width: "100%",
-		height: "50%",
+		maxHeight: "90%",
 		backgroundColor: "white",
 		borderRadius: 12,
 		padding: 8,
