@@ -1,9 +1,5 @@
-/**
- * MSW Server Setup for Jest/Node.js Testing
- * Uses msw/node instead of msw/native for Jest environment
- */
 import "./polyfills";
-import { setupServer } from "msw/node";
+import { setupServer } from "msw/native";
 import { handlers } from "./handlers";
 
 export const server = setupServer(...handlers);
