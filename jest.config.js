@@ -6,7 +6,7 @@ module.exports = {
 	},
 	transformIgnorePatterns: [
 		// Match both flat node_modules and pnpm's .pnpm store layout; include ESM deps used by msw
-		"node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-ng/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|until-async|\\.pnpm/.*node_modules/((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?|until-async))",
+		"node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-ng/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@reduxjs/toolkit|immer|until-async|\\.pnpm/.*node_modules/((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?|until-async))",
 	],
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 	collectCoverageFrom: [
