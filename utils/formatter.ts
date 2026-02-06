@@ -24,15 +24,15 @@ export const formatCurrency = (
 			style: "currency",
 			currency: "GBP",
 		}).format(amount);
-	} else if (currency === "EUR") {
+	}
+	if (currency === "EUR") {
 		return new Intl.NumberFormat("en-EUR", {
 			style: "currency",
 			currency: "EUR",
 		}).format(amount);
-	} else {
-		return new Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: currency,
-		}).format(amount);
 	}
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: currency,
+	}).format(amount);
 };

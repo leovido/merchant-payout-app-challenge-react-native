@@ -1,7 +1,12 @@
 module.exports = {
 	preset: "jest-expo",
+	moduleNameMapper: {
+		// Force msw/node in Jest (jest-expo resolves with "react-native" and msw/node is null there)
+		"^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
+	},
 	transformIgnorePatterns: [
-		"node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-ng/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)",
+		// Match both flat node_modules and pnpm's .pnpm store layout; include ESM deps used by msw
+		"node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-ng/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|until-async|\\.pnpm/.*node_modules/((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?|until-async))",
 	],
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 	collectCoverageFrom: [

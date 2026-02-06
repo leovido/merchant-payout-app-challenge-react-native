@@ -5,17 +5,17 @@ import {
 	Pressable,
 	StyleSheet,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityListItem } from "@/components/ActivityListItem";
 import { ActivityModal } from "@/components/ActivityModal";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { formatCurrency } from "@/utils/formatter";
 import {
 	useGetBalanceQuery,
 	useGetPaginatedActivityQuery,
 } from "../features/api/apiSlice";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { formatCurrency } from "@/utils/formatter";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 
 export default function HomeScreen() {
 	const { data: balance, isLoading: isBalanceLoading } = useGetBalanceQuery();
@@ -116,7 +116,7 @@ export default function HomeScreen() {
 							</ActivityListItem>
 						)}
 						keyExtractor={(item) => item.id}
-					></FlatList>
+					/>
 				</ThemedView>
 
 				<Pressable
