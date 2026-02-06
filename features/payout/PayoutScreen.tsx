@@ -9,15 +9,15 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useDispatch, useSelector } from "react-redux";
-import { useCreatePayoutMutation } from "@/app/features/api/apiSlice";
-import { setPayout } from "@/app/features/payout/payoutSlice";
-import type { RootState } from "@/app/store";
+import { useCreatePayoutMutation } from "@/api/apiSlice";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { setPayout } from "@/features/payout/payoutSlice";
+import type { RootState } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutModalContent } from "./PayoutModal";
-import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
 
 /** IBAN: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
