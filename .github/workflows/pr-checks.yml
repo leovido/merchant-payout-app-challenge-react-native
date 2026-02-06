@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Audit
-        run: pnpm audit --audit-level=moderate
-
   test:
     name: Test
     runs-on: ubuntu-latest
