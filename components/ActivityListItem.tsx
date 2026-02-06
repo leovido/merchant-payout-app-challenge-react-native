@@ -3,6 +3,7 @@ import { StyleSheet, type ViewStyle } from "react-native";
 import type { ActivityItem } from "@/types/api";
 import { dateFormatter } from "@/utils/dateFormatter";
 import { formatCurrency } from "@/utils/formatter";
+import { Divider } from "./Divider";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
 
@@ -34,7 +35,7 @@ export function ActivityListItem({
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>
-			<ThemedView style={styles.separator} />
+			<Divider />
 		</ActivityContext.Provider>
 	);
 }
@@ -142,9 +143,5 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: "600",
 		paddingBottom: 4,
-	},
-	separator: {
-		borderBottomColor: "gray",
-		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
 });

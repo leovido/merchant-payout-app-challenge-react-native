@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useGetPaginatedActivityQuery } from "@/app/features/api/apiSlice";
 import { ActivityListItem } from "./ActivityListItem";
+import { Divider } from "./Divider";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
 
@@ -46,7 +47,7 @@ export const ActivityModal = ({
 
 						<Button title="Done" onPress={() => setIsModalOpen(false)} />
 					</ThemedView>
-					<ThemedView style={styles.separator} />
+					<Divider />
 				</ThemedView>
 				<FlatList
 					data={activityData?.items}
@@ -98,10 +99,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginBottom: 16,
 		paddingVertical: 16,
-	},
-	separator: {
-		borderBottomColor: "gray",
-		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
 	activityContainer: {
 		flexDirection: "row",
