@@ -1,9 +1,9 @@
 /**
- * MSW Server Setup for React Native
- * Polyfills must be imported before MSW
+ * MSW Server Setup for Jest/Node.js Testing
+ * Uses msw/node instead of msw/native for Jest environment
  */
 import "./polyfills";
-import { setupServer } from "msw/native";
+import { setupServer } from "msw/node";
 import { handlers } from "./handlers";
 
 export const server = setupServer(...handlers);
