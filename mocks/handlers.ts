@@ -81,7 +81,7 @@ export const handlers = [
 		// Parse cursor from query parameters
 		const url = new URL(request.url);
 		const cursor = url.searchParams.get("cursor");
-		const limit = parseInt(url.searchParams.get("limit") || "15", 10);
+		const limit = Number.parseInt(url.searchParams.get("limit") || "15", 10);
 
 		// If cursor is provided, return paginated activity response
 		if (cursor !== null) {
@@ -113,7 +113,7 @@ export const handlers = [
 		// Parse cursor and limit from query parameters
 		const url = new URL(request.url);
 		const cursor = url.searchParams.get("cursor");
-		const limit = parseInt(url.searchParams.get("limit") || "15", 10);
+		const limit = Number.parseInt(url.searchParams.get("limit") || "15", 10);
 
 		const paginatedActivity = getPaginatedActivity(cursor, limit);
 		const response: PaginatedActivityResponse = paginatedActivity;

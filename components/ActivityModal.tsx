@@ -46,7 +46,7 @@ export const ActivityModal = ({
 
 						<Button title="Done" onPress={() => setIsModalOpen(false)} />
 					</ThemedView>
-					<ThemedView style={styles.separator}></ThemedView>
+					<ThemedView style={styles.separator} />
 				</ThemedView>
 				<FlatList
 					data={activityData?.items}
@@ -73,7 +73,7 @@ export const ActivityModal = ({
 							refetch();
 						}
 					}}
-				></FlatList>
+				/>
 				{isActivityFetching && (
 					<ThemedView style={styles.loadingContainer}>
 						<ActivityIndicator size="small" />

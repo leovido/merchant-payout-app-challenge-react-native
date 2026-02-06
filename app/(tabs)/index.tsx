@@ -116,7 +116,7 @@ export default function HomeScreen() {
 							</ActivityListItem>
 						)}
 						keyExtractor={(item) => item.id}
-					></FlatList>
+					/>
 				</ThemedView>
 
 				<Pressable

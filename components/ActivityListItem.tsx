@@ -34,7 +34,7 @@ export function ActivityListItem({
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>
-			<ThemedView style={styles.separator}></ThemedView>
+			<ThemedView style={styles.separator} />
 		</ActivityContext.Provider>
 	);
 }
