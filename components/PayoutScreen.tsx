@@ -30,10 +30,6 @@ interface PayoutItem {
 	setCurrency: (currency: Currency) => void;
 	iban: string;
 	setIban: (iban: string) => void;
-	isModalVisible: boolean;
-	setIsModalVisible: (isModalVisible: boolean) => void;
-	onCloseModal: () => void;
-	onConfirmModal: () => void;
 }
 
 const PayoutContext = createContext<PayoutItem>({
@@ -44,10 +40,6 @@ const PayoutContext = createContext<PayoutItem>({
 	setCurrency: () => {},
 	iban: "",
 	setIban: () => {},
-	isModalVisible: false,
-	setIsModalVisible: () => {},
-	onCloseModal: () => {},
-	onConfirmModal: () => {},
 });
 
 function usePayoutContext() {
@@ -82,16 +74,6 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 				},
 				setIban: (iban: string) => {
 					dispatch(setPayout({ ...payout, iban }));
-				},
-				isModalVisible: false,
-				setIsModalVisible: (isModalVisible: boolean) => {
-					dispatch(setPayout({ ...payout, isModalVisible }));
-				},
-				onCloseModal: () => {
-					dispatch(setPayout({ ...payout, isModalVisible: false }));
-				},
-				onConfirmModal: () => {
-					dispatch(setPayout({ ...payout, isModalVisible: false }));
 				},
 			}}
 		>
