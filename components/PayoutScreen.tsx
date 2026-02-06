@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
 	ActivityIndicator,
+	Modal,
 	Pressable,
 	StyleSheet,
 	TextInput,
@@ -13,8 +14,13 @@ import { setPayout } from "@/app/features/payout/payoutSlice";
 import type { RootState } from "@/app/store";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import type { Currency } from "@/types/api";
+import { formatCurrency } from "@/utils/formatter";
+import { PayoutModalContent } from "./PayoutModal";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
+
+/** IBAN: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
+const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
 
 interface PayoutItem {
 	amount?: number;
@@ -24,6 +30,10 @@ interface PayoutItem {
 	setCurrency: (currency: Currency) => void;
 	iban: string;
 	setIban: (iban: string) => void;
+	isModalVisible: boolean;
+	setIsModalVisible: (isModalVisible: boolean) => void;
+	onCloseModal: () => void;
+	onConfirmModal: () => void;
 }
 
 const PayoutContext = createContext<PayoutItem>({
@@ -34,6 +44,10 @@ const PayoutContext = createContext<PayoutItem>({
 	setCurrency: () => {},
 	iban: "",
 	setIban: () => {},
+	isModalVisible: false,
+	setIsModalVisible: () => {},
+	onCloseModal: () => {},
+	onConfirmModal: () => {},
 });
 
 function usePayoutContext() {
@@ -68,6 +82,16 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 				},
 				setIban: (iban: string) => {
 					dispatch(setPayout({ ...payout, iban }));
+				},
+				isModalVisible: false,
+				setIsModalVisible: (isModalVisible: boolean) => {
+					dispatch(setPayout({ ...payout, isModalVisible }));
+				},
+				onCloseModal: () => {
+					dispatch(setPayout({ ...payout, isModalVisible: false }));
+				},
+				onConfirmModal: () => {
+					dispatch(setPayout({ ...payout, isModalVisible: false }));
 				},
 			}}
 		>
@@ -177,11 +201,18 @@ PayoutScreen.CurrencyDropdown = function CurrencyDropdown() {
 };
 
 PayoutScreen.IBANTextField = function IBANTextField() {
-	const [iban, setIban] = useState("");
+	const { iban, setIban } = usePayoutContext();
 
 	const handleIbanChange = (text: string) => {
-		setIban(text);
+		const cleaned = text
+			.replace(/\s/g, "")
+			.toUpperCase()
+			.replace(/[^A-Z0-9]/g, "")
+			.slice(0, 34);
+		setIban(cleaned);
 	};
+
+	const showIbanError = iban.length > 0 && !IBAN_REGEX.test(iban);
 
 	return (
 		<ThemedView style={styles.ibanTextFieldSection}>
@@ -190,36 +221,39 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 			</ThemedText>
 
 			<TextInput
-				style={styles.input}
+				style={[styles.input, showIbanError && styles.inputError]}
 				placeholder="FR1212345123451234567A12310131231231231"
-				keyboardType="numeric"
+				placeholderTextColor="gray"
+				autoCapitalize="characters"
+				autoCorrect={false}
 				value={iban}
 				onChangeText={handleIbanChange}
 			/>
 			<ThemedText style={styles.ibanTextFieldHint} type="subtitle">
 				Enter the destination bank account IBAN.
 			</ThemedText>
+			{showIbanError && (
+				<ThemedText style={styles.ibanErrorText} type="subtitle">
+					Enter a valid IBAN (e.g. GB82WEST12345698765432).
+				</ThemedText>
+			)}
 		</ThemedView>
 	);
 };
 
-PayoutScreen.ConfirmButton = function ConfirmButton() {
-	const { amount, currency, iban } = usePayoutContext();
-	const [createPayout, { isLoading }] = useCreatePayoutMutation();
+interface ConfirmButtonProps {
+	setIsModalVisible: (isModalVisible: boolean) => void;
+}
+
+PayoutScreen.ConfirmButton = function ConfirmButton({
+	setIsModalVisible,
+}: ConfirmButtonProps) {
+	const { amount } = usePayoutContext();
 
 	const isDisabled = amount == null || amount <= 0;
 
 	const onPressConfirm = async () => {
-		if (amount == null || amount <= 0) {
-			return;
-		}
-		const response = await createPayout({ amount, currency, iban });
-
-		if (response.error) {
-			console.error("Create payout error", response.error);
-		} else {
-			console.log("Create payout response", response.data);
-		}
+		setIsModalVisible(true);
 	};
 
 	return (
@@ -232,15 +266,99 @@ PayoutScreen.ConfirmButton = function ConfirmButton() {
 				onPress={onPressConfirm}
 				disabled={isDisabled}
 			>
-				{isLoading ? (
-					<ActivityIndicator size="small" color="white" />
-				) : (
-					<ThemedText style={styles.confirmButtonText} type="default">
-						Confirm
-					</ThemedText>
-				)}
+				<ThemedText style={styles.confirmButtonText} type="default">
+					Confirm
+				</ThemedText>
 			</Pressable>
 		</ThemedView>
+	);
+};
+
+interface PayoutModalProps {
+	isModalVisible: boolean;
+	onCloseModal: () => void;
+	onConfirmModal: () => void;
+}
+
+PayoutScreen.PayoutModal = function PayoutModal({
+	isModalVisible,
+	onCloseModal,
+	onConfirmModal,
+}: PayoutModalProps) {
+	const payout = useSelector((state: RootState) => state.payout);
+	const [createPayout, { isLoading }] = useCreatePayoutMutation();
+	const formattedAmountWithCurrency = formatCurrency(
+		payout.amount || 0,
+		payout.currency || "GBP",
+	);
+
+	const onPressConfirmButton = async () => {
+		const response = await createPayout({
+			amount: payout.amount || 0,
+			currency: payout.currency || "GBP",
+			iban: payout.iban || "",
+		});
+		if (response.error) {
+			console.error(response.error);
+		} else {
+			onConfirmModal();
+		}
+	};
+
+	return (
+		<Modal
+			visible={isModalVisible}
+			onRequestClose={onCloseModal}
+			animationType="fade"
+			transparent
+			statusBarTranslucent
+		>
+			<Pressable
+				style={styles.modalOverlay}
+				onPress={onCloseModal}
+				accessibilityRole="button"
+				accessibilityLabel="Close modal"
+			>
+				<Pressable style={styles.modalBox} onPress={(e) => e.stopPropagation()}>
+					<PayoutModalContent
+						payout={{
+							amount: payout.amount || 0,
+							currency: payout.currency || "GBP",
+							iban: payout.iban || "",
+						}}
+					>
+						<PayoutModalContent.Title />
+						<PayoutModalContent.Content
+							title="Amount"
+							value={formattedAmountWithCurrency}
+						/>
+						<PayoutModalContent.Content
+							title="Currency"
+							value={payout.currency || "GBP"}
+						/>
+						<PayoutModalContent.Content
+							title="IBAN"
+							value={payout.iban || ""}
+						/>
+
+						<ThemedView style={styles.modalButtonContainer}>
+							<PayoutModalContent.Button
+								buttonTitle="Cancel"
+								customStyle={styles.modalCancelButton}
+								onPressConfirm={onCloseModal}
+								isLoading={isLoading}
+							/>
+							<PayoutModalContent.Button
+								buttonTitle="Confirm"
+								customStyle={styles.modalConfirmButton}
+								onPressConfirm={onPressConfirmButton}
+								isLoading={isLoading}
+							/>
+						</ThemedView>
+					</PayoutModalContent>
+				</Pressable>
+			</Pressable>
+		</Modal>
 	);
 };
 
@@ -252,6 +370,51 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
+	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: "rgba(0,0,0,0.5)",
+		justifyContent: "center",
+		alignItems: "center",
+		padding: 24,
+	},
+	modalButtonContainer: {
+		flexDirection: "row",
+		justifyContent: "space-evenly",
+		gap: 8,
+	},
+	modalCancelButton: {
+		width: "50%",
+		height: 50,
+		backgroundColor: "lightgray",
+		color: "black",
+		fontSize: 16,
+		fontWeight: "bold",
+		padding: 8,
+		borderRadius: 4,
+		textAlign: "center",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalConfirmButton: {
+		width: "50%",
+		height: 50,
+		backgroundColor: "#0a7ea4",
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		padding: 8,
+		borderRadius: 4,
+		textAlign: "center",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalBox: {
+		width: "100%",
+		height: "50%",
+		backgroundColor: "white",
+		borderRadius: 12,
+		padding: 8,
 	},
 	input: {
 		height: 50,
@@ -294,6 +457,15 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		fontWeight: "300",
 		color: "gray",
+	},
+	inputError: {
+		borderColor: "#c53030",
+		borderWidth: 1.5,
+	},
+	ibanErrorText: {
+		paddingTop: 6,
+		fontSize: 12,
+		color: "#c53030",
 	},
 	confirmButtonSection: {
 		paddingVertical: 16,
