@@ -91,14 +91,12 @@ PayoutScreen.Title = function Title() {
 PayoutScreen.AmountTextField = function AmountTextField() {
 	const { setAmount } = usePayoutContext();
 	const payout = useSelector((state: RootState) => state.payout);
-	// Digits only: "1" → 1 cent, "12" → 12 cents; display is (cents/100).toFixed(2)
 	const [digitString, setDigitString] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
 
 	const cents = digitString === "" ? 0 : Number.parseInt(digitString, 10);
 	const displayValue = digitString === "" ? "" : (cents / 100).toFixed(2);
 
-	// Sync from Redux when not focused (e.g. form reset or initial load)
 	useEffect(() => {
 		if (!isFocused) {
 			setDigitString(

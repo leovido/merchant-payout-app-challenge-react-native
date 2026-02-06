@@ -7,8 +7,8 @@ const config = getDefaultConfig(__dirname);
 // Exclude test files from the app bundle. Jest globals (describe, it, expect) exist only when
 // running Jest (via jest.setup.js); the app must never bundle test files.
 const defaultBlockList = config.resolver.blockList;
-const testFilePattern = /[\/\\].*\.(test|spec)\.(ts|tsx|js|jsx)$/;
-const testsDirPattern = /[\/\\]__tests__[\/\\]/;
+const testFilePattern = /[/\\].*\.(test|spec)\.(ts|tsx|js|jsx)$/;
+const testsDirPattern = /[/\\]__tests__[/\\]/;
 config.resolver.blockList = Array.isArray(defaultBlockList)
 	? [...defaultBlockList, testFilePattern, testsDirPattern]
 	: [defaultBlockList, testFilePattern, testsDirPattern];
