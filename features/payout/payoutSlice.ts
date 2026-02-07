@@ -63,10 +63,22 @@ export const payoutSlice = createSlice({
 				errorMessage: action.payload.errorMessage,
 			};
 		},
+		setPayoutResponse: (
+			state: typeof initialState,
+			action: PayloadAction<{
+				payoutResponse: PayoutResponse;
+			}>,
+		) => {
+			return { ...state, payoutResponse: action.payload.payoutResponse };
+		},
 	},
 });
 
-export const { setPayout, resetPayoutState, setFailurePayoutState } =
-	payoutSlice.actions;
+export const {
+	setPayout,
+	resetPayoutState,
+	setFailurePayoutState,
+	setPayoutResponse,
+} = payoutSlice.actions;
 
 export default payoutSlice.reducer;

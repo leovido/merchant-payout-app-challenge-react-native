@@ -10,6 +10,7 @@ import {
 	resetPayoutState,
 	setFailurePayoutState,
 	setPayout,
+	setPayoutResponse,
 } from "@/features/payout/payoutSlice";
 import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
@@ -34,6 +35,7 @@ export default function PayoutsScreen() {
 				currency: payout?.currency || "GBP",
 				iban: payout?.iban || "",
 			});
+
 			if (response.error) {
 				if ("data" in response.error) {
 					const errorMessage = (response.error.data as { error: string }).error;
@@ -47,10 +49,8 @@ export default function PayoutsScreen() {
 				}
 			} else {
 				dispatch(
-					setPayout({
-						...payout,
+					setPayoutResponse({
 						payoutResponse: response.data,
-						errorMessage: undefined,
 					}),
 				);
 			}
@@ -68,6 +68,7 @@ export default function PayoutsScreen() {
 
 	const onPressCreateAnotherPayout = async () => {
 		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
+		dispatch(resetPayoutState());
 	};
 
 	const onPressTryAgain = async () => {
