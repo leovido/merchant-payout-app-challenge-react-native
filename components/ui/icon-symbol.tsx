@@ -23,6 +23,7 @@ const MAPPING = {
 	"chevron.right": "chevron-right",
 	"arrow.up.circle.fill": "arrow-circle-up",
 	"checkmark.circle.fill": "check-circle",
+	xmark: "close",
 } as IconMapping;
 
 /**
