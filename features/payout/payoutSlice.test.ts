@@ -1,4 +1,9 @@
-import payoutReducer, { setPayout } from "./payoutSlice";
+import payoutReducer, {
+	resetPayoutState,
+	setFailurePayoutState,
+	setPayout,
+	setPayoutResponse,
+} from "./payoutSlice";
 
 describe("payoutSlice", () => {
 	it("returns initial state when given undefined state and empty payload", () => {
@@ -69,5 +74,127 @@ describe("payoutSlice", () => {
 		const state = payoutReducer(withAmount, setPayout({ amount: undefined }));
 		expect(state.amount).toBeUndefined();
 		expect(state.formattedAmount).toBe("");
+	});
+
+	describe("resetPayoutState", () => {
+		it("returns initial state from undefined state", () => {
+			const state = payoutReducer(undefined, resetPayoutState());
+			expect(state.amount).toBeUndefined();
+			expect(state.currency).toBe("GBP");
+			expect(state.iban).toBe("");
+			expect(state.payoutResponse).toBeUndefined();
+			expect(state.errorMessage).toBeUndefined();
+		});
+
+		it("resets state to initial when called after setPayout", () => {
+			const withData = payoutReducer(
+				undefined,
+				setPayout({
+					amount: 1000,
+					currency: "EUR",
+					iban: "DE89370400440532013000",
+				}),
+			);
+			const state = payoutReducer(withData, resetPayoutState());
+			expect(state.amount).toBeUndefined();
+			expect(state.currency).toBe("GBP");
+			expect(state.iban).toBe("");
+			expect(state.formattedAmount).toBeUndefined();
+			expect(state.payoutResponse).toBeUndefined();
+			expect(state.errorMessage).toBeUndefined();
+		});
+	});
+
+	describe("setFailurePayoutState", () => {
+		it("sets errorMessage and payoutResponse with status failed", () => {
+			const withAmount = payoutReducer(
+				undefined,
+				setPayout({ amount: 500, currency: "GBP", iban: "FR123" }),
+			);
+			const state = payoutReducer(
+				withAmount,
+				setFailurePayoutState({ errorMessage: "Insufficient funds" }),
+			);
+			expect(state.errorMessage).toBe("Insufficient funds");
+			expect(state.payoutResponse).toBeDefined();
+			expect(state.payoutResponse?.status).toBe("failed");
+			expect(state.payoutResponse?.amount).toBe(500);
+			expect(state.payoutResponse?.currency).toBe("GBP");
+			expect(state.payoutResponse?.iban).toBe("FR123");
+			expect(state.payoutResponse?.id).toBe("");
+			expect(state.payoutResponse?.created_at).toBeDefined();
+		});
+
+		it("preserves amount, currency and iban from current state", () => {
+			const withData = payoutReducer(
+				undefined,
+				setPayout({
+					amount: 12345,
+					currency: "EUR",
+					iban: "DE89370400440532013000",
+				}),
+			);
+			const state = payoutReducer(
+				withData,
+				setFailurePayoutState({ errorMessage: "Network error" }),
+			);
+			expect(state.payoutResponse?.amount).toBe(12345);
+			expect(state.payoutResponse?.currency).toBe("EUR");
+			expect(state.payoutResponse?.iban).toBe("DE89370400440532013000");
+		});
+	});
+
+	describe("setPayoutResponse", () => {
+		it("sets payoutResponse and keeps rest of state", () => {
+			const withAmount = payoutReducer(
+				undefined,
+				setPayout({ amount: 100, iban: "FR123" }),
+			);
+			const response = {
+				id: "pay-123",
+				status: "completed" as const,
+				amount: 100,
+				currency: "GBP" as const,
+				iban: "FR123",
+				created_at: "2025-02-07T12:00:00Z",
+			};
+			const state = payoutReducer(
+				withAmount,
+				setPayoutResponse({ payoutResponse: response }),
+			);
+			expect(state.payoutResponse).toEqual(response);
+			expect(state.amount).toBe(100);
+			expect(state.iban).toBe("FR123");
+			expect(state.formattedAmount).toBe("1.00");
+		});
+
+		it("replaces existing payoutResponse", () => {
+			const withResponse = payoutReducer(
+				undefined,
+				setPayoutResponse({
+					payoutResponse: {
+						id: "old",
+						status: "pending",
+						amount: 0,
+						currency: "GBP",
+						iban: "",
+						created_at: "",
+					},
+				}),
+			);
+			const newResponse = {
+				id: "new",
+				status: "completed" as const,
+				amount: 500,
+				currency: "EUR" as const,
+				iban: "DE123",
+				created_at: "2025-02-07T13:00:00Z",
+			};
+			const state = payoutReducer(
+				withResponse,
+				setPayoutResponse({ payoutResponse: newResponse }),
+			);
+			expect(state.payoutResponse).toEqual(newResponse);
+		});
 	});
 });

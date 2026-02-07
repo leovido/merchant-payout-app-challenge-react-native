@@ -260,32 +260,20 @@ interface PayoutModalProps {
 	isModalVisible: boolean;
 	onCloseModal: () => void;
 	onConfirmModal: () => void;
+	isLoading: boolean;
 }
 
 PayoutScreen.PayoutModal = function PayoutModal({
 	isModalVisible,
 	onCloseModal,
 	onConfirmModal,
+	isLoading,
 }: PayoutModalProps) {
 	const payout = useSelector((state: RootState) => state.payout);
-	const [createPayout, { isLoading }] = useCreatePayoutMutation();
 	const formattedAmountWithCurrency = formatCurrency(
 		payout.amount || 0,
 		payout.currency || "GBP",
 	);
-
-	const onPressConfirmButton = async () => {
-		const response = await createPayout({
-			amount: payout.amount || 0,
-			currency: payout.currency || "GBP",
-			iban: payout.iban || "",
-		});
-		if (response.error) {
-			console.error(response.error);
-		} else {
-			onConfirmModal();
-		}
-	};
 
 	return (
 		<Modal
@@ -334,7 +322,7 @@ PayoutScreen.PayoutModal = function PayoutModal({
 							<PayoutModalContent.Button
 								buttonTitle="Confirm"
 								customStyle={styles.modalConfirmButton}
-								onPressConfirm={onPressConfirmButton}
+								onPressConfirm={onConfirmModal}
 								isLoading={isLoading}
 							/>
 						</ThemedView>
@@ -414,7 +402,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
 		minWidth: "70%",
-		maxWidth: "90%",
+		maxWidth: "80%",
 	},
 	amountTextFieldTitle: {
 		paddingBottom: 8,
@@ -422,8 +410,8 @@ const styles = StyleSheet.create({
 	currencyDropdownSection: {
 		paddingVertical: 16,
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		minWidth: "10%",
-		maxWidth: "40%",
+		minWidth: "20%",
+		maxWidth: "50%",
 	},
 	currencyDropdownTitle: {
 		paddingBottom: 8,
