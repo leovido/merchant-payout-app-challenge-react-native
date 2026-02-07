@@ -1,16 +1,18 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, type ViewStyle } from "react-native";
 import type { PayoutResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutStatusScreen } from "./PayoutStatusScreen";
 
 interface PayoutStatusCompletedScreenProps {
 	payoutResponse: PayoutResponse;
+	customStyle?: ViewStyle | ViewStyle[];
 	onPress: () => void;
 }
 
 export const PayoutStatusCompletedScreen = ({
 	payoutResponse,
 	onPress,
+	customStyle,
 }: PayoutStatusCompletedScreenProps) => {
 	const formattedAmount = formatCurrency(
 		payoutResponse?.amount,
@@ -19,7 +21,10 @@ export const PayoutStatusCompletedScreen = ({
 	const description = `Your payout of ${formattedAmount} has been processed successfully.`;
 
 	return (
-		<PayoutStatusScreen payoutResponse={payoutResponse}>
+		<PayoutStatusScreen
+			payoutResponse={payoutResponse}
+			customStyle={customStyle}
+		>
 			<PayoutStatusScreen.IconStatus customStyle={styles.icon} />
 			<PayoutStatusScreen.Title title="Payout Completed" />
 			<PayoutStatusScreen.Description

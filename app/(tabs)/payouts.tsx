@@ -13,12 +13,12 @@ type PayoutScreenStatus = "default" | "completed" | "failed";
 
 export default function PayoutsScreen() {
 	const [payoutScreenStatus, setPayoutScreenStatus] =
-		useState<PayoutScreenStatus>("failed");
+		useState<PayoutScreenStatus>("completed");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	// const payoutResponse = useSelector((state: RootState) => state.payout.payoutResponse);
 	const payoutResponse = {
 		id: "123",
-		status: "failed",
+		status: "completed",
 		amount: 100,
 		currency: "GBP",
 		iban: "GB12345678901234567890",

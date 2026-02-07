@@ -42,7 +42,7 @@ export const PayoutModalContent = ({
 }: PayoutModalContentProps) => {
 	return (
 		<PayoutModalContext.Provider value={payout}>
-			<ThemedView style={styles.container}>{children}</ThemedView>;
+			<ThemedView style={styles.container}>{children}</ThemedView>
 		</PayoutModalContext.Provider>
 	);
 };
@@ -55,27 +55,27 @@ PayoutModalContent.Title = function Title() {
 	);
 };
 
+interface PayoutModalContentContentProps {
+	title: string;
+	value: string;
+}
+
 PayoutModalContent.Content = function Content({
 	title,
 	value,
-}: {
-	title: string;
-	value: string;
-}) {
+}: PayoutModalContentContentProps) {
 	return (
-		<>
-			<ThemedView style={styles.contentContainer}>
-				<ThemedView style={styles.contentRow}>
-					<ThemedText style={styles.content} type="default">
-						{title}
-					</ThemedText>
-					<ThemedText style={styles.contentValue} type="defaultSemiBold">
-						{value}
-					</ThemedText>
-				</ThemedView>
-				<Divider />
+		<ThemedView style={styles.contentContainer}>
+			<ThemedView style={styles.contentRow}>
+				<ThemedText style={styles.content} type="default">
+					{title}
+				</ThemedText>
+				<ThemedText style={styles.contentValue} type="defaultSemiBold">
+					{value}
+				</ThemedText>
 			</ThemedView>
-		</>
+			<Divider />
+		</ThemedView>
 	);
 };
 

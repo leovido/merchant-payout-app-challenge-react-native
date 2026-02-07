@@ -122,6 +122,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
 		paddingHorizontal: 24,
+		width: "80%",
+		alignSelf: "center",
 	},
 	icon: {
 		marginBottom: 8,

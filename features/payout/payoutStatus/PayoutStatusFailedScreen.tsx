@@ -1,15 +1,17 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, type ViewStyle } from "react-native";
 import type { PayoutResponse } from "@/types/api";
 import { PayoutStatusScreen } from "./PayoutStatusScreen";
 
 interface PayoutStatusFailedScreenProps {
 	payoutResponse: PayoutResponse;
+	customStyle?: ViewStyle | ViewStyle[];
 	onPress: () => void;
 }
 
 export const PayoutStatusFailedScreen = ({
 	payoutResponse,
 	onPress,
+	customStyle,
 }: PayoutStatusFailedScreenProps) => {
 	const title = "Unable to Proccess Payout";
 	const description =
@@ -18,7 +20,7 @@ export const PayoutStatusFailedScreen = ({
 	return (
 		<PayoutStatusScreen
 			payoutResponse={payoutResponse}
-			customStyle={styles.container}
+			customStyle={customStyle}
 		>
 			<PayoutStatusScreen.IconStatus customStyle={styles.icon} />
 			<PayoutStatusScreen.Title
@@ -38,8 +40,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
-		alignSelf: "center",
-		width: "80%",
 	},
 	titleContainer: {
 		paddingVertical: 8,
