@@ -7,7 +7,6 @@ import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
 import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
-import type { RootState } from "@/store/store";
 import type { PayoutResponse } from "@/types/api";
 
 type PayoutScreenStatus = "default" | "completed" | "failed";

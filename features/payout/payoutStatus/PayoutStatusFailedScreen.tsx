@@ -16,7 +16,10 @@ export const PayoutStatusFailedScreen = ({
 		"Service temporarily unavailable. Please try again later.";
 
 	return (
-		<PayoutStatusScreen payoutResponse={payoutResponse}>
+		<PayoutStatusScreen
+			payoutResponse={payoutResponse}
+			customStyle={styles.container}
+		>
 			<PayoutStatusScreen.IconStatus customStyle={styles.icon} />
 			<PayoutStatusScreen.Title
 				title={title}
@@ -35,7 +38,8 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
-		alignItems: "center",
+		alignSelf: "center",
+		width: "80%",
 	},
 	titleContainer: {
 		paddingVertical: 8,

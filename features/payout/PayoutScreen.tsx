@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
 		minWidth: "70%",
-		maxWidth: "90%",
+		maxWidth: "80%",
 	},
 	amountTextFieldTitle: {
 		paddingBottom: 8,
@@ -422,8 +422,8 @@ const styles = StyleSheet.create({
 	currencyDropdownSection: {
 		paddingVertical: 16,
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		minWidth: "10%",
-		maxWidth: "40%",
+		minWidth: "20%",
+		maxWidth: "50%",
 	},
 	currencyDropdownTitle: {
 		paddingBottom: 8,

@@ -23,16 +23,22 @@ const usePayoutStatusContext = () => {
 	return context;
 };
 
+interface PayoutStatusScreenProps {
+	payoutResponse: PayoutResponse;
+	children: React.ReactNode;
+	customStyle?: ViewStyle | ViewStyle[];
+}
+
 export const PayoutStatusScreen = ({
 	payoutResponse,
 	children,
-}: {
-	payoutResponse: PayoutResponse;
-	children: React.ReactNode;
-}) => {
+	customStyle,
+}: PayoutStatusScreenProps) => {
 	return (
 		<PayoutStatusContext.Provider value={payoutResponse}>
-			<ThemedView style={styles.container}>{children}</ThemedView>
+			<ThemedView style={[styles.container, customStyle]}>
+				{children}
+			</ThemedView>
 		</PayoutStatusContext.Provider>
 	);
 };
@@ -102,7 +108,7 @@ PayoutStatusScreen.Button = ({
 			style={[styles.button, customStyle]}
 			onPress={onPress}
 		>
-			<ThemedText style={styles.buttonText} type="default">
+			<ThemedText style={styles.buttonText} type="defaultSemiBold">
 				{title}
 			</ThemedText>
 		</Pressable>
@@ -126,6 +132,7 @@ const styles = StyleSheet.create({
 	description: {
 		paddingVertical: 8,
 		textAlign: "center",
+		fontWeight: "300",
 	},
 	button: {
 		marginTop: 30,
