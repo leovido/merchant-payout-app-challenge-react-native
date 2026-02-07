@@ -260,32 +260,20 @@ interface PayoutModalProps {
 	isModalVisible: boolean;
 	onCloseModal: () => void;
 	onConfirmModal: () => void;
+	isLoading: boolean;
 }
 
 PayoutScreen.PayoutModal = function PayoutModal({
 	isModalVisible,
 	onCloseModal,
 	onConfirmModal,
+	isLoading,
 }: PayoutModalProps) {
 	const payout = useSelector((state: RootState) => state.payout);
-	const [createPayout, { isLoading }] = useCreatePayoutMutation();
 	const formattedAmountWithCurrency = formatCurrency(
 		payout.amount || 0,
 		payout.currency || "GBP",
 	);
-
-	const onPressConfirmButton = async () => {
-		const response = await createPayout({
-			amount: payout.amount || 0,
-			currency: payout.currency || "GBP",
-			iban: payout.iban || "",
-		});
-		if (response.error) {
-			console.error(response.error);
-		} else {
-			onConfirmModal();
-		}
-	};
 
 	return (
 		<Modal
@@ -334,7 +322,7 @@ PayoutScreen.PayoutModal = function PayoutModal({
 							<PayoutModalContent.Button
 								buttonTitle="Confirm"
 								customStyle={styles.modalConfirmButton}
-								onPressConfirm={onPressConfirmButton}
+								onPressConfirm={onConfirmModal}
 								isLoading={isLoading}
 							/>
 						</ThemedView>

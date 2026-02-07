@@ -4,18 +4,20 @@ import { PayoutStatusScreen } from "./PayoutStatusScreen";
 
 interface PayoutStatusFailedScreenProps {
 	payoutResponse: PayoutResponse;
+	errorMessage?: string;
 	customStyle?: ViewStyle | ViewStyle[];
 	onPress: () => void;
 }
 
 export const PayoutStatusFailedScreen = ({
 	payoutResponse,
+	errorMessage,
 	onPress,
 	customStyle,
 }: PayoutStatusFailedScreenProps) => {
 	const title = "Unable to Proccess Payout";
 	const description =
-		"Service temporarily unavailable. Please try again later.";
+		errorMessage || "Service temporarily unavailable. Please try again later.";
 
 	return (
 		<PayoutStatusScreen

@@ -1,43 +1,82 @@
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
+import {
+	resetPayoutState,
+	setFailurePayoutState,
+	setPayout,
+} from "@/features/payout/payoutSlice";
 import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
-import type { PayoutResponse } from "@/types/api";
-
-type PayoutScreenStatus = "default" | "completed" | "failed";
+import type { RootState } from "@/store/store";
 
 export default function PayoutsScreen() {
-	const [payoutScreenStatus, setPayoutScreenStatus] =
-		useState<PayoutScreenStatus>("completed");
 	const [isModalVisible, setIsModalVisible] = useState(false);
-	// const payoutResponse = useSelector((state: RootState) => state.payout.payoutResponse);
-	const payoutResponse = {
-		id: "123",
-		status: "completed",
-		amount: 100,
-		currency: "GBP",
-		iban: "GB12345678901234567890",
-		created_at: "2026-01-01",
-	} as PayoutResponse;
+	const [createPayoutResponse, { isLoading }] = useCreatePayoutMutation();
+
+	const payout = useSelector((state: RootState) => state.payout);
+
+	const dispatch = useDispatch();
 
 	const onCloseModal = () => {
 		setIsModalVisible(false);
 	};
-	const onConfirmModal = () => {
-		setIsModalVisible(false);
+
+	const onPressCreatePayout = async () => {
+		try {
+			const response = await createPayoutResponse({
+				amount: payout?.amount || 0,
+				currency: payout?.currency || "GBP",
+				iban: payout?.iban || "",
+			});
+			if (response.error) {
+				if ("data" in response.error) {
+					const errorMessage = (response.error.data as { error: string }).error;
+					if (errorMessage) {
+						dispatch(
+							setFailurePayoutState({
+								errorMessage,
+							}),
+						);
+					}
+				}
+			} else {
+				dispatch(
+					setPayout({
+						...payout,
+						payoutResponse: response.data,
+						errorMessage: undefined,
+					}),
+				);
+			}
+		} catch {
+			dispatch(
+				setFailurePayoutState({
+					errorMessage:
+						"Service temporarily unavailable. Please try again later.",
+				}),
+			);
+		} finally {
+			setIsModalVisible(false);
+		}
 	};
-	const onPressCreateAnotherPayout = () => {
-		setPayoutScreenStatus("default");
+
+	const onPressCreateAnotherPayout = async () => {
+		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
+	};
+
+	const onPressTryAgain = async () => {
+		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
 	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			{payoutScreenStatus === "default" && (
+			{payout.payoutResponse === undefined && (
 				<PayoutScreen>
 					<PayoutScreen.Title />
 					<ThemedView style={styles.headerContainer}>
@@ -51,20 +90,26 @@ export default function PayoutsScreen() {
 					<PayoutScreen.PayoutModal
 						isModalVisible={isModalVisible}
 						onCloseModal={onCloseModal}
-						onConfirmModal={onConfirmModal}
+						onConfirmModal={onPressCreatePayout}
+						isLoading={isLoading}
 					/>
 				</PayoutScreen>
 			)}
-			{payoutScreenStatus === "completed" && (
-				<PayoutStatusCompletedScreen
-					payoutResponse={payoutResponse}
-					onPress={onPressCreateAnotherPayout}
-				/>
-			)}
-			{payoutScreenStatus === "failed" && (
+			{payout.payoutResponse?.status === "completed" &&
+				payout.payoutResponse && (
+					<PayoutStatusCompletedScreen
+						payoutResponse={payout.payoutResponse}
+						onPress={onPressCreateAnotherPayout}
+					/>
+				)}
+			{payout.payoutResponse?.status === "failed" && payout.payoutResponse && (
 				<PayoutStatusFailedScreen
-					payoutResponse={payoutResponse}
-					onPress={onPressCreateAnotherPayout}
+					payoutResponse={payout.payoutResponse}
+					errorMessage={
+						payout.errorMessage ??
+						"Service temporarily unavailable. Please try again later."
+					}
+					onPress={onPressTryAgain}
 				/>
 			)}
 		</SafeAreaView>
