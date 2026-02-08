@@ -1,9 +1,11 @@
 import { useState } from "react";
 import {
 	ActivityIndicator,
-	Button,
 	FlatList,
 	Modal,
+	Platform,
+	PlatformColor,
+	Pressable,
 	StyleSheet,
 } from "react-native";
 import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
@@ -31,8 +33,6 @@ export const ActivityModal = ({
 		return <ActivityIndicator size="large" color="blue" />;
 	}
 
-	const _isLoadingMore = activityData?.has_more && isActivityLoading;
-
 	return (
 		<Modal
 			presentationStyle="formSheet"
@@ -45,7 +45,17 @@ export const ActivityModal = ({
 					<ThemedView style={styles.header}>
 						<ThemedText type="title">Recent Activity</ThemedText>
 
-						<Button title="Done" onPress={() => setIsModalOpen(false)} />
+						<Pressable
+							accessibilityLabel="Done button"
+							accessibilityRole="button"
+							accessibilityValue={{ text: "Done" }}
+							style={styles.doneButton}
+							onPress={() => setIsModalOpen(false)}
+						>
+							<ThemedText type="defaultSemiBold" style={styles.doneButtonText}>
+								Done
+							</ThemedText>
+						</Pressable>
 					</ThemedView>
 					<Divider />
 				</ThemedView>
@@ -124,5 +134,15 @@ const styles = StyleSheet.create({
 	},
 	descriptionContainer: {
 		flexDirection: "column",
+	},
+	doneButton: {
+		backgroundColor: "white",
+		padding: 8,
+	},
+	doneButtonText: {
+		color:
+			Platform.OS === "ios"
+				? PlatformColor("linkColor")
+				: PlatformColor("?android:attr/colorAccent"),
 	},
 });
