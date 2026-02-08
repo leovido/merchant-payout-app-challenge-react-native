@@ -46,7 +46,7 @@ ActivityListItem.ActivityType = function ActivityType() {
 
 	return (
 		<ThemedText
-			accessibilityLabel="Activity type"
+			accessibilityLabel={`Activity type: ${formattedType}`}
 			accessibilityRole="text"
 			accessibilityValue={{ text: formattedType }}
 			style={styles.activityType}
@@ -61,7 +61,7 @@ ActivityListItem.Description = function Description() {
 
 	return (
 		<ThemedText
-			accessibilityLabel="Activity description"
+			accessibilityLabel={activity.description}
 			accessibilityRole="text"
 			accessibilityValue={{ text: activity.description }}
 		>
@@ -81,9 +81,8 @@ ActivityListItem.Amount = function Amount() {
 				styles.amount,
 				activity.amount > 0 ? styles.positiveAmount : styles.negativeAmount,
 			]}
-			accessibilityLabel="Activity amount"
+			accessibilityLabel={`Amount, ${formattedAmount}`}
 			accessibilityRole="text"
-			accessibilityValue={{ text: formattedAmount }}
 		>
 			{formattedAmount}
 		</ThemedText>
@@ -96,7 +95,13 @@ ActivityListItem.Status = function Status() {
 		activity.status.charAt(0).toUpperCase() + activity.status.slice(1);
 
 	return (
-		<ThemedText type="defaultSemiBold" style={styles.status}>
+		<ThemedText
+			accessibilityLabel={formattedStatus}
+			accessibilityRole="text"
+			accessibilityValue={{ text: formattedStatus }}
+			type="defaultSemiBold"
+			style={styles.status}
+		>
 			{formattedStatus}
 		</ThemedText>
 	);
@@ -107,7 +112,12 @@ ActivityListItem.Date = function ActivityDate() {
 	const formattedDate = dateFormatter(activity.date);
 
 	return (
-		<ThemedText type="default" style={styles.date}>
+		<ThemedText
+			accessibilityLabel={formattedDate}
+			accessibilityRole="text"
+			type="default"
+			style={styles.date}
+		>
 			{formattedDate}
 		</ThemedText>
 	);

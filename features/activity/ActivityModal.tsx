@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
+	type ListRenderItemInfo,
 	Modal,
 	Platform,
 	PlatformColor,
@@ -13,6 +14,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
+import type { ActivityItem } from "@/types/api";
 
 export const ActivityModal = ({
 	isModalOpen,
@@ -29,12 +31,29 @@ export const ActivityModal = ({
 		refetch,
 	} = useGetPaginatedActivityQuery({ cursor: cursor ?? undefined });
 
+	const renderItem = (item: ListRenderItemInfo<ActivityItem>) => (
+		<ActivityListItem activity={item.item}>
+			<ThemedView style={styles.activityContainer}>
+				<ThemedView style={styles.descriptionContainer}>
+					<ActivityListItem.ActivityType />
+					<ActivityListItem.Description />
+					<ActivityListItem.Date />
+				</ThemedView>
+				<ThemedView style={styles.amountContainer}>
+					<ActivityListItem.Amount />
+					<ActivityListItem.Status />
+				</ThemedView>
+			</ThemedView>
+		</ActivityListItem>
+	);
 	if (!activityData && isActivityLoading) {
 		return <ActivityIndicator size="large" color="blue" />;
 	}
 
 	return (
 		<Modal
+			accessibilityLabel="Recent activity modal"
+			accessibilityRole="none"
 			presentationStyle="formSheet"
 			visible={isModalOpen}
 			animationType="slide"
@@ -42,13 +61,22 @@ export const ActivityModal = ({
 		>
 			<ThemedView style={styles.modalContainer}>
 				<ThemedView>
-					<ThemedView style={styles.header}>
-						<ThemedText type="title">Recent Activity</ThemedText>
+					<ThemedView
+						accessibilityLabel="Recent activity modal header"
+						accessibilityRole="header"
+						style={styles.header}
+					>
+						<ThemedText
+							accessibilityLabel="Recent activity"
+							accessibilityRole="text"
+							type="title"
+						>
+							Recent Activity
+						</ThemedText>
 
 						<Pressable
-							accessibilityLabel="Done button"
+							accessibilityLabel="Done"
 							accessibilityRole="button"
-							accessibilityValue={{ text: "Done" }}
 							style={styles.doneButton}
 							onPress={() => setIsModalOpen(false)}
 						>
@@ -60,22 +88,10 @@ export const ActivityModal = ({
 					<Divider />
 				</ThemedView>
 				<FlatList
+					accessibilityLabel="Activity list"
+					accessibilityRole="list"
 					data={activityData?.items}
-					renderItem={(item) => (
-						<ActivityListItem activity={item.item}>
-							<ThemedView style={styles.activityContainer}>
-								<ThemedView style={styles.descriptionContainer}>
-									<ActivityListItem.ActivityType />
-									<ActivityListItem.Description />
-									<ActivityListItem.Date />
-								</ThemedView>
-								<ThemedView style={styles.amountContainer}>
-									<ActivityListItem.Amount />
-									<ActivityListItem.Status />
-								</ThemedView>
-							</ThemedView>
-						</ActivityListItem>
-					)}
+					renderItem={renderItem}
 					keyExtractor={(item, index) => `${item.id}-${index}`}
 					initialNumToRender={10}
 					onEndReached={() => {
@@ -88,7 +104,11 @@ export const ActivityModal = ({
 				{isActivityFetching && (
 					<ThemedView style={styles.loadingContainer}>
 						<ActivityIndicator size="small" />
-						<ThemedText style={styles.loadingText}>
+						<ThemedText
+							accessibilityLabel="Loading more"
+							accessibilityRole="text"
+							style={styles.loadingText}
+						>
 							{"Loading more..."}
 						</ThemedText>
 					</ThemedView>
