@@ -1,32 +1,21 @@
 import { useState } from "react";
-import {
-	ActivityIndicator,
-	FlatList,
-	Pressable,
-	StyleSheet,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-	useGetBalanceQuery,
-	useGetPaginatedActivityQuery,
-} from "@/api/apiSlice";
+import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
 import { ActivityModal } from "@/features/activity/ActivityModal";
-import { formatCurrency } from "@/utils/formatter";
+import { BalanceSection } from "@/features/balances/BalanceSection";
 
 export default function HomeScreen() {
-	const { data: balance, isLoading: isBalanceLoading } = useGetBalanceQuery();
-	const { data: activity, isLoading: isActivityLoading } =
-		useGetPaginatedActivityQuery({ limit: 3, cursor: "" });
+	const { data: activity } = useGetPaginatedActivityQuery({
+		limit: 3,
+		cursor: "",
+	});
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	if (isBalanceLoading || isActivityLoading) {
-		return <ActivityIndicator size="large" color="blue" />;
-	}
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -43,58 +32,13 @@ export default function HomeScreen() {
 					</ThemedText>
 				</ThemedView>
 
-				<ThemedView style={styles.accountBalanceSection}>
-					<ThemedText
-						accessibilityLabel="Account balance"
-						accessibilityRole="text"
-						type="subtitle"
-					>
-						Account Balance
-					</ThemedText>
-					<ThemedView style={styles.balanceContainer}>
-						<ThemedView style={styles.balances}>
-							<ThemedText
-								accessibilityLabel="Available balance"
-								accessibilityRole="text"
-								style={styles.balanceLabel}
-							>
-								Available
-							</ThemedText>
-							<ThemedText
-								accessibilityLabel="Available balance amount"
-								accessibilityRole="text"
-								type="subtitle"
-								style={styles.balanceAmount}
-							>
-								{formatCurrency(
-									balance?.available_balance ?? 0,
-									balance?.currency ?? "GBP",
-								)}
-							</ThemedText>
-						</ThemedView>
-
-						<ThemedView style={styles.balances}>
-							<ThemedText
-								accessibilityLabel="Pending balance"
-								accessibilityRole="text"
-								style={styles.balanceLabel}
-							>
-								Pending
-							</ThemedText>
-							<ThemedText
-								accessibilityLabel="Pending balance amount"
-								accessibilityRole="text"
-								type="subtitle"
-								style={styles.balanceAmount}
-							>
-								{formatCurrency(
-									balance?.pending_balance ?? 0,
-									balance?.currency ?? "GBP",
-								)}
-							</ThemedText>
-						</ThemedView>
-					</ThemedView>
-				</ThemedView>
+				<BalanceSection>
+					<BalanceSection.Title />
+					<BalanceSection.BalanceTypeContainer>
+						<BalanceSection.BalanceType type="Available" />
+						<BalanceSection.BalanceType type="Pending" />
+					</BalanceSection.BalanceTypeContainer>
+				</BalanceSection>
 
 				<ThemedView style={styles.section}>
 					<ThemedText
@@ -151,25 +95,6 @@ const styles = StyleSheet.create({
 	separator: {
 		backgroundColor: "black",
 	},
-	balanceContainer: {
-		flexDirection: "row",
-		width: "100%",
-		gap: 16,
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		marginBottom: 24,
-	},
-	accountBalanceSection: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		paddingLeft: 16,
-	},
-	balanceLabel: {
-		color: "gray",
-	},
-	balanceAmount: {
-		fontWeight: "700",
-		color: "black",
-	},
 	showMoreButton: {
 		backgroundColor: "lightblue",
 		padding: 12,
@@ -178,9 +103,6 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		alignItems: "center",
 		justifyContent: "center",
-	},
-	balances: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
 	},
 	container: {
 		flex: 1,

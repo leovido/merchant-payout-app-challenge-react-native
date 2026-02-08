@@ -1,0 +1,161 @@
+import { createContext, useContext } from "react";
+import { StyleSheet } from "react-native";
+import { useGetBalanceQuery } from "@/api/apiSlice";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import type { BalanceResponse } from "@/types/api";
+import { formatCurrency } from "@/utils/formatter";
+
+const BalanceSectionContext = createContext<{
+	balance?: BalanceResponse;
+	isLoading: boolean;
+	isError: boolean;
+}>({
+	isLoading: false,
+	isError: false,
+});
+
+const useBalanceSectionContext = () => {
+	const context = useContext(BalanceSectionContext);
+	if (!context) {
+		throw new Error(
+			"useBalanceSectionContext must be used within BalanceSection",
+		);
+	}
+	return context;
+};
+
+export function BalanceSection({ children }: { children: React.ReactNode }) {
+	const { data: balance, isLoading, isError } = useGetBalanceQuery();
+
+	return (
+		<BalanceSectionContext.Provider value={{ balance, isLoading, isError }}>
+			<ThemedView style={styles.accountBalanceSection}>{children}</ThemedView>
+		</BalanceSectionContext.Provider>
+	);
+}
+
+BalanceSection.Title = function Title() {
+	const title = "Account Balance";
+
+	return (
+		<ThemedText
+			accessibilityLabel={title}
+			accessibilityRole="text"
+			type="subtitle"
+		>
+			{title}
+		</ThemedText>
+	);
+};
+
+BalanceSection.BalanceTypeContainer = function BalanceTypeContainer({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const { isError } = useBalanceSectionContext();
+
+	if (isError) {
+		return (
+			<ThemedText
+				accessibilityLabel="Error loading balance type"
+				accessibilityRole="text"
+				accessibilityValue={{ text: "Error loading balance type" }}
+				type="subtitle"
+				style={styles.balanceTypeContainerError}
+			>
+				Error loading balance type
+			</ThemedText>
+		);
+	}
+
+	return (
+		<ThemedView style={styles.balanceTypeContainer}>{children}</ThemedView>
+	);
+};
+
+interface BalanceTypeProps {
+	type: "Available" | "Pending";
+}
+
+BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
+	const { balance, isLoading } = useBalanceSectionContext();
+
+	const balanceAmount = balance
+		? type === "Available"
+			? balance.available_balance
+			: balance.pending_balance
+		: 0;
+
+	const balanceCurrency = balance ? balance.currency : "GBP";
+
+	return (
+		<ThemedView style={styles.balanceType}>
+			<ThemedText
+				accessibilityLabel={`${type} balance`}
+				accessibilityRole="text"
+				style={styles.balanceLabel}
+			>
+				{type}
+			</ThemedText>
+			{isLoading ? (
+				<ThemedText
+					accessibilityLabel={`${type} balance amount`}
+					accessibilityRole="text"
+					type="subtitle"
+					style={styles.balanceAmount}
+				>
+					-
+				</ThemedText>
+			) : (
+				<ThemedText
+					accessibilityLabel={`${type} balance amount`}
+					accessibilityRole="text"
+					type="subtitle"
+					style={styles.balanceAmount}
+				>
+					{formatCurrency(balanceAmount, balanceCurrency)}
+				</ThemedText>
+			)}
+		</ThemedView>
+	);
+};
+
+const styles = StyleSheet.create({
+	accountBalanceSection: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingLeft: 16,
+	},
+	balanceTypeContainer: {
+		flexDirection: "row",
+		width: "100%",
+		paddingVertical: 16,
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		marginBottom: 24,
+	},
+	balanceTypeContainerError: {
+		padding: 16,
+		textAlign: "center",
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "red",
+	},
+	balanceType: {
+		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		width: "50%",
+	},
+	balanceLabel: {
+		color: "gray",
+	},
+	balanceAmount: {
+		fontWeight: "700",
+		color: "black",
+	},
+	balanceTitle: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "black",
+	},
+});
