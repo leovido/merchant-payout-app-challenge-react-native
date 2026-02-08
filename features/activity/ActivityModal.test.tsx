@@ -72,24 +72,27 @@ describe("ActivityModal", () => {
 		expect(screen.queryByLabelText("Done button")).not.toBeOnTheScreen();
 	});
 
-	it("when open with data, shows Recent Activity title and Done button", () => {
+	it("when open with data, shows modal and header with accessibility labels", () => {
 		renderActivityModal(
 			{ isModalOpen: true, setIsModalOpen: jest.fn() },
 			{ data: defaultPaginatedData },
 		);
 
-		expect(screen.getByText("Recent Activity")).toBeOnTheScreen();
-		expect(screen.getByLabelText("Done button")).toBeOnTheScreen();
-		expect(screen.getByText("Done")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Recent activity modal")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Recent activity")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Done")).toBeOnTheScreen();
 	});
 
-	it("when open with activity items, list shows item description and amount", () => {
+	it("when open with activity items, list shows item via description and amount labels", () => {
 		const items = [
 			createActivityItem({
 				id: "m1",
+				type: "refund",
 				description: "Refund",
 				amount: 1000,
 				currency: "GBP",
+				date: "07/02/2025",
+				status: "completed",
 			}),
 		];
 		renderActivityModal(
@@ -97,8 +100,8 @@ describe("ActivityModal", () => {
 			{ data: { items, next_cursor: null, has_more: false } },
 		);
 
-		expect(screen.getByText("Refund")).toBeOnTheScreen();
-		expect(screen.getByText("£10.00")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Refund")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Amount, £10.00")).toBeOnTheScreen();
 	});
 
 	it("when Done is pressed, calls setIsModalOpen with false", () => {
@@ -108,7 +111,7 @@ describe("ActivityModal", () => {
 			{ data: defaultPaginatedData },
 		);
 
-		fireEvent.press(screen.getByLabelText("Done button"));
+		fireEvent.press(screen.getByLabelText("Done"));
 
 		expect(setIsModalOpen).toHaveBeenCalledWith(false);
 	});

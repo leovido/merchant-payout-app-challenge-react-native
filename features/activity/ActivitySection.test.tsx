@@ -60,32 +60,47 @@ describe("ActivitySection", () => {
 		jest.restoreAllMocks();
 	});
 
-	it("renders title with Recent Activity text and accessibility", () => {
+	it("renders section with accessibility label and summary role", () => {
 		renderActivitySection();
 
-		const title = screen.getByText("Recent Activity");
-		expect(title).toBeOnTheScreen();
-		expect(screen.getByLabelText("Recent activity")).toBeOnTheScreen();
-		expect(title).toHaveProp("accessibilityRole", "text");
+		const section = screen.getByLabelText("Recent activity section");
+		expect(section).toBeOnTheScreen();
+		expect(section).toHaveProp("accessibilityRole", "summary");
 	});
 
-	it("renders Show more button with correct label and role", () => {
+	it("renders title with Recent activity label and text role", () => {
+		renderActivitySection();
+
+		const title = screen.getByLabelText("Recent activity");
+		expect(title).toBeOnTheScreen();
+		expect(title).toHaveProp("accessibilityRole", "text");
+		expect(screen.getByText("Recent Activity")).toBeOnTheScreen();
+	});
+
+	it("renders Show more button with label and button role", () => {
 		renderActivitySection();
 
 		const button = screen.getByLabelText("Show more activity");
 		expect(button).toBeOnTheScreen();
 		expect(button).toHaveProp("accessibilityRole", "button");
-		expect(screen.getByText("Show more")).toBeOnTheScreen();
+	});
+
+	it("renders activity list with accessibility label and list role", () => {
+		renderActivitySection();
+
+		const list = screen.getByLabelText("Recent activity list");
+		expect(list).toBeOnTheScreen();
+		expect(list).toHaveProp("accessibilityRole", "list");
 	});
 
 	it("when activity is empty, section and button are visible", () => {
 		renderActivitySection({ data: { ...defaultActivityData, items: [] } });
 
-		expect(screen.getByText("Recent Activity")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Recent activity section")).toBeOnTheScreen();
 		expect(screen.getByLabelText("Show more activity")).toBeOnTheScreen();
 	});
 
-	it("when activity has items, list shows first item description and amount", () => {
+	it("when activity has items, list shows first item via description and amount labels", () => {
 		const items = [
 			createActivityItem({
 				id: "a1",
@@ -98,8 +113,8 @@ describe("ActivitySection", () => {
 			data: { items, next_cursor: null, has_more: false },
 		});
 
-		expect(screen.getByText("Payout to bank")).toBeOnTheScreen();
-		expect(screen.getByText("-£5.00")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Payout to bank")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Amount, -£5.00")).toBeOnTheScreen();
 	});
 
 	it("when Show more is pressed, modal opens and shows Done button", () => {
@@ -108,6 +123,6 @@ describe("ActivitySection", () => {
 		const button = screen.getByLabelText("Show more activity");
 		fireEvent.press(button);
 
-		expect(screen.getByLabelText("Done button")).toBeOnTheScreen();
+		expect(screen.getByLabelText("Done")).toBeOnTheScreen();
 	});
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
+	type ListRenderItemInfo,
 	Modal,
 	Platform,
 	PlatformColor,
@@ -13,6 +14,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
+import type { ActivityItem } from "@/types/api";
 
 export const ActivityModal = ({
 	isModalOpen,
@@ -29,6 +31,21 @@ export const ActivityModal = ({
 		refetch,
 	} = useGetPaginatedActivityQuery({ cursor: cursor ?? undefined });
 
+	const renderItem = (item: ListRenderItemInfo<ActivityItem>) => (
+		<ActivityListItem activity={item.item}>
+			<ThemedView style={styles.activityContainer}>
+				<ThemedView style={styles.descriptionContainer}>
+					<ActivityListItem.ActivityType />
+					<ActivityListItem.Description />
+					<ActivityListItem.Date />
+				</ThemedView>
+				<ThemedView style={styles.amountContainer}>
+					<ActivityListItem.Amount />
+					<ActivityListItem.Status />
+				</ThemedView>
+			</ThemedView>
+		</ActivityListItem>
+	);
 	if (!activityData && isActivityLoading) {
 		return <ActivityIndicator size="large" color="blue" />;
 	}
@@ -74,21 +91,7 @@ export const ActivityModal = ({
 					accessibilityLabel="Activity list"
 					accessibilityRole="list"
 					data={activityData?.items}
-					renderItem={(item) => (
-						<ActivityListItem activity={item.item}>
-							<ThemedView style={styles.activityContainer}>
-								<ThemedView style={styles.descriptionContainer}>
-									<ActivityListItem.ActivityType />
-									<ActivityListItem.Description />
-									<ActivityListItem.Date />
-								</ThemedView>
-								<ThemedView style={styles.amountContainer}>
-									<ActivityListItem.Amount />
-									<ActivityListItem.Status />
-								</ThemedView>
-							</ThemedView>
-						</ActivityListItem>
-					)}
+					renderItem={renderItem}
 					keyExtractor={(item, index) => `${item.id}-${index}`}
 					initialNumToRender={10}
 					onEndReached={() => {
@@ -101,7 +104,11 @@ export const ActivityModal = ({
 				{isActivityFetching && (
 					<ThemedView style={styles.loadingContainer}>
 						<ActivityIndicator size="small" />
-						<ThemedText style={styles.loadingText}>
+						<ThemedText
+							accessibilityLabel="Loading more"
+							accessibilityRole="text"
+							style={styles.loadingText}
+						>
 							{"Loading more..."}
 						</ThemedText>
 					</ThemedView>
