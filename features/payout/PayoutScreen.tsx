@@ -1,6 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
-	ActivityIndicator,
 	Modal,
 	Pressable,
 	StyleSheet,
@@ -9,11 +8,11 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useDispatch, useSelector } from "react-redux";
-import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { setPayout } from "@/features/payout/payoutSlice";
+import { useKeyboard } from "@/hooks/useKeyboard";
 import type { RootState } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
@@ -30,6 +29,8 @@ interface PayoutItem {
 	setCurrency: (currency: Currency) => void;
 	iban: string;
 	setIban: (iban: string) => void;
+	/** Ref for the IBAN TextInput; used so the Amount field can focus it on "Next". */
+	ibanInputRef: React.RefObject<TextInput | null>;
 }
 
 const PayoutContext = createContext<PayoutItem>({
@@ -40,6 +41,7 @@ const PayoutContext = createContext<PayoutItem>({
 	setCurrency: () => {},
 	iban: "",
 	setIban: () => {},
+	ibanInputRef: { current: null },
 });
 
 function usePayoutContext() {
@@ -58,6 +60,7 @@ interface PayoutScreenProps {
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const payout = useSelector((state: RootState) => state.payout);
 	const dispatch = useDispatch();
+	const ibanInputRef = useRef<TextInput | null>(null);
 
 	return (
 		<PayoutContext.Provider
@@ -75,6 +78,7 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 				setIban: (iban: string) => {
 					dispatch(setPayout({ ...payout, iban }));
 				},
+				ibanInputRef,
 			}}
 		>
 			<ThemedView style={[styles.container, customStyle]}>
@@ -95,7 +99,7 @@ PayoutScreen.Title = function Title() {
 };
 
 PayoutScreen.AmountTextField = function AmountTextField() {
-	const { setAmount } = usePayoutContext();
+	const { setAmount, ibanInputRef } = usePayoutContext();
 	const payout = useSelector((state: RootState) => state.payout);
 	const [digitString, setDigitString] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
@@ -147,6 +151,12 @@ PayoutScreen.AmountTextField = function AmountTextField() {
 				placeholder="0.00"
 				keyboardType="number-pad"
 				value={displayValue}
+				clearButtonMode="while-editing"
+				returnKeyType="next"
+				returnKeyLabel="Next"
+				onSubmitEditing={() => {
+					ibanInputRef.current?.focus();
+				}}
 				onChangeText={onChangeText}
 				onFocus={onFocus}
 				onBlur={onBlur}
@@ -183,7 +193,8 @@ PayoutScreen.CurrencyDropdown = function CurrencyDropdown() {
 };
 
 PayoutScreen.IBANTextField = function IBANTextField() {
-	const { iban, setIban } = usePayoutContext();
+	const { Keyboard } = useKeyboard();
+	const { iban, setIban, ibanInputRef } = usePayoutContext();
 
 	const handleIbanChange = (text: string) => {
 		const cleaned = text
@@ -203,6 +214,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 			</ThemedText>
 
 			<TextInput
+				ref={ibanInputRef}
 				style={[styles.input, showIbanError && styles.inputError]}
 				placeholder="FR1212345123451234567A12310131231231231"
 				placeholderTextColor="gray"
@@ -210,6 +222,11 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 				autoCorrect={false}
 				value={iban}
 				onChangeText={handleIbanChange}
+				clearButtonMode="while-editing"
+				returnKeyType="done"
+				onSubmitEditing={() => {
+					Keyboard.dismiss();
+				}}
 			/>
 			<ThemedText style={styles.ibanTextFieldHint} type="subtitle">
 				Enter the destination bank account IBAN.
