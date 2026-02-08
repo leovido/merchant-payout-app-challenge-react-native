@@ -12,6 +12,7 @@ module.exports = {
 	collectCoverageFrom: [
 		"app/**/*.{ts,tsx}",
 		"components/**/*.{ts,tsx}",
+		"features/**/*.{ts,tsx}",
 		"!**/*.d.ts",
 		"!**/node_modules/**",
 	],
