@@ -31,7 +31,13 @@ export function BalanceSection({ children }: { children: React.ReactNode }) {
 
 	return (
 		<BalanceSectionContext.Provider value={{ balance, isLoading, isError }}>
-			<ThemedView style={styles.accountBalanceSection}>{children}</ThemedView>
+			<ThemedView
+				accessibilityLabel="Account balance"
+				accessibilityRole="summary"
+				style={styles.accountBalanceSection}
+			>
+				{children}
+			</ThemedView>
 		</BalanceSectionContext.Provider>
 	);
 }
@@ -61,8 +67,7 @@ BalanceSection.BalanceTypeContainer = function BalanceTypeContainer({
 		return (
 			<ThemedText
 				accessibilityLabel="Error loading balance type"
-				accessibilityRole="text"
-				accessibilityValue={{ text: "Error loading balance type" }}
+				accessibilityRole="alert"
 				type="subtitle"
 				style={styles.balanceTypeContainerError}
 			>
@@ -72,7 +77,9 @@ BalanceSection.BalanceTypeContainer = function BalanceTypeContainer({
 	}
 
 	return (
-		<ThemedView style={styles.balanceTypeContainer}>{children}</ThemedView>
+		<ThemedView accessibilityRole="none" style={styles.balanceTypeContainer}>
+			{children}
+		</ThemedView>
 	);
 };
 
@@ -91,34 +98,23 @@ BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
 
 	const balanceCurrency = balance ? balance.currency : "GBP";
 
+	const accessibleLabel = isLoading
+		? `${type} balance, loading`
+		: `${type} balance, ${formatCurrency(balanceAmount, balanceCurrency)}`;
+
+	const amountText = isLoading
+		? "-"
+		: formatCurrency(balanceAmount, balanceCurrency);
+
 	return (
 		<ThemedView style={styles.balanceType}>
-			<ThemedText
-				accessibilityLabel={`${type} balance`}
-				accessibilityRole="text"
-				style={styles.balanceLabel}
-			>
-				{type}
+			<ThemedText accessibilityLabel={accessibleLabel} accessibilityRole="text">
+				<ThemedText style={styles.balanceLabel}>{type}</ThemedText>
+				{"\n"}
+				<ThemedText type="subtitle" style={styles.balanceAmount}>
+					{amountText}
+				</ThemedText>
 			</ThemedText>
-			{isLoading ? (
-				<ThemedText
-					accessibilityLabel={`${type} balance amount`}
-					accessibilityRole="text"
-					type="subtitle"
-					style={styles.balanceAmount}
-				>
-					-
-				</ThemedText>
-			) : (
-				<ThemedText
-					accessibilityLabel={`${type} balance amount`}
-					accessibilityRole="text"
-					type="subtitle"
-					style={styles.balanceAmount}
-				>
-					{formatCurrency(balanceAmount, balanceCurrency)}
-				</ThemedText>
-			)}
 		</ThemedView>
 	);
 };
@@ -151,11 +147,6 @@ const styles = StyleSheet.create({
 	},
 	balanceAmount: {
 		fontWeight: "700",
-		color: "black",
-	},
-	balanceTitle: {
-		fontSize: 16,
-		fontWeight: "bold",
 		color: "black",
 	},
 });
