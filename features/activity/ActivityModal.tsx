@@ -35,6 +35,8 @@ export const ActivityModal = ({
 
 	return (
 		<Modal
+			accessibilityLabel="Recent activity modal"
+			accessibilityRole="none"
 			presentationStyle="formSheet"
 			visible={isModalOpen}
 			animationType="slide"
@@ -42,13 +44,22 @@ export const ActivityModal = ({
 		>
 			<ThemedView style={styles.modalContainer}>
 				<ThemedView>
-					<ThemedView style={styles.header}>
-						<ThemedText type="title">Recent Activity</ThemedText>
+					<ThemedView
+						accessibilityLabel="Recent activity modal header"
+						accessibilityRole="header"
+						style={styles.header}
+					>
+						<ThemedText
+							accessibilityLabel="Recent activity"
+							accessibilityRole="text"
+							type="title"
+						>
+							Recent Activity
+						</ThemedText>
 
 						<Pressable
-							accessibilityLabel="Done button"
+							accessibilityLabel="Done"
 							accessibilityRole="button"
-							accessibilityValue={{ text: "Done" }}
 							style={styles.doneButton}
 							onPress={() => setIsModalOpen(false)}
 						>
@@ -60,6 +71,8 @@ export const ActivityModal = ({
 					<Divider />
 				</ThemedView>
 				<FlatList
+					accessibilityLabel="Activity list"
+					accessibilityRole="list"
 					data={activityData?.items}
 					renderItem={(item) => (
 						<ActivityListItem activity={item.item}>

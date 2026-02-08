@@ -40,7 +40,13 @@ export function ActivitySection({ children }: { children: React.ReactNode }) {
 		<ActivitySectionContext.Provider
 			value={{ activity: activityData?.items, isModalOpen, setIsModalOpen }}
 		>
-			<ThemedView style={styles.section}>{children}</ThemedView>
+			<ThemedView
+				accessibilityLabel="Recent activity section"
+				accessibilityRole="summary"
+				style={styles.section}
+			>
+				{children}
+			</ThemedView>
 		</ActivitySectionContext.Provider>
 	);
 }
@@ -62,6 +68,8 @@ ActivitySection.List = function List() {
 
 	return (
 		<FlatList
+			accessibilityLabel="Recent activity list"
+			accessibilityRole="list"
 			data={activity}
 			renderItem={(item) => (
 				<ActivityListItem
