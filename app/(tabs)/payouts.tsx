@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { StyleSheet } from "react-native";
+import {
+	KeyboardAvoidingView,
+	Platform,
+	ScrollView,
+	StyleSheet,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
@@ -78,23 +83,32 @@ export default function PayoutsScreen() {
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			{payout.payoutResponse === undefined && (
-				<PayoutScreen>
-					<PayoutScreen.Title />
-					<ThemedView style={styles.headerContainer}>
-						<PayoutScreen.AmountTextField />
-						<PayoutScreen.CurrencyDropdown />
-					</ThemedView>
-					<ThemedView style={styles.headerContainer}>
-						<PayoutScreen.IBANTextField />
-					</ThemedView>
-					<PayoutScreen.ConfirmButton setIsModalVisible={setIsModalVisible} />
-					<PayoutScreen.PayoutModal
-						isModalVisible={isModalVisible}
-						onCloseModal={onCloseModal}
-						onConfirmModal={onPressCreatePayout}
-						isLoading={isLoading}
-					/>
-				</PayoutScreen>
+				<KeyboardAvoidingView
+					style={styles.keyboardAvoidingView}
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+				>
+					<ScrollView keyboardShouldPersistTaps="handled">
+						<PayoutScreen>
+							<PayoutScreen.Title />
+							<ThemedView style={styles.headerContainer}>
+								<PayoutScreen.AmountTextField />
+								<PayoutScreen.CurrencyDropdown />
+							</ThemedView>
+							<ThemedView style={styles.headerContainer}>
+								<PayoutScreen.IBANTextField />
+							</ThemedView>
+							<PayoutScreen.ConfirmButton
+								setIsModalVisible={setIsModalVisible}
+							/>
+							<PayoutScreen.PayoutModal
+								isModalVisible={isModalVisible}
+								onCloseModal={onCloseModal}
+								onConfirmModal={onPressCreatePayout}
+								isLoading={isLoading}
+							/>
+						</PayoutScreen>
+					</ScrollView>
+				</KeyboardAvoidingView>
 			)}
 			{payout.payoutResponse?.status === "completed" &&
 				payout.payoutResponse && (
@@ -142,5 +156,8 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		backgroundColor: BACKGROUND_COLOR_LIGHT,
 		width: "100%",
+	},
+	keyboardAvoidingView: {
+		flex: 1,
 	},
 });
