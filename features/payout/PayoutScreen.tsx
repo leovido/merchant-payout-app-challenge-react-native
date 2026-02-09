@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useDispatch, useSelector } from "react-redux";
-import { getDeviceId } from "screen-security";
+import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -61,7 +61,7 @@ interface PayoutScreenProps {
 
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const payout = useSelector((state: RootState) => state.payout);
-	const deviceId = getDeviceId();
+	const deviceId = ScreenSecurityModule.getDeviceId();
 	const dispatch = useDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
 

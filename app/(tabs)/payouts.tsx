@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -33,7 +34,21 @@ export default function PayoutsScreen() {
 		setIsModalVisible(false);
 	};
 
-	const onPressCreatePayout = async () => {
+	const validateBiometricAuthentication = async (amount: number) => {
+		const requiresBiometricAuthentication = amount >= 1000;
+
+		if (requiresBiometricAuthentication) {
+			const isAuthenticated =
+				await ScreenSecurityModule.isBiometricAuthenticated();
+			console.log("isAuthenticated", isAuthenticated);
+
+			return isAuthenticated;
+		} else {
+			return true;
+		}
+	};
+
+	const requestPayout = async () => {
 		try {
 			const response = await createPayoutResponse({
 				amount: payout?.amount || 0,
@@ -59,6 +74,28 @@ export default function PayoutsScreen() {
 						payoutResponse: response.data,
 					}),
 				);
+			}
+		} catch {
+			dispatch(
+				setFailurePayoutState({
+					errorMessage:
+						"Service temporarily unavailable. Please try again later.",
+				}),
+			);
+		} finally {
+			setIsModalVisible(false);
+		}
+	};
+
+	const onPressCreatePayout = async () => {
+		try {
+			const isValidBiometricAuthentication =
+				await validateBiometricAuthentication(payout?.amount || 0);
+
+			if (isValidBiometricAuthentication) {
+				await requestPayout();
+			} else {
+				await requestPayout();
 			}
 		} catch {
 			dispatch(
