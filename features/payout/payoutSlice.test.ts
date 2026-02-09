@@ -1,5 +1,6 @@
 import payoutReducer, {
 	resetPayoutState,
+	setDeviceId,
 	setFailurePayoutState,
 	setPayout,
 	setPayoutResponse,
@@ -195,6 +196,22 @@ describe("payoutSlice", () => {
 				setPayoutResponse({ payoutResponse: newResponse }),
 			);
 			expect(state.payoutResponse).toEqual(newResponse);
+		});
+	});
+
+	describe("setDeviceId", () => {
+		it("sets device_id and keeps rest of state", () => {
+			const withAmount = payoutReducer(undefined, setPayout({ amount: 100 }));
+			const state = payoutReducer(
+				withAmount,
+				setDeviceId({ device_id: "123" }),
+			);
+			expect(state.device_id).toBe("123");
+			expect(state.amount).toBe(100);
+			expect(state.iban).toBe("");
+			expect(state.formattedAmount).toBe("1.00");
+			expect(state.payoutResponse).toBeUndefined();
+			expect(state.errorMessage).toBeUndefined();
 		});
 	});
 });

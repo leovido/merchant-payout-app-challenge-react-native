@@ -8,17 +8,18 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { useDispatch, useSelector } from "react-redux";
+import { getDeviceId } from "screen-security";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
-import { setPayout } from "@/features/payout/payoutSlice";
+import { setDeviceId, setPayout } from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import type { RootState } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutModalContent } from "./PayoutModal";
 
-/** IBAN: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
+/** IBAN REGEX: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
 
 interface PayoutItem {
@@ -29,7 +30,7 @@ interface PayoutItem {
 	setCurrency: (currency: Currency) => void;
 	iban: string;
 	setIban: (iban: string) => void;
-	/** Ref for the IBAN TextInput; used so the Amount field can focus it on "Next". */
+	deviceId: string;
 	ibanInputRef: React.RefObject<TextInput | null>;
 }
 
@@ -41,6 +42,7 @@ const PayoutContext = createContext<PayoutItem>({
 	setCurrency: () => {},
 	iban: "",
 	setIban: () => {},
+	deviceId: "",
 	ibanInputRef: { current: null },
 });
 
@@ -59,8 +61,13 @@ interface PayoutScreenProps {
 
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const payout = useSelector((state: RootState) => state.payout);
+	const deviceId = getDeviceId();
 	const dispatch = useDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
+
+	useEffect(() => {
+		dispatch(setDeviceId({ device_id: deviceId }));
+	}, [deviceId, dispatch]);
 
 	return (
 		<PayoutContext.Provider
@@ -69,6 +76,7 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 				formattedAmount: payout.formattedAmount || "",
 				currency: payout.currency || "GBP",
 				iban: payout.iban || "",
+				deviceId: payout.device_id || "",
 				setAmount: (amount: number | undefined) => {
 					dispatch(setPayout({ ...payout, amount }));
 				},

@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getDeviceId } from "screen-security";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -22,8 +21,6 @@ export default function HomeScreen() {
 						Business Account
 					</ThemedText>
 				</ThemedView>
-
-				<ThemedText>{getDeviceId()}</ThemedText>
 
 				<BalanceSection>
 					<BalanceSection.Title />
