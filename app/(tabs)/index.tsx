@@ -5,6 +5,7 @@ import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { ActivitySection } from "@/features/activity/ActivitySection";
 import { BalanceSection } from "@/features/balances/BalanceSection";
+import { getDeviceId } from "@/screen-security";
 
 export default function HomeScreen() {
 	return (
@@ -21,6 +22,8 @@ export default function HomeScreen() {
 						Business Account
 					</ThemedText>
 				</ThemedView>
+
+				<ThemedText>{getDeviceId()}</ThemedText>
 
 				<BalanceSection>
 					<BalanceSection.Title />

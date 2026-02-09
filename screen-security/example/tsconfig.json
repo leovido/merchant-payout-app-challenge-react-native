@@ -1,0 +1,10 @@
+{
+	"extends": "expo/tsconfig.base",
+	"compilerOptions": {
+		"strict": true,
+		"paths": {
+			"screen-security": ["../src/index"],
+			"screen-security/*": ["../src/*"]
+		}
+	}
+}
