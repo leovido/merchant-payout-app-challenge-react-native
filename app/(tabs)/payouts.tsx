@@ -39,6 +39,7 @@ export default function PayoutsScreen() {
 				amount: payout?.amount || 0,
 				currency: payout?.currency || "GBP",
 				iban: payout?.iban || "",
+				...(payout?.device_id && { device_id: payout.device_id }),
 			});
 
 			if (response.error) {

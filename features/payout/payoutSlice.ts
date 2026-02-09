@@ -10,6 +10,7 @@ const initialState: Partial<CreatePayoutRequest> & {
 	formattedAmount?: string;
 	payoutResponse?: PayoutResponse;
 	errorMessage?: string;
+	device_id?: string;
 } = {
 	amount: undefined,
 	currency: "GBP",
@@ -71,6 +72,14 @@ export const payoutSlice = createSlice({
 		) => {
 			return { ...state, payoutResponse: action.payload.payoutResponse };
 		},
+		setDeviceId: (
+			state: typeof initialState,
+			action: PayloadAction<{
+				device_id?: string;
+			}>,
+		) => {
+			return { ...state, device_id: action.payload.device_id };
+		},
 	},
 });
 
@@ -79,6 +88,7 @@ export const {
 	resetPayoutState,
 	setFailurePayoutState,
 	setPayoutResponse,
+	setDeviceId,
 } = payoutSlice.actions;
 
 export default payoutSlice.reducer;
