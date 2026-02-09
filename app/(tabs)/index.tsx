@@ -1,11 +1,11 @@
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getDeviceId } from "screen-security";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
 import { ActivitySection } from "@/features/activity/ActivitySection";
 import { BalanceSection } from "@/features/balances/BalanceSection";
-import { getDeviceId } from "@/screen-security";
 
 export default function HomeScreen() {
 	return (

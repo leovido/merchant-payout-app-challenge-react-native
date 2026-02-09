@@ -1,5 +1,5 @@
 import ScreenSecurityModule from "./ScreenSecurityModule";
 
-export function getDeviceId(): string {
+export default function getDeviceId(): string {
 	return ScreenSecurityModule.getDeviceId();
 }
