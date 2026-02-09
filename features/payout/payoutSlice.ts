@@ -75,7 +75,7 @@ export const payoutSlice = createSlice({
 		setDeviceId: (
 			state: typeof initialState,
 			action: PayloadAction<{
-				device_id: string;
+				device_id?: string;
 			}>,
 		) => {
 			return { ...state, device_id: action.payload.device_id };
