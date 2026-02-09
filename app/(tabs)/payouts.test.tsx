@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Provider } from "react-redux";
+import screenSecurityMock from "screen-security";
 import { apiSlice } from "@/api/apiSlice";
 import PayoutsScreen from "@/app/(tabs)/payouts";
 import activityReducer from "@/features/activity/activitySlice";
@@ -24,10 +25,6 @@ const mockCreatePayout = jest.fn((body: CreatePayoutRequest) => {
 		},
 	});
 });
-
-jest.mock("screen-security", () => ({
-	getDeviceId: () => mockGetDeviceId(),
-}));
 
 jest.mock("@/api/apiSlice", () => {
 	const actual =
@@ -75,6 +72,11 @@ describe("PayoutsScreen device_id in request body", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		capturedPayoutBody = undefined;
+		(
+			screenSecurityMock as unknown as {
+				setGetDeviceIdImpl: (fn: () => string) => void;
+			}
+		).setGetDeviceIdImpl(mockGetDeviceId);
 	});
 
 	it("includes device_id in payout request when native module returns a value", async () => {
