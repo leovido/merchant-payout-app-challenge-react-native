@@ -11,21 +11,20 @@ public class ScreenSecurityModule: Module {
 
     AsyncFunction("isBiometricAuthenticated") {
       let context = LAContext()
-      
-      guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil) else {
+      var canEvaluateError: NSError?
+      guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &canEvaluateError) else {
         throw NSError(domain: "ScreenSecurity", code: 1, userInfo: [NSLocalizedDescriptionKey: "BIOMETRICS_NOT_ENROLLED"])
       }
 
-      do {
-        try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Require biometric authentication for payments over £1,000.00") { success, error in
-        if success {
-          return
-        } else {
-          return
+      let reason = "Require biometric authentication for payments over £1,000.00"
+      return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
+          if let error = error {
+            continuation.resume(throwing: NSError(domain: "ScreenSecurity", code: 1, userInfo: [NSLocalizedDescriptionKey: error.localizedDescription]))
+            return
+          }
+          continuation.resume(returning: success)
         }
-      }
-      } catch {
-        throw NSError(domain: "ScreenSecurity", code: 1, userInfo: [NSLocalizedDescriptionKey: error.localizedDescription])
       }
     }
   }

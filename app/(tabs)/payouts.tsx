@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
+import { isBiometricAuthenticated } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -38,10 +38,9 @@ export default function PayoutsScreen() {
 		const requiresBiometricAuthentication = amount >= 1000;
 
 		if (requiresBiometricAuthentication) {
-			const isAuthenticated =
-				await ScreenSecurityModule.isBiometricAuthenticated();
-			console.log("isAuthenticated", isAuthenticated);
+			const isAuthenticated = await isBiometricAuthenticated();
 
+			console.log("isAuthenticated", isAuthenticated);
 			return isAuthenticated;
 		} else {
 			return true;
@@ -57,6 +56,7 @@ export default function PayoutsScreen() {
 				...(payout?.device_id && { device_id: payout.device_id }),
 			});
 
+			console.log("response payout", response);
 			if (response.error) {
 				if ("data" in response.error) {
 					const errorMessage = (response.error.data as { error: string }).error;
@@ -93,8 +93,6 @@ export default function PayoutsScreen() {
 				await validateBiometricAuthentication(payout?.amount || 0);
 
 			if (isValidBiometricAuthentication) {
-				await requestPayout();
-			} else {
 				await requestPayout();
 			}
 		} catch {
