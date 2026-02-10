@@ -1,5 +1,7 @@
 import { StyleSheet, Text, type TextProps } from "react-native";
 
+import { Colors, Typography } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 
 export type ThemedTextProps = TextProps & {
@@ -15,14 +17,19 @@ export function ThemedText({
 	type = "default",
 	...rest
 }: ThemedTextProps) {
-	const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+	const theme = useColorScheme() ?? "light";
+	const defaultColor = useThemeColor(
+		{ light: lightColor, dark: darkColor },
+		"text",
+	);
+	const linkColor = Colors[theme].tint;
 
 	return (
 		<Text
 			accessibilityLabel={rest.accessibilityLabel}
 			accessibilityRole={rest.accessibilityRole}
 			style={[
-				{ color },
+				{ color: type === "link" ? linkColor : defaultColor },
 				type === "default" ? styles.default : undefined,
 				type === "title" ? styles.title : undefined,
 				type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
@@ -37,29 +44,28 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
 	default: {
-		fontSize: 16,
-		lineHeight: 24,
-		color: "gray",
+		fontSize: Typography.body.fontSize,
+		lineHeight: Typography.body.lineHeight,
+		fontWeight: Typography.body.fontWeight,
 	},
 	defaultSemiBold: {
-		fontSize: 16,
-		lineHeight: 24,
-		fontWeight: "600",
-		color: "black",
+		fontSize: Typography.label.fontSize,
+		lineHeight: Typography.label.lineHeight,
+		fontWeight: Typography.label.fontWeight,
 	},
 	title: {
-		fontSize: 32,
-		fontWeight: "bold",
-		lineHeight: 32,
-		color: "black",
+		fontSize: Typography.title.fontSize,
+		lineHeight: Typography.title.lineHeight,
+		fontWeight: Typography.title.fontWeight,
 	},
 	subtitle: {
-		fontSize: 20,
-		fontWeight: "bold",
+		fontSize: Typography.sectionTitle.fontSize,
+		lineHeight: Typography.sectionTitle.lineHeight,
+		fontWeight: Typography.sectionTitle.fontWeight,
 	},
 	link: {
-		lineHeight: 30,
-		fontSize: 16,
-		color: "#0a7ea4",
+		fontSize: Typography.link.fontSize,
+		lineHeight: Typography.link.lineHeight,
+		fontWeight: Typography.link.fontWeight,
 	},
 });

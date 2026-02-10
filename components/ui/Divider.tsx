@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { ThemedView } from "@/components/themed-view";
+import { SemanticColors } from "@/constants/theme";
 
 export function Divider() {
 	return <ThemedView style={styles.divider} />;
@@ -7,7 +8,7 @@ export function Divider() {
 
 const styles = StyleSheet.create({
 	divider: {
-		borderBottomColor: "lightgray",
+		borderBottomColor: SemanticColors.light.border,
 		borderBottomWidth: StyleSheet.hairlineWidth,
 	},
 });

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { SemanticColors, Spacing, Typography } from "@/constants/theme";
 import type { BalanceResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 
@@ -119,34 +119,36 @@ BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	accountBalanceSection: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		paddingLeft: 16,
+		backgroundColor: c.backgroundPrimary,
+		paddingLeft: Spacing.screenPaddingHorizontal,
 	},
 	balanceTypeContainer: {
 		flexDirection: "row",
 		width: "100%",
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		marginBottom: 24,
+		paddingVertical: Spacing.sectionPaddingVertical,
+		backgroundColor: c.backgroundPrimary,
+		marginBottom: Spacing.sectionGap,
 	},
 	balanceTypeContainerError: {
-		padding: 16,
+		padding: Spacing.screenPaddingHorizontal,
 		textAlign: "center",
-		fontSize: 16,
-		fontWeight: "bold",
-		color: "red",
+		fontSize: Typography.label.fontSize,
+		fontWeight: Typography.label.fontWeight,
+		color: c.error,
 	},
 	balanceType: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		backgroundColor: c.backgroundPrimary,
 		width: "50%",
 	},
 	balanceLabel: {
-		color: "gray",
+		color: c.textSecondary,
 	},
 	balanceAmount: {
-		fontWeight: "700",
-		color: "black",
+		fontWeight: Typography.balance.fontWeight,
+		color: c.textPrimary,
 	},
 });

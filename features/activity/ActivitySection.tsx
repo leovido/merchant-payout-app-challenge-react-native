@@ -4,7 +4,7 @@ import { FlatList, Pressable, StyleSheet } from "react-native";
 import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { BorderRadius, SemanticColors, Spacing } from "@/constants/theme";
 import type { ActivityItem } from "@/types/api";
 import { ActivityListItem } from "./ActivityListItem";
 import { ActivityModal } from "./ActivityModal";
@@ -109,21 +109,23 @@ ActivitySection.Modal = function Modal() {
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	showMoreButton: {
-		backgroundColor: "lightblue",
-		padding: 12,
-		borderRadius: 8,
+		backgroundColor: c.buttonLinkBackground,
+		padding: Spacing.listItemPaddingVertical,
+		borderRadius: BorderRadius.button,
 		fontSize: 18,
 		fontWeight: "600",
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	section: {
-		marginBottom: 24,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		marginBottom: Spacing.sectionGap,
+		backgroundColor: c.backgroundPrimary,
 	},
 	activityListItem: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		backgroundColor: c.backgroundPrimary,
 	},
 });

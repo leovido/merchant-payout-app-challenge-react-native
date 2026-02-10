@@ -3,6 +3,7 @@ import { StyleSheet, type ViewStyle } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
+import { SemanticColors, Spacing, Typography } from "@/constants/theme";
 import type { ActivityItem } from "@/types/api";
 import { dateFormatter } from "@/utils/dateFormatter";
 import { formatCurrency } from "@/utils/formatter";
@@ -123,33 +124,35 @@ ActivityListItem.Date = function ActivityDate() {
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		paddingVertical: 16,
+		paddingVertical: Spacing.sectionPaddingVertical,
 	},
 	amount: {
-		color: "black",
+		color: c.textPrimary,
 	},
 	positiveAmount: {
-		color: "green",
+		color: c.success,
 	},
 	negativeAmount: {
-		color: "red",
+		color: c.error,
 	},
 	status: {
-		color: "gray",
-		fontSize: 12,
-		fontWeight: "400",
+		color: c.textSecondary,
+		fontSize: Typography.hint.fontSize,
+		fontWeight: Typography.hint.fontWeight,
 	},
 	date: {
-		color: "gray",
-		fontSize: 12,
-		fontWeight: "400",
+		color: c.textSecondary,
+		fontSize: Typography.hint.fontSize,
+		fontWeight: Typography.hint.fontWeight,
 	},
 	activityType: {
-		color: "black",
+		color: c.textPrimary,
 		fontSize: 18,
 		fontWeight: "600",
 		paddingBottom: 4,
