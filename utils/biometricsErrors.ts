@@ -10,6 +10,24 @@ export const BIOMETRICS_MESSAGES: Record<string, string> = {
 	BIOMETRICS_USER_FALLBACK: "User chose alternative authentication.",
 };
 
+export class BiometricsError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "BiometricsError";
+		Object.setPrototypeOf(this, BiometricsError.prototype);
+	}
+
+	static from(error: unknown): BiometricsError | null {
+		const fromCode = getBiometricsMessage(error);
+		if (fromCode) return new BiometricsError(fromCode);
+		if (error instanceof Error) {
+			const fromMessage = getBiometricsMessageFromErrorMessage(error);
+			if (fromMessage) return new BiometricsError(fromMessage);
+		}
+		return null;
+	}
+}
+
 /** True if the error has a biometric code (from native module). Returns the code or null. */
 export function getBiometricsCode(error: unknown): string | null {
 	const code = (error as { code?: string })?.code;

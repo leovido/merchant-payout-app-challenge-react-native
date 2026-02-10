@@ -18,6 +18,9 @@ try {
 		require.resolve("screen-security/package.json", { paths: [projectRoot] }),
 	);
 } catch {
+	console.warn(
+		"[sync-screen-security] screen-security not resolved in node_modules; skipping native sync. Run after install: pnpm run sync:screen-security",
+	);
 	process.exit(0);
 }
 
