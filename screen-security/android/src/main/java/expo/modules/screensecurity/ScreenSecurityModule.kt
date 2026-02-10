@@ -24,9 +24,9 @@ class ScreenSecurityModule : Module() {
         ?: ""
     }
 
-    AsyncFunction("isBiometricAuthenticated") {
+    val isBiometricBlock: suspend () -> Boolean = block@ {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        return@AsyncFunction false
+        return@block false
       }
       val ctx = requireNotNull(appContext.reactContext)
       val biometricManager = BiometricManager.from(ctx)
@@ -37,7 +37,7 @@ class ScreenSecurityModule : Module() {
         biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
       }
       if (!canAuthenticate) {
-        return@AsyncFunction false
+        return@block false
       }
       withContext(Dispatchers.Main) {
         val activity = appContext.currentActivity as? FragmentActivity
@@ -74,5 +74,6 @@ class ScreenSecurityModule : Module() {
         }
       }
     }
+    AsyncFunction("isBiometricAuthenticated").SuspendBody(isBiometricBlock)
   }
 }
