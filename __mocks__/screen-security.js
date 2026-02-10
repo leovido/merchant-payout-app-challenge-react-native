@@ -12,4 +12,12 @@ function setGetDeviceIdImpl(fn) {
 	getDeviceIdImpl = fn;
 }
 
-module.exports = { getDeviceId, setGetDeviceIdImpl };
+function addScreenshotListener() {
+	return { remove: () => {} };
+}
+
+module.exports = {
+	addScreenshotListener,
+	getDeviceId,
+	setGetDeviceIdImpl,
+};

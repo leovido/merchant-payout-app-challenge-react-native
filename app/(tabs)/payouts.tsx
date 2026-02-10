@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+	Alert,
 	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
@@ -7,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -77,6 +79,18 @@ export default function PayoutsScreen() {
 	const onPressTryAgain = async () => {
 		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
 	};
+
+	useEffect(() => {
+		if (payout.payoutResponse !== undefined) return;
+		const subscription = addScreenshotListener(() => {
+			Alert.alert(
+				"Screenshot detected",
+				"Please keep your financial data private. Avoid sharing screenshots of this screen.",
+				[{ text: "OK" }],
+			);
+		});
+		return () => subscription.remove();
+	}, [payout.payoutResponse]);
 
 	return (
 		<SafeAreaView style={styles.safeArea}>

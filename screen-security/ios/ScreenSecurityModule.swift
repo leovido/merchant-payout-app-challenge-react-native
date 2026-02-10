@@ -1,12 +1,38 @@
 import ExpoModulesCore
 import LocalAuthentication
+import UIKit
 
 public class ScreenSecurityModule: Module {
+  private var screenshotObserver: NSObjectProtocol?
+
   public func definition() -> ModuleDefinition {
     Name("ScreenSecurity")
 
+    Events("onScreenshotTaken")
+
+    OnStartObserving {
+      screenshotObserver = NotificationCenter.default.addObserver(
+        forName: UIApplication.userDidTakeScreenshotNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] _ in
+        self?.sendEvent("onScreenshotTaken", [:])
+      }
+    }
+
+    OnStopObserving {
+      if let observer = screenshotObserver {
+        NotificationCenter.default.removeObserver(observer)
+        screenshotObserver = nil
+      }
+    }
+
     Function("getDeviceId") {
       return UIDevice.current.identifierForVendor?.uuidString ?? ""
+    }
+
+    Function("simulateScreenshotEvent") {
+      self.sendEvent("onScreenshotTaken", [:])
     }
 
     AsyncFunction("isBiometricAuthenticated") {
