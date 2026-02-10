@@ -1,7 +1,6 @@
 import type { MerchantApiError } from "@/api/types";
 import {
-	getBiometricsMessage,
-	getBiometricsMessageFromErrorMessage,
+	BiometricsError,
 	isBiometricsNotEnrolledError,
 } from "./biometricsErrors";
 
@@ -12,25 +11,20 @@ const DEFAULT_MESSAGE =
 
 function isApiError(error: unknown): error is MerchantApiError {
 	const e = error as MerchantApiError;
-
-	return e.data.error !== undefined;
+	return e?.data?.error !== undefined;
 }
 
 export default function extractErrorMessage(error: unknown): string {
-	// Prefer native biometric code so we show a clean message (Android sends a long wrapper message).
-	const biometricMessage = getBiometricsMessage(error);
-	if (biometricMessage) return biometricMessage;
+	const biometrics = BiometricsError.from(error);
+	if (biometrics) return biometrics.message;
 
-	if (error instanceof Error) {
-		const messageFromError = getBiometricsMessageFromErrorMessage(error);
-		if (messageFromError) return messageFromError;
-		return error.message;
-	}
-	if (isApiError(error)) {
-		return (error as MerchantApiError).data.error;
-	}
+	if (error instanceof Error) return error.message;
+
+	if (isApiError(error)) return error.data.error;
+
 	// Native rejections sometimes send { code, message } as a plain object.
 	const native = error as { message?: string };
 	if (typeof native?.message === "string") return native.message;
+
 	return DEFAULT_MESSAGE;
 }
