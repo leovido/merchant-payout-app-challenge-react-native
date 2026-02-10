@@ -15,7 +15,7 @@ export const PayoutStatusFailedScreen = ({
 	onPress,
 	customStyle,
 }: PayoutStatusFailedScreenProps) => {
-	const title = "Unable to Proccess Payout";
+	const title = "Unable to Process Payout";
 	const description =
 		errorMessage || "Service temporarily unavailable. Please try again later.";
 

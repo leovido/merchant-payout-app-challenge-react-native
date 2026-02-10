@@ -95,7 +95,7 @@ export const ActivityModal = ({
 					keyExtractor={(item, index) => `${item.id}-${index}`}
 					initialNumToRender={10}
 					onEndReached={() => {
-						if (activityData?.has_more) {
+						if (activityData?.has_more && activityData?.next_cursor) {
 							setCursor(activityData.next_cursor);
 							refetch();
 						}

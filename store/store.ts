@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
 import { apiSlice } from "@/api/apiSlice";
 import activityReducer from "@/features/activity/activitySlice";
 import balanceReducer from "@/features/balances/balanceSlice";
@@ -16,3 +17,7 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();

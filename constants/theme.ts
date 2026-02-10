@@ -10,6 +10,19 @@ const tintColorDark = "#fff";
 
 export const BACKGROUND_COLOR_LIGHT = "#f2f2f2";
 
+/** Primary / accent (buttons, links) */
+export const TINT_COLOR_LIGHT = tintColorLight;
+
+/** Error state (borders, text) */
+export const ERROR_RED = "#c53030";
+
+/** Modal overlay */
+export const MODAL_OVERLAY = "rgba(0,0,0,0.5)";
+
+/** Input border and secondary surfaces */
+export const INPUT_BORDER_LIGHT = "lightgray";
+export const SURFACE_WHITE = "white";
+
 export const Colors = {
 	light: {
 		text: "#11181C",
