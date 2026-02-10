@@ -1,7 +1,5 @@
 import type { MerchantApiError } from "@/api/types";
 
-type ErrorKind = "standard" | "api" | "unknown";
-
 const DEFAULT_MESSAGE =
 	"Service temporarily unavailable. Please try again later.";
 

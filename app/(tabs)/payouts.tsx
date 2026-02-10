@@ -49,20 +49,14 @@ export default function PayoutsScreen() {
 	};
 
 	const requestPayout = async () => {
-		const response = await createPayoutResponse({
+		const data = await createPayoutResponse({
 			amount: payout?.amount || 0,
 			currency: payout?.currency || "GBP",
 			iban: payout?.iban || "",
 			...(payout?.device_id && { device_id: payout.device_id }),
 		}).unwrap();
 
-		if ("data" in response) {
-			dispatch(
-				setPayoutResponse({
-					payoutResponse: response.data as PayoutResponse,
-				}),
-			);
-		}
+		dispatch(setPayoutResponse({ payoutResponse: data }));
 	};
 
 	const onPressCreatePayout = async () => {
