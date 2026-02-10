@@ -8,7 +8,7 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { BorderRadius, SemanticColors, Spacing } from "@/constants/theme";
 import type { PayoutResponse } from "@/types/api";
 
 const PayoutStatusContext = createContext<PayoutResponse | undefined>(
@@ -55,7 +55,11 @@ PayoutStatusScreen.IconStatus = ({
 			style={[styles.icon, customStyle]}
 			name={payout?.status === "completed" ? "checkmark.circle.fill" : "xmark"}
 			size={48}
-			color={payout.status === "completed" ? "green" : "red"}
+			color={
+				payout.status === "completed"
+					? SemanticColors.light.success
+					: SemanticColors.light.error
+			}
 		/>
 	);
 };
@@ -115,39 +119,41 @@ PayoutStatusScreen.Button = ({
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
-		paddingHorizontal: 24,
+		backgroundColor: c.backgroundPrimary,
+		paddingHorizontal: Spacing.modalPadding,
 		width: "80%",
 		alignSelf: "center",
 	},
 	icon: {
-		marginBottom: 8,
+		marginBottom: Spacing.labelInputGap,
 	},
 	title: {
-		paddingVertical: 8,
+		paddingVertical: Spacing.labelInputGap,
 	},
 	description: {
-		paddingVertical: 8,
+		paddingVertical: Spacing.labelInputGap,
 		textAlign: "center",
-		fontWeight: "300",
+		fontWeight: "400",
 	},
 	button: {
 		marginTop: 30,
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		borderRadius: 8,
+		paddingVertical: Spacing.labelInputGap,
+		paddingHorizontal: Spacing.sectionPaddingVertical,
+		borderRadius: BorderRadius.button,
 		height: 50,
-		backgroundColor: "#0a7ea4",
+		backgroundColor: c.primary,
 		width: "80%",
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	buttonText: {
-		color: "white",
+		color: c.backgroundSecondary,
 	},
 });

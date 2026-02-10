@@ -1,4 +1,5 @@
 import { StyleSheet, type ViewStyle } from "react-native";
+import { SemanticColors, Typography } from "@/constants/theme";
 import type { PayoutResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutStatusScreen } from "./PayoutStatusScreen";
@@ -41,10 +42,10 @@ export const PayoutStatusCompletedScreen = ({
 
 const styles = StyleSheet.create({
 	description: {
-		color: "gray",
-		fontSize: 14,
+		color: SemanticColors.light.textSecondary,
+		fontSize: Typography.hint.fontSize,
 	},
 	icon: {
-		color: "lightgreen",
+		color: SemanticColors.light.success,
 	},
 });

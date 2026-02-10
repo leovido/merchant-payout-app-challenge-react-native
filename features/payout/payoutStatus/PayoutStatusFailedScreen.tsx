@@ -1,4 +1,5 @@
 import { StyleSheet, type ViewStyle } from "react-native";
+import { SemanticColors, Typography } from "@/constants/theme";
 import type { PayoutResponse } from "@/types/api";
 import { PayoutStatusScreen } from "./PayoutStatusScreen";
 
@@ -45,13 +46,13 @@ const styles = StyleSheet.create({
 	},
 	titleContainer: {
 		paddingVertical: 8,
-		color: "red",
+		color: SemanticColors.light.error,
 	},
 	description: {
-		color: "red",
-		fontSize: 14,
+		color: SemanticColors.light.error,
+		fontSize: Typography.hint.fontSize,
 	},
 	icon: {
-		color: "red",
+		color: SemanticColors.light.error,
 	},
 });

@@ -11,12 +11,10 @@ import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import {
-	BACKGROUND_COLOR_LIGHT,
-	ERROR_RED,
-	INPUT_BORDER_LIGHT,
-	MODAL_OVERLAY,
-	SURFACE_WHITE,
-	TINT_COLOR_LIGHT,
+	BorderRadius,
+	SemanticColors,
+	Shadows,
+	Spacing,
 } from "@/constants/theme";
 import { setDeviceId, setPayout } from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
@@ -231,7 +229,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 				ref={ibanInputRef}
 				style={[styles.input, showIbanError && styles.inputError]}
 				placeholder="FR1212345123451234567A12310131231231231"
-				placeholderTextColor="gray"
+				placeholderTextColor={SemanticColors.light.textPlaceholder}
 				autoCapitalize="characters"
 				autoCorrect={false}
 				value={iban}
@@ -279,7 +277,13 @@ PayoutScreen.ConfirmButton = function ConfirmButton({
 				onPress={onPressConfirm}
 				disabled={isDisabled}
 			>
-				<ThemedText style={styles.confirmButtonText} type="default">
+				<ThemedText
+					style={[
+						styles.confirmButtonText,
+						isDisabled && styles.confirmButtonDisabledText,
+					]}
+					type="default"
+				>
 					Confirm
 				</ThemedText>
 			</Pressable>
@@ -364,50 +368,52 @@ PayoutScreen.PayoutModal = function PayoutModal({
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		padding: Spacing.screenPaddingHorizontal,
+		backgroundColor: c.backgroundPrimary,
 	},
 	title: {
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		backgroundColor: c.backgroundPrimary,
 	},
 	modalOverlay: {
 		flex: 1,
-		backgroundColor: MODAL_OVERLAY,
+		backgroundColor: c.overlay,
 		justifyContent: "center",
 		alignItems: "center",
-		padding: 24,
+		padding: Spacing.modalPadding,
 	},
 	modalButtonContainer: {
 		flexDirection: "row",
 		justifyContent: "space-evenly",
-		gap: 8,
+		gap: Spacing.labelInputGap,
 	},
 	modalCancelButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: INPUT_BORDER_LIGHT,
-		padding: 8,
-		borderRadius: 4,
+		backgroundColor: c.buttonSecondaryBackground,
+		padding: Spacing.labelInputGap,
+		borderRadius: BorderRadius.button,
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	modalCancelButtonText: {
-		color: "black",
+		color: c.textPrimary,
 		fontSize: 16,
-		fontWeight: "bold",
+		fontWeight: "600",
 	},
 	modalConfirmButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: TINT_COLOR_LIGHT,
-		color: "white",
+		backgroundColor: c.primary,
+		color: c.backgroundSecondary,
 		fontSize: 16,
-		fontWeight: "bold",
-		padding: 8,
-		borderRadius: 4,
+		fontWeight: "600",
+		padding: Spacing.labelInputGap,
+		borderRadius: BorderRadius.button,
 		textAlign: "center",
 		justifyContent: "center",
 		alignItems: "center",
@@ -415,71 +421,72 @@ const styles = StyleSheet.create({
 	modalBox: {
 		width: "100%",
 		maxHeight: "90%",
-		backgroundColor: SURFACE_WHITE,
-		borderRadius: 12,
-		padding: 8,
+		backgroundColor: c.backgroundSecondary,
+		borderRadius: BorderRadius.modal,
+		padding: Spacing.labelInputGap,
+		...Shadows.modal,
 	},
 	input: {
 		height: 50,
 		borderWidth: 1,
-		borderColor: INPUT_BORDER_LIGHT,
-		padding: 8,
-		borderRadius: 8,
-		backgroundColor: SURFACE_WHITE,
-		color: "black",
+		borderColor: c.border,
+		padding: Spacing.labelInputGap,
+		borderRadius: BorderRadius.input,
+		backgroundColor: c.backgroundSecondary,
+		color: c.textPrimary,
 		fontSize: 18,
 	},
 	amountTextFieldSection: {
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingVertical: Spacing.sectionPaddingVertical,
+		backgroundColor: c.backgroundPrimary,
 		minWidth: "70%",
 		maxWidth: "80%",
 	},
 	amountTextFieldTitle: {
-		paddingBottom: 8,
+		paddingBottom: Spacing.labelInputGap,
 	},
 	currencyDropdownSection: {
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingVertical: Spacing.sectionPaddingVertical,
+		backgroundColor: c.backgroundPrimary,
 		minWidth: "20%",
 		maxWidth: "50%",
 	},
 	currencyDropdownTitle: {
-		paddingBottom: 8,
+		paddingBottom: Spacing.labelInputGap,
 	},
 	ibanTextFieldSection: {
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingVertical: Spacing.sectionPaddingVertical,
+		backgroundColor: c.backgroundPrimary,
 		width: "100%",
 	},
 	ibanTextFieldTitle: {
-		paddingBottom: 8,
+		paddingBottom: Spacing.labelInputGap,
 	},
 	ibanTextFieldHint: {
-		paddingTop: 8,
+		paddingTop: Spacing.labelInputGap,
 		fontSize: 12,
-		fontWeight: "300",
-		color: "gray",
+		fontWeight: "400",
+		color: c.textSecondary,
 	},
 	inputError: {
-		borderColor: ERROR_RED,
+		borderColor: c.error,
 		borderWidth: 1.5,
 	},
 	ibanErrorText: {
 		paddingTop: 6,
 		fontSize: 12,
-		color: ERROR_RED,
+		color: c.error,
 	},
 	confirmButtonSection: {
-		paddingVertical: 16,
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		paddingVertical: Spacing.sectionPaddingVertical,
+		backgroundColor: c.backgroundPrimary,
 		width: "100%",
 	},
 	confirmButton: {
-		backgroundColor: TINT_COLOR_LIGHT,
-		color: "white",
-		padding: 16,
-		borderRadius: 4,
+		backgroundColor: c.primary,
+		color: c.backgroundSecondary,
+		padding: Spacing.sectionPaddingVertical,
+		borderRadius: BorderRadius.button,
 		textAlign: "center",
 		fontSize: 16,
 		height: 60,
@@ -487,12 +494,15 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	confirmButtonDisabled: {
-		backgroundColor: "gray",
-		opacity: 0.5,
+		backgroundColor: c.buttonDisabledBackground,
 	},
 	confirmButtonText: {
-		color: "white",
+		color: c.backgroundSecondary,
 		fontSize: 16,
-		fontWeight: "bold",
+		fontWeight: "600",
+	},
+	confirmButtonDisabledText: {
+		color: c.buttonDisabledText,
+		fontWeight: "400",
 	},
 });

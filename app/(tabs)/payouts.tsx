@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import { SemanticColors } from "@/constants/theme";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
 import {
 	resetPayoutState,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
 	headerContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		backgroundColor: BACKGROUND_COLOR_LIGHT,
+		backgroundColor: SemanticColors.light.backgroundPrimary,
 		width: "100%",
 	},
 	keyboardAvoidingView: {

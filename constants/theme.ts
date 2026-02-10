@@ -1,56 +1,190 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Design system tokens derived from docs/ios and docs/android reference designs.
+ * Colors, typography, spacing, and radii for light theme (dark mirrors for compatibility).
  */
 
-import { Platform } from "react-native";
+import { Platform, type ViewStyle } from "react-native";
 
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+// ---------------------------------------------------------------------------
+// Semantic color palette (light theme – primary reference from docs)
+// ---------------------------------------------------------------------------
 
-export const BACKGROUND_COLOR_LIGHT = "#f2f2f2";
+const lightColors = {
+	backgroundPrimary: "#F2F2F2",
+	backgroundSecondary: "#FFFFFF",
+	textPrimary: "#1A1A1A",
+	textSecondary: "#555555",
+	textPlaceholder: "#A0A0A0",
+	primary: "#0096AA",
+	success: "#27AE60",
+	error: "#EB5757",
+	border: "#D5D5D5",
+	buttonSecondaryBackground: "#EBEBEB",
+	/** Gray for disabled primary buttons (e.g. Confirm) */
+	buttonDisabledBackground: "#DFDFDF",
+	/** Text color for disabled primary buttons */
+	buttonDisabledText: "#B9B9B9",
+	buttonLinkBackground: "#EBF5FF",
+	/** Show more button (e.g. Recent Activity) */
+	showMoreButtonBackground: "#E3F1F6",
+	showMoreButtonText: "#4787DE",
+	tabInactive: "#8C8C8C",
+	overlay: "rgba(0,0,0,0.5)",
+} as const;
 
-/** Primary / accent (buttons, links) */
+const darkColors = {
+	backgroundPrimary: "#151718",
+	backgroundSecondary: "#1C1E1F",
+	textPrimary: "#ECEDEE",
+	textSecondary: "#9BA1A6",
+	textPlaceholder: "#687076",
+	primary: "#00B4CC",
+	success: "#34C759",
+	error: "#FF453A",
+	border: "#2C2E2F",
+	buttonSecondaryBackground: "#2C2E2F",
+	buttonDisabledBackground: "#3A3D3F",
+	buttonDisabledText: "#6B6B6B",
+	buttonLinkBackground: "rgba(0, 180, 204, 0.15)",
+	showMoreButtonBackground: "rgba(71, 135, 222, 0.15)",
+	showMoreButtonText: "#6BA3F5",
+	tabInactive: "#9BA1A6",
+	overlay: "rgba(0,0,0,0.6)",
+} as const;
+
+export const SemanticColors = {
+	light: lightColors,
+	dark: darkColors,
+} as const;
+
+// ---------------------------------------------------------------------------
+// Legacy exports (aliased for incremental migration)
+// ---------------------------------------------------------------------------
+
+const tintColorLight = lightColors.primary;
+const tintColorDark = darkColors.primary;
+
+/** @deprecated Use SemanticColors.light.backgroundPrimary */
+export const BACKGROUND_COLOR_LIGHT = lightColors.backgroundPrimary;
+
+/** @deprecated Use SemanticColors.light.primary */
 export const TINT_COLOR_LIGHT = tintColorLight;
 
-/** Error state (borders, text) */
-export const ERROR_RED = "#c53030";
+/** @deprecated Use SemanticColors.light.error */
+export const ERROR_RED = lightColors.error;
 
-/** Modal overlay */
-export const MODAL_OVERLAY = "rgba(0,0,0,0.5)";
+/** @deprecated Use SemanticColors.light.overlay */
+export const MODAL_OVERLAY = lightColors.overlay;
 
-/** Input border and secondary surfaces */
-export const INPUT_BORDER_LIGHT = "lightgray";
-export const SURFACE_WHITE = "white";
+/** @deprecated Use SemanticColors.light.border */
+export const INPUT_BORDER_LIGHT = lightColors.border;
+
+/** @deprecated Use SemanticColors.light.backgroundSecondary */
+export const SURFACE_WHITE = lightColors.backgroundSecondary;
 
 export const Colors = {
 	light: {
-		text: "#11181C",
-		background: "#fff",
+		text: lightColors.textPrimary,
+		background: lightColors.backgroundSecondary,
 		tint: tintColorLight,
-		icon: "#687076",
-		tabIconDefault: "#687076",
+		icon: lightColors.textSecondary,
+		tabIconDefault: lightColors.tabInactive,
 		tabIconSelected: tintColorLight,
 	},
 	dark: {
-		text: "#ECEDEE",
-		background: "#151718",
+		text: darkColors.textPrimary,
+		background: darkColors.backgroundSecondary,
 		tint: tintColorDark,
-		icon: "#9BA1A6",
-		tabIconDefault: "#9BA1A6",
+		icon: darkColors.textSecondary,
+		tabIconDefault: darkColors.tabInactive,
 		tabIconSelected: tintColorDark,
 	},
 };
 
+// ---------------------------------------------------------------------------
+// Typography scale (from docs mocks)
+// ---------------------------------------------------------------------------
+
+export const Typography = {
+	/** Screen title e.g. "Business Account", "Send Payout" */
+	title: { fontSize: 28, fontWeight: "700" as const, lineHeight: 34 },
+	/** Section / modal title */
+	sectionTitle: { fontSize: 20, fontWeight: "700" as const, lineHeight: 26 },
+	/** Form labels, semibold */
+	label: { fontSize: 16, fontWeight: "600" as const, lineHeight: 22 },
+	/** Body and input value */
+	body: { fontSize: 16, fontWeight: "400" as const, lineHeight: 24 },
+	/** Hint, caption, dates, tab labels */
+	hint: { fontSize: 12, fontWeight: "400" as const, lineHeight: 16 },
+	/** Balance amounts */
+	balance: { fontSize: 24, fontWeight: "700" as const, lineHeight: 30 },
+	/** Link / action text (use with primary color) */
+	link: { fontSize: 16, fontWeight: "600" as const, lineHeight: 24 },
+	/** Default fallback */
+	default: { fontSize: 16, fontWeight: "400" as const, lineHeight: 24 },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Spacing scale (generic + semantic aliases)
+// ---------------------------------------------------------------------------
+
+const spacingScale = {
+	xs: 4,
+	sm: 8,
+	md: 12,
+	lg: 16,
+	xl: 20,
+	"2xl": 24,
+} as const;
+
+export const Spacing = {
+	...spacingScale,
+	// Semantic aliases (derived from scale)
+	screenPaddingHorizontal: spacingScale.xl,
+	sectionGap: spacingScale["2xl"],
+	labelInputGap: spacingScale.sm,
+	fieldGap: spacingScale.lg,
+	listItemPaddingVertical: spacingScale.md,
+	sectionPaddingVertical: spacingScale.lg,
+	modalPadding: spacingScale["2xl"],
+} as const;
+
+// ---------------------------------------------------------------------------
+// Border radius
+// ---------------------------------------------------------------------------
+
+export const BorderRadius = {
+	input: 8,
+	button: 8,
+	modal: 12,
+} as const;
+
+// ---------------------------------------------------------------------------
+// Shadows (for modal etc.)
+// ---------------------------------------------------------------------------
+
+export const Shadows: Record<string, ViewStyle> = {
+	modal:
+		Platform.OS === "ios"
+			? {
+					shadowColor: "#000",
+					shadowOffset: { width: 0, height: 2 },
+					shadowOpacity: 0.1,
+					shadowRadius: 8,
+					elevation: 4,
+				}
+			: { elevation: 4 },
+};
+
+// ---------------------------------------------------------------------------
+// Fonts (platform-specific family names)
+// ---------------------------------------------------------------------------
+
 export const Fonts = Platform.select({
 	ios: {
-		/** iOS `UIFontDescriptorSystemDesignDefault` */
 		sans: "system-ui",
-		/** iOS `UIFontDescriptorSystemDesignSerif` */
 		serif: "ui-serif",
-		/** iOS `UIFontDescriptorSystemDesignRounded` */
 		rounded: "ui-rounded",
-		/** iOS `UIFontDescriptorSystemDesignMonospaced` */
 		mono: "ui-monospace",
 	},
 	default: {

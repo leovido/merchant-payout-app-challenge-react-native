@@ -9,6 +9,7 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
+import { SemanticColors, Spacing, Typography } from "@/constants/theme";
 import type { Currency } from "@/types/api";
 
 interface PayoutModalProps {
@@ -106,7 +107,7 @@ PayoutModalContent.Button = function Button({
 			{isLoading ? (
 				<ActivityIndicator
 					size="small"
-					color="white"
+					color={SemanticColors.light.backgroundSecondary}
 					accessibilityLabel="Loading indicator"
 				/>
 			) : (
@@ -123,25 +124,27 @@ PayoutModalContent.Button = function Button({
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	container: {
-		padding: 16,
+		padding: Spacing.sectionPaddingVertical,
 	},
 	title: {
-		fontSize: 24,
-		fontWeight: "bold",
+		fontSize: Typography.sectionTitle.fontSize,
+		fontWeight: Typography.sectionTitle.fontWeight,
 		textAlign: "center",
-		paddingBottom: 20,
+		paddingBottom: Spacing.sectionGap,
 	},
 	content: {
-		color: "gray",
-		fontSize: 14,
+		color: c.textSecondary,
+		fontSize: Typography.hint.fontSize,
 	},
 	contentValue: {
-		color: "black",
+		color: c.textPrimary,
 	},
 	contentContainer: {
-		gap: 8,
+		gap: Spacing.labelInputGap,
 		paddingBottom: 18,
 	},
 	contentRow: {
@@ -150,8 +153,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	confirmButtonText: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
+		color: c.backgroundSecondary,
+		fontSize: Typography.label.fontSize,
+		fontWeight: Typography.label.fontWeight,
 	},
 });

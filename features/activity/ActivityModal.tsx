@@ -4,8 +4,6 @@ import {
 	FlatList,
 	type ListRenderItemInfo,
 	Modal,
-	Platform,
-	PlatformColor,
 	Pressable,
 	StyleSheet,
 } from "react-native";
@@ -13,6 +11,7 @@ import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
+import { SemanticColors, Spacing, Typography } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
 import type { ActivityItem } from "@/types/api";
 
@@ -118,17 +117,19 @@ export const ActivityModal = ({
 	);
 };
 
+const c = SemanticColors.light;
+
 const styles = StyleSheet.create({
 	modalContainer: {
 		flex: 1,
-		padding: 16,
+		padding: Spacing.screenPaddingHorizontal,
 	},
 	header: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		marginBottom: 16,
-		paddingVertical: 16,
+		marginBottom: Spacing.sectionPaddingVertical,
+		paddingVertical: Spacing.sectionPaddingVertical,
 	},
 	activityContainer: {
 		flexDirection: "row",
@@ -137,16 +138,16 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	loadingText: {
-		color: "gray",
-		fontSize: 14,
-		fontWeight: "400",
+		color: c.textSecondary,
+		fontSize: Typography.hint.fontSize,
+		fontWeight: Typography.hint.fontWeight,
 	},
 	loadingContainer: {
 		flexDirection: "column",
 		justifyContent: "center",
-		gap: 8,
+		gap: Spacing.labelInputGap,
 		alignItems: "center",
-		marginTop: 16,
+		marginTop: Spacing.sectionPaddingVertical,
 	},
 	amountContainer: {
 		flexDirection: "column",
@@ -156,13 +157,10 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 	},
 	doneButton: {
-		backgroundColor: "white",
-		padding: 8,
+		backgroundColor: c.backgroundSecondary,
+		padding: Spacing.labelInputGap,
 	},
 	doneButtonText: {
-		color:
-			Platform.OS === "ios"
-				? PlatformColor("linkColor")
-				: PlatformColor("?android:attr/colorAccent"),
+		color: c.showMoreButtonText,
 	},
 });
