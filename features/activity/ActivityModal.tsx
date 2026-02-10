@@ -161,6 +161,6 @@ const styles = StyleSheet.create({
 		padding: Spacing.labelInputGap,
 	},
 	doneButtonText: {
-		color: c.primary,
+		color: c.showMoreButtonText,
 	},
 });

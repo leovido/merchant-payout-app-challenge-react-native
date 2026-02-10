@@ -277,7 +277,13 @@ PayoutScreen.ConfirmButton = function ConfirmButton({
 				onPress={onPressConfirm}
 				disabled={isDisabled}
 			>
-				<ThemedText style={styles.confirmButtonText} type="default">
+				<ThemedText
+					style={[
+						styles.confirmButtonText,
+						isDisabled && styles.confirmButtonDisabledText,
+					]}
+					type="default"
+				>
 					Confirm
 				</ThemedText>
 			</Pressable>
@@ -488,12 +494,15 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	confirmButtonDisabled: {
-		backgroundColor: c.textSecondary,
-		opacity: 0.5,
+		backgroundColor: c.buttonDisabledBackground,
 	},
 	confirmButtonText: {
 		color: c.backgroundSecondary,
 		fontSize: 16,
 		fontWeight: "600",
+	},
+	confirmButtonDisabledText: {
+		color: c.buttonDisabledText,
+		fontWeight: "400",
 	},
 });

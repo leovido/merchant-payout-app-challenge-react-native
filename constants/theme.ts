@@ -18,9 +18,16 @@ const lightColors = {
 	primary: "#0096AA",
 	success: "#27AE60",
 	error: "#EB5757",
-	border: "#E0E0E0",
+	border: "#D5D5D5",
 	buttonSecondaryBackground: "#EBEBEB",
+	/** Gray for disabled primary buttons (e.g. Confirm) */
+	buttonDisabledBackground: "#DFDFDF",
+	/** Text color for disabled primary buttons */
+	buttonDisabledText: "#B9B9B9",
 	buttonLinkBackground: "#EBF5FF",
+	/** Show more button (e.g. Recent Activity) */
+	showMoreButtonBackground: "#E3F1F6",
+	showMoreButtonText: "#4787DE",
 	tabInactive: "#8C8C8C",
 	overlay: "rgba(0,0,0,0.5)",
 } as const;
@@ -36,7 +43,11 @@ const darkColors = {
 	error: "#FF453A",
 	border: "#2C2E2F",
 	buttonSecondaryBackground: "#2C2E2F",
+	buttonDisabledBackground: "#3A3D3F",
+	buttonDisabledText: "#6B6B6B",
 	buttonLinkBackground: "rgba(0, 180, 204, 0.15)",
+	showMoreButtonBackground: "rgba(71, 135, 222, 0.15)",
+	showMoreButtonText: "#6BA3F5",
 	tabInactive: "#9BA1A6",
 	overlay: "rgba(0,0,0,0.6)",
 } as const;
@@ -114,19 +125,28 @@ export const Typography = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Spacing scale
+// Spacing scale (generic + semantic aliases)
 // ---------------------------------------------------------------------------
 
+const spacingScale = {
+	xs: 4,
+	sm: 8,
+	md: 12,
+	lg: 16,
+	xl: 20,
+	"2xl": 24,
+} as const;
+
 export const Spacing = {
-	screenPaddingHorizontal: 20,
-	sectionGap: 24,
-	labelInputGap: 8,
-	fieldGap: 16,
-	listItemPaddingVertical: 12,
-	/** Between form sections */
-	sectionPaddingVertical: 16,
-	/** Modal internal padding */
-	modalPadding: 24,
+	...spacingScale,
+	// Semantic aliases (derived from scale)
+	screenPaddingHorizontal: spacingScale.xl,
+	sectionGap: spacingScale["2xl"],
+	labelInputGap: spacingScale.sm,
+	fieldGap: spacingScale.lg,
+	listItemPaddingVertical: spacingScale.md,
+	sectionPaddingVertical: spacingScale.lg,
+	modalPadding: spacingScale["2xl"],
 } as const;
 
 // ---------------------------------------------------------------------------

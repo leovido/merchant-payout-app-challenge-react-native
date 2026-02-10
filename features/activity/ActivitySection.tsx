@@ -96,7 +96,9 @@ ActivitySection.Button = function Button() {
 			onPress={() => setIsModalOpen(true)}
 			style={styles.showMoreButton}
 		>
-			<ThemedText type="link">Show more</ThemedText>
+			<ThemedText type="link" style={styles.showMoreButtonText}>
+				Show more
+			</ThemedText>
 		</Pressable>
 	);
 };
@@ -113,13 +115,19 @@ const c = SemanticColors.light;
 
 const styles = StyleSheet.create({
 	showMoreButton: {
-		backgroundColor: c.buttonLinkBackground,
-		padding: Spacing.listItemPaddingVertical,
+		backgroundColor: c.showMoreButtonBackground,
+		paddingTop: Spacing.fieldGap,
+		paddingBottom: Spacing.listItemPaddingVertical,
+		paddingHorizontal: Spacing.sectionPaddingVertical,
 		borderRadius: BorderRadius.button,
-		fontSize: 18,
-		fontWeight: "600",
 		alignItems: "center",
 		justifyContent: "center",
+		marginTop: Spacing.lg,
+	},
+	showMoreButtonText: {
+		fontSize: 16,
+		fontWeight: "600",
+		color: c.showMoreButtonText,
 	},
 	section: {
 		marginBottom: Spacing.sectionGap,
