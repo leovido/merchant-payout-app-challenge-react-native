@@ -15,7 +15,8 @@
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:ci": "jest --ci --coverage",
-		"postinstall": "lefthook install && node scripts/sync-screen-security-android.js"
+		"postinstall": "(lefthook install || true) && node scripts/sync-screen-security-android.js",
+		"sync:screen-security": "node scripts/sync-screen-security-android.js"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "^15.0.3",
