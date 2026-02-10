@@ -5,6 +5,8 @@ module.exports = {
 		"^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
 		// Resolve screen-security to a mock so CI does not need the real native module
 		"^screen-security$": "<rootDir>/__mocks__/screen-security.js",
+		"^screen-security/src/ScreenSecurityModule$":
+			"<rootDir>/__mocks__/screen-security.js",
 	},
 	transformIgnorePatterns: [
 		// Match both flat node_modules and pnpm's .pnpm store; allow ESM deps (immer, @reduxjs/toolkit, msw, react-redux) to be transformed

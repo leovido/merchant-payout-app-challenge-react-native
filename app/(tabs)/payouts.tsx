@@ -19,11 +19,15 @@ import {
 } from "@/features/payout/payoutSlice";
 import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
+import { useBiometrics } from "@/hooks/useBiometrics";
 import type { RootState } from "@/store/store";
+import extractErrorMessage from "@/utils/errorHandler";
 
 export default function PayoutsScreen() {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [createPayoutResponse, { isLoading }] = useCreatePayoutMutation();
+	const { validateBiometricAuthentication, handleBiometricsNotEnrolledError } =
+		useBiometrics();
 
 	const payout = useSelector((state: RootState) => state.payout);
 
@@ -33,38 +37,31 @@ export default function PayoutsScreen() {
 		setIsModalVisible(false);
 	};
 
+	const requestPayout = async () => {
+		const data = await createPayoutResponse({
+			amount: payout?.amount || 0,
+			currency: payout?.currency || "GBP",
+			iban: payout?.iban || "",
+			...(payout?.device_id && { device_id: payout.device_id }),
+		}).unwrap();
+
+		dispatch(setPayoutResponse({ payoutResponse: data }));
+	};
+
 	const onPressCreatePayout = async () => {
 		try {
-			const response = await createPayoutResponse({
-				amount: payout?.amount || 0,
-				currency: payout?.currency || "GBP",
-				iban: payout?.iban || "",
-				...(payout?.device_id && { device_id: payout.device_id }),
-			});
+			const isValidBiometricAuthentication =
+				await validateBiometricAuthentication(payout?.amount || 0);
 
-			if (response.error) {
-				if ("data" in response.error) {
-					const errorMessage = (response.error.data as { error: string }).error;
-					if (errorMessage) {
-						dispatch(
-							setFailurePayoutState({
-								errorMessage,
-							}),
-						);
-					}
-				}
-			} else {
-				dispatch(
-					setPayoutResponse({
-						payoutResponse: response.data,
-					}),
-				);
+			if (isValidBiometricAuthentication) {
+				await requestPayout();
 			}
-		} catch {
+		} catch (error) {
+			await handleBiometricsNotEnrolledError(error);
+
 			dispatch(
 				setFailurePayoutState({
-					errorMessage:
-						"Service temporarily unavailable. Please try again later.",
+					errorMessage: extractErrorMessage(error),
 				}),
 			);
 		} finally {
@@ -121,10 +118,7 @@ export default function PayoutsScreen() {
 			{payout.payoutResponse?.status === "failed" && payout.payoutResponse && (
 				<PayoutStatusFailedScreen
 					payoutResponse={payout.payoutResponse}
-					errorMessage={
-						payout.errorMessage ??
-						"Service temporarily unavailable. Please try again later."
-					}
+					errorMessage={payout.errorMessage}
 					onPress={onPressTryAgain}
 				/>
 			)}
