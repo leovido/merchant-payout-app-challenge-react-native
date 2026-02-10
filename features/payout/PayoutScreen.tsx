@@ -7,14 +7,20 @@ import {
 	type ViewStyle,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { useDispatch, useSelector } from "react-redux";
 import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
+import {
+	BACKGROUND_COLOR_LIGHT,
+	ERROR_RED,
+	INPUT_BORDER_LIGHT,
+	MODAL_OVERLAY,
+	SURFACE_WHITE,
+	TINT_COLOR_LIGHT,
+} from "@/constants/theme";
 import { setDeviceId, setPayout } from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
-import type { RootState } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutModalContent } from "./PayoutModal";
@@ -60,9 +66,9 @@ interface PayoutScreenProps {
 }
 
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
-	const payout = useSelector((state: RootState) => state.payout);
+	const payout = useAppSelector((state) => state.payout);
 	const deviceId = ScreenSecurityModule.getDeviceId();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
 
 	useEffect(() => {
@@ -108,7 +114,7 @@ PayoutScreen.Title = function Title() {
 
 PayoutScreen.AmountTextField = function AmountTextField() {
 	const { setAmount, ibanInputRef } = usePayoutContext();
-	const payout = useSelector((state: RootState) => state.payout);
+	const payout = useAppSelector((state) => state.payout);
 	const [digitString, setDigitString] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
 
@@ -294,10 +300,10 @@ PayoutScreen.PayoutModal = function PayoutModal({
 	onConfirmModal,
 	isLoading,
 }: PayoutModalProps) {
-	const payout = useSelector((state: RootState) => state.payout);
+	const payout = useAppSelector((state) => state.payout);
 	const formattedAmountWithCurrency = formatCurrency(
-		payout.amount || 0,
-		payout.currency || "GBP",
+		payout.amount ?? 0,
+		payout.currency ?? "GBP",
 	);
 
 	return (
@@ -317,9 +323,9 @@ PayoutScreen.PayoutModal = function PayoutModal({
 				<Pressable style={styles.modalBox} onPress={(e) => e.stopPropagation()}>
 					<PayoutModalContent
 						payout={{
-							amount: payout.amount || 0,
-							currency: payout.currency || "GBP",
-							iban: payout.iban || "",
+							amount: payout.amount ?? 0,
+							currency: payout.currency ?? "GBP",
+							iban: payout.iban ?? "",
 						}}
 					>
 						<PayoutModalContent.Title />
@@ -329,11 +335,11 @@ PayoutScreen.PayoutModal = function PayoutModal({
 						/>
 						<PayoutModalContent.Content
 							title="Currency"
-							value={payout.currency || "GBP"}
+							value={payout.currency ?? "GBP"}
 						/>
 						<PayoutModalContent.Content
 							title="IBAN"
-							value={payout.iban || ""}
+							value={payout.iban ?? ""}
 						/>
 
 						<ThemedView style={styles.modalButtonContainer}>
@@ -369,7 +375,7 @@ const styles = StyleSheet.create({
 	},
 	modalOverlay: {
 		flex: 1,
-		backgroundColor: "rgba(0,0,0,0.5)",
+		backgroundColor: MODAL_OVERLAY,
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 24,
@@ -382,7 +388,7 @@ const styles = StyleSheet.create({
 	modalCancelButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: "lightgray",
+		backgroundColor: INPUT_BORDER_LIGHT,
 		padding: 8,
 		borderRadius: 4,
 		justifyContent: "center",
@@ -396,7 +402,7 @@ const styles = StyleSheet.create({
 	modalConfirmButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: "#0a7ea4",
+		backgroundColor: TINT_COLOR_LIGHT,
 		color: "white",
 		fontSize: 16,
 		fontWeight: "bold",
@@ -409,17 +415,17 @@ const styles = StyleSheet.create({
 	modalBox: {
 		width: "100%",
 		maxHeight: "90%",
-		backgroundColor: "white",
+		backgroundColor: SURFACE_WHITE,
 		borderRadius: 12,
 		padding: 8,
 	},
 	input: {
 		height: 50,
 		borderWidth: 1,
-		borderColor: "lightgray",
+		borderColor: INPUT_BORDER_LIGHT,
 		padding: 8,
 		borderRadius: 8,
-		backgroundColor: "white",
+		backgroundColor: SURFACE_WHITE,
 		color: "black",
 		fontSize: 18,
 	},
@@ -456,13 +462,13 @@ const styles = StyleSheet.create({
 		color: "gray",
 	},
 	inputError: {
-		borderColor: "#c53030",
+		borderColor: ERROR_RED,
 		borderWidth: 1.5,
 	},
 	ibanErrorText: {
 		paddingTop: 6,
 		fontSize: 12,
-		color: "#c53030",
+		color: ERROR_RED,
 	},
 	confirmButtonSection: {
 		paddingVertical: 16,
@@ -470,7 +476,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	confirmButton: {
-		backgroundColor: "#0a7ea4",
+		backgroundColor: TINT_COLOR_LIGHT,
 		color: "white",
 		padding: 16,
 		borderRadius: 4,

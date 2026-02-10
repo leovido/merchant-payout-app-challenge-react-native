@@ -22,9 +22,5 @@ export default function extractErrorMessage(error: unknown): string {
 
 	if (isApiError(error)) return error.data.error;
 
-	// Native rejections sometimes send { code, message } as a plain object.
-	const native = error as { message?: string };
-	if (typeof native?.message === "string") return native.message;
-
 	return DEFAULT_MESSAGE;
 }

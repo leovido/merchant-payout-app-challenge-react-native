@@ -11,10 +11,12 @@ import type {
 
 export const apiSlice = createApi({
 	reducerPath: "api",
+	tagTypes: ["Balance", "Activity", "Payout"],
 	baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
 	endpoints: (builder) => ({
 		getBalance: builder.query<BalanceResponse, void>({
 			query: () => "/api/merchant",
+			providesTags: ["Balance"],
 		}),
 		getPaginatedActivity: builder.query<
 			PaginatedActivityResponse,
@@ -23,8 +25,12 @@ export const apiSlice = createApi({
 			serializeQueryArgs: (args) => {
 				return `activity-${args.queryArgs.limit}-${args.endpointName}`;
 			},
-			merge(currentCacheData, responseData) {
+			merge(currentCacheData, responseData, { arg }) {
 				if (!currentCacheData) {
+					return responseData;
+				}
+				// Refetch of first page (e.g. after invalidation): replace cache to avoid duplicates.
+				if (!arg?.cursor) {
 					return responseData;
 				}
 				return {
@@ -45,6 +51,7 @@ export const apiSlice = createApi({
 					})),
 				};
 			},
+			providesTags: ["Activity"],
 		}),
 		createPayout: builder.mutation<PayoutResponse, CreatePayoutRequest>({
 			query: (body) => ({
@@ -52,6 +59,7 @@ export const apiSlice = createApi({
 				method: "POST",
 				body,
 			}),
+			invalidatesTags: ["Balance", "Activity"],
 		}),
 	}),
 });

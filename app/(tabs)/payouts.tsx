@@ -7,7 +7,6 @@ import {
 	StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
 import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
@@ -19,10 +18,10 @@ import {
 	setPayout,
 	setPayoutResponse,
 } from "@/features/payout/payoutSlice";
-import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
+import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayoutStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
 import { useBiometrics } from "@/hooks/useBiometrics";
-import type { RootState } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import extractErrorMessage from "@/utils/errorHandler";
 
 export default function PayoutsScreen() {
@@ -31,9 +30,9 @@ export default function PayoutsScreen() {
 	const { validateBiometricAuthentication, handleBiometricsNotEnrolledError } =
 		useBiometrics();
 
-	const payout = useSelector((state: RootState) => state.payout);
+	const payout = useAppSelector((state) => state.payout);
 
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const onCloseModal = () => {
 		setIsModalVisible(false);
@@ -41,10 +40,10 @@ export default function PayoutsScreen() {
 
 	const requestPayout = async () => {
 		const data = await createPayoutResponse({
-			amount: payout?.amount || 0,
-			currency: payout?.currency || "GBP",
-			iban: payout?.iban || "",
-			...(payout?.device_id && { device_id: payout.device_id }),
+			amount: payout.amount ?? 0,
+			currency: payout.currency ?? "GBP",
+			iban: payout.iban ?? "",
+			...(payout.device_id && { device_id: payout.device_id }),
 		}).unwrap();
 
 		dispatch(setPayoutResponse({ payoutResponse: data }));
@@ -53,7 +52,7 @@ export default function PayoutsScreen() {
 	const onPressCreatePayout = async () => {
 		try {
 			const isValidBiometricAuthentication =
-				await validateBiometricAuthentication(payout?.amount || 0);
+				await validateBiometricAuthentication(payout?.amount ?? 0);
 
 			if (isValidBiometricAuthentication) {
 				await requestPayout();
@@ -72,12 +71,12 @@ export default function PayoutsScreen() {
 	};
 
 	const onPressCreateAnotherPayout = async () => {
-		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
+		dispatch(setPayout({ payoutResponse: undefined }));
 		dispatch(resetPayoutState());
 	};
 
 	const onPressTryAgain = async () => {
-		dispatch(setPayout({ ...payout, payoutResponse: undefined }));
+		dispatch(setPayout({ payoutResponse: undefined }));
 	};
 
 	useEffect(() => {
@@ -143,22 +142,6 @@ export default function PayoutsScreen() {
 const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
-	},
-	container: {
-		flex: 1,
-		padding: 16,
-	},
-	header: {
-		marginBottom: 24,
-	},
-	section: {
-		marginBottom: 24,
-	},
-	input: {
-		borderWidth: 1,
-		borderColor: "gray",
-		padding: 8,
-		borderRadius: 4,
 	},
 	headerContainer: {
 		flexDirection: "row",
