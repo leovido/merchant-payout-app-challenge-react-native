@@ -26,6 +26,12 @@ function parseBiometricsError(error: unknown): string {
 	}
 }
 
+export function isBiometricsNotEnrolledError(error: unknown): boolean {
+	return (
+		error instanceof Error && error.message.includes("BIOMETRICS_NOT_ENROLLED")
+	);
+}
+
 export default function extractErrorMessage(error: unknown): string {
 	if (error instanceof Error) {
 		if (error.message.includes("BIOMETRICS")) {

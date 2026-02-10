@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { isBiometricAuthenticated } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
 import { ThemedView } from "@/components/themed-view";
 import { BACKGROUND_COLOR_LIGHT } from "@/constants/theme";
@@ -20,13 +19,15 @@ import {
 } from "@/features/payout/payoutSlice";
 import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayouStatusCompletedScreen";
 import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
+import { useBiometrics } from "@/hooks/useBiometrics";
 import type { RootState } from "@/store/store";
-import type { PayoutResponse } from "@/types/api";
 import extractErrorMessage from "@/utils/errorHandler";
 
 export default function PayoutsScreen() {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [createPayoutResponse, { isLoading }] = useCreatePayoutMutation();
+	const { validateBiometricAuthentication, handleBiometricsNotEnrolledError } =
+		useBiometrics();
 
 	const payout = useSelector((state: RootState) => state.payout);
 
@@ -34,18 +35,6 @@ export default function PayoutsScreen() {
 
 	const onCloseModal = () => {
 		setIsModalVisible(false);
-	};
-
-	const validateBiometricAuthentication = async (amount: number) => {
-		const requiresBiometricAuthentication = amount >= 100000;
-
-		if (requiresBiometricAuthentication) {
-			const isAuthenticated = await isBiometricAuthenticated();
-
-			return isAuthenticated;
-		} else {
-			return true;
-		}
 	};
 
 	const requestPayout = async () => {
@@ -68,6 +57,8 @@ export default function PayoutsScreen() {
 				await requestPayout();
 			}
 		} catch (error) {
+			await handleBiometricsNotEnrolledError(error);
+
 			dispatch(
 				setFailurePayoutState({
 					errorMessage: extractErrorMessage(error),
