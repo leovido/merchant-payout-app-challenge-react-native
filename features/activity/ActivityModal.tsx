@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -11,7 +11,7 @@ import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
-import { SemanticColors, Spacing, Typography } from "@/constants/theme";
+import { colors, Spacing, Typography } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
 import type { ActivityItem } from "@/types/api";
 
@@ -45,6 +45,14 @@ export const ActivityModal = ({
 			</ThemedView>
 		</ActivityListItem>
 	);
+
+	const onEndReached = useCallback(() => {
+		if (activityData?.has_more && activityData?.next_cursor) {
+			setCursor(activityData.next_cursor);
+			refetch();
+		}
+	}, [activityData?.has_more, activityData?.next_cursor, refetch]);
+
 	if (!activityData && isActivityLoading) {
 		return <ActivityIndicator size="large" color="blue" />;
 	}
@@ -93,12 +101,7 @@ export const ActivityModal = ({
 					renderItem={renderItem}
 					keyExtractor={(item, index) => `${item.id}-${index}`}
 					initialNumToRender={10}
-					onEndReached={() => {
-						if (activityData?.has_more && activityData?.next_cursor) {
-							setCursor(activityData.next_cursor);
-							refetch();
-						}
-					}}
+					onEndReached={onEndReached}
 				/>
 				{isActivityFetching && (
 					<ThemedView style={styles.loadingContainer}>
@@ -116,8 +119,6 @@ export const ActivityModal = ({
 		</Modal>
 	);
 };
-
-const c = SemanticColors.light;
 
 const styles = StyleSheet.create({
 	modalContainer: {
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	loadingText: {
-		color: c.textSecondary,
+		color: colors.textSecondary,
 		fontSize: Typography.hint.fontSize,
 		fontWeight: Typography.hint.fontWeight,
 	},
@@ -157,10 +158,10 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 	},
 	doneButton: {
-		backgroundColor: c.backgroundSecondary,
+		backgroundColor: colors.backgroundSecondary,
 		padding: Spacing.labelInputGap,
 	},
 	doneButtonText: {
-		color: c.showMoreButtonText,
+		color: colors.showMoreButtonText,
 	},
 });

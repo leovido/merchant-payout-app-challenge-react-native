@@ -20,12 +20,9 @@ const lightColors = {
 	error: "#EB5757",
 	border: "#D5D5D5",
 	buttonSecondaryBackground: "#EBEBEB",
-	/** Gray for disabled primary buttons (e.g. Confirm) */
 	buttonDisabledBackground: "#DFDFDF",
-	/** Text color for disabled primary buttons */
 	buttonDisabledText: "#B9B9B9",
 	buttonLinkBackground: "#EBF5FF",
-	/** Show more button (e.g. Recent Activity) */
 	showMoreButtonBackground: "#E3F1F6",
 	showMoreButtonText: "#4787DE",
 	tabInactive: "#8C8C8C",
@@ -57,31 +54,10 @@ export const SemanticColors = {
 	dark: darkColors,
 } as const;
 
-// ---------------------------------------------------------------------------
-// Legacy exports (aliased for incremental migration)
-// ---------------------------------------------------------------------------
+export const colors = SemanticColors.light;
 
 const tintColorLight = lightColors.primary;
 const tintColorDark = darkColors.primary;
-
-/** @deprecated Use SemanticColors.light.backgroundPrimary */
-export const BACKGROUND_COLOR_LIGHT = lightColors.backgroundPrimary;
-
-/** @deprecated Use SemanticColors.light.primary */
-export const TINT_COLOR_LIGHT = tintColorLight;
-
-/** @deprecated Use SemanticColors.light.error */
-export const ERROR_RED = lightColors.error;
-
-/** @deprecated Use SemanticColors.light.overlay */
-export const MODAL_OVERLAY = lightColors.overlay;
-
-/** @deprecated Use SemanticColors.light.border */
-export const INPUT_BORDER_LIGHT = lightColors.border;
-
-/** @deprecated Use SemanticColors.light.backgroundSecondary */
-export const SURFACE_WHITE = lightColors.backgroundSecondary;
-
 export const Colors = {
 	light: {
 		text: lightColors.textPrimary,
@@ -139,7 +115,6 @@ const spacingScale = {
 
 export const Spacing = {
 	...spacingScale,
-	// Semantic aliases (derived from scale)
 	screenPaddingHorizontal: spacingScale.xl,
 	sectionGap: spacingScale["2xl"],
 	labelInputGap: spacingScale.sm,

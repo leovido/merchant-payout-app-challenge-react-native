@@ -8,7 +8,7 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { BorderRadius, SemanticColors, Spacing } from "@/constants/theme";
+import { BorderRadius, colors, Spacing } from "@/constants/theme";
 import type { PayoutResponse } from "@/types/api";
 
 const PayoutStatusContext = createContext<PayoutResponse | undefined>(
@@ -55,11 +55,7 @@ PayoutStatusScreen.IconStatus = ({
 			style={[styles.icon, customStyle]}
 			name={payout?.status === "completed" ? "checkmark.circle.fill" : "xmark"}
 			size={48}
-			color={
-				payout.status === "completed"
-					? SemanticColors.light.success
-					: SemanticColors.light.error
-			}
+			color={payout.status === "completed" ? colors.success : colors.error}
 		/>
 	);
 };
@@ -119,14 +115,12 @@ PayoutStatusScreen.Button = ({
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		paddingHorizontal: Spacing.modalPadding,
 		width: "80%",
 		alignSelf: "center",
@@ -148,12 +142,12 @@ const styles = StyleSheet.create({
 		paddingHorizontal: Spacing.sectionPaddingVertical,
 		borderRadius: BorderRadius.button,
 		height: 50,
-		backgroundColor: c.primary,
+		backgroundColor: colors.primary,
 		width: "80%",
 		alignItems: "center",
 		justifyContent: "center",
 	},
 	buttonText: {
-		color: c.backgroundSecondary,
+		color: colors.backgroundSecondary,
 	},
 });

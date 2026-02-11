@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { SemanticColors, Spacing } from "@/constants/theme";
+import { colors, Spacing } from "@/constants/theme";
 import { ActivitySection } from "@/features/activity/ActivitySection";
 import { BalanceSection } from "@/features/balances/BalanceSection";
 
@@ -41,25 +41,23 @@ export default function HomeScreen() {
 	);
 }
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
 	},
 	activityListItem: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 	headerTitle: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 	separator: {
-		backgroundColor: c.textPrimary,
+		backgroundColor: colors.textPrimary,
 	},
 	container: {
 		flex: 1,
 		padding: Spacing.screenPaddingHorizontal,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 	header: {
 		marginBottom: Spacing.sectionGap,

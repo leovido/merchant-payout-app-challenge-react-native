@@ -1,10 +1,15 @@
 import type React from "react";
-import { createContext, useContext, useState } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { createContext, useCallback, useContext, useState } from "react";
+import {
+	FlatList,
+	type ListRenderItemInfo,
+	Pressable,
+	StyleSheet,
+} from "react-native";
 import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { BorderRadius, SemanticColors, Spacing } from "@/constants/theme";
+import { BorderRadius, colors, Spacing } from "@/constants/theme";
 import type { ActivityItem } from "@/types/api";
 import { ActivityListItem } from "./ActivityListItem";
 import { ActivityModal } from "./ActivityModal";
@@ -66,20 +71,23 @@ ActivitySection.Title = function Title() {
 ActivitySection.List = function List() {
 	const { activity } = useActivitySectionContext();
 
+	const renderItem = useCallback((item: ListRenderItemInfo<ActivityItem>) => {
+		return (
+			<ActivityListItem
+				activity={item.item}
+				customStyle={styles.activityListItem}
+			>
+				<ActivityListItem.Description />
+				<ActivityListItem.Amount />
+			</ActivityListItem>
+		);
+	}, []);
 	return (
 		<FlatList
 			accessibilityLabel="Recent activity list"
 			accessibilityRole="list"
 			data={activity}
-			renderItem={(item) => (
-				<ActivityListItem
-					activity={item.item}
-					customStyle={styles.activityListItem}
-				>
-					<ActivityListItem.Description />
-					<ActivityListItem.Amount />
-				</ActivityListItem>
-			)}
+			renderItem={renderItem}
 			keyExtractor={(item) => item.id}
 		/>
 	);
@@ -111,11 +119,9 @@ ActivitySection.Modal = function Modal() {
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	showMoreButton: {
-		backgroundColor: c.showMoreButtonBackground,
+		backgroundColor: colors.showMoreButtonBackground,
 		paddingTop: Spacing.fieldGap,
 		paddingBottom: Spacing.listItemPaddingVertical,
 		paddingHorizontal: Spacing.sectionPaddingVertical,
@@ -127,13 +133,13 @@ const styles = StyleSheet.create({
 	showMoreButtonText: {
 		fontSize: 16,
 		fontWeight: "600",
-		color: c.showMoreButtonText,
+		color: colors.showMoreButtonText,
 	},
 	section: {
 		marginBottom: Spacing.sectionGap,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 	activityListItem: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 });

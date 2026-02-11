@@ -9,7 +9,7 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
-import { SemanticColors, Spacing, Typography } from "@/constants/theme";
+import { colors, Spacing, Typography } from "@/constants/theme";
 import type { Currency } from "@/types/api";
 
 interface PayoutModalProps {
@@ -107,7 +107,7 @@ PayoutModalContent.Button = function Button({
 			{isLoading ? (
 				<ActivityIndicator
 					size="small"
-					color={SemanticColors.light.backgroundSecondary}
+					color={colors.backgroundSecondary}
 					accessibilityLabel="Loading indicator"
 				/>
 			) : (
@@ -124,8 +124,6 @@ PayoutModalContent.Button = function Button({
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	container: {
 		padding: Spacing.sectionPaddingVertical,
@@ -137,11 +135,11 @@ const styles = StyleSheet.create({
 		paddingBottom: Spacing.sectionGap,
 	},
 	content: {
-		color: c.textSecondary,
+		color: colors.textSecondary,
 		fontSize: Typography.hint.fontSize,
 	},
 	contentValue: {
-		color: c.textPrimary,
+		color: colors.textPrimary,
 	},
 	contentContainer: {
 		gap: Spacing.labelInputGap,
@@ -153,7 +151,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	confirmButtonText: {
-		color: c.backgroundSecondary,
+		color: colors.backgroundSecondary,
 		fontSize: Typography.label.fontSize,
 		fontWeight: Typography.label.fontWeight,
 	},
