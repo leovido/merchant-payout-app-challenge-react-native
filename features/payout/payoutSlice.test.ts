@@ -1,7 +1,10 @@
 import payoutReducer, {
 	resetPayoutState,
+	setAmount,
+	setCurrency,
 	setDeviceId,
 	setFailurePayoutState,
+	setIban,
 	setPayout,
 	setPayoutResponse,
 } from "./payoutSlice";
@@ -40,8 +43,8 @@ describe("payoutSlice", () => {
 	});
 
 	it("updates currency and preserves formattedAmount when amount is set", () => {
-		const withAmount = payoutReducer(undefined, setPayout({ amount: 500 }));
-		const state = payoutReducer(withAmount, setPayout({ currency: "EUR" }));
+		const withAmount = payoutReducer(undefined, setAmount({ amount: 500 }));
+		const state = payoutReducer(withAmount, setCurrency({ currency: "EUR" }));
 		expect(state.amount).toBe(500);
 		expect(state.currency).toBe("EUR");
 		expect(state.formattedAmount).toBe("5.00");
@@ -59,10 +62,10 @@ describe("payoutSlice", () => {
 	});
 
 	it("updates iban without changing amount or formattedAmount", () => {
-		const withAmount = payoutReducer(undefined, setPayout({ amount: 100 }));
+		const withAmount = payoutReducer(undefined, setAmount({ amount: 100 }));
 		const state = payoutReducer(
 			withAmount,
-			setPayout({ iban: "DE89370400440532013000" }),
+			setIban({ iban: "DE89370400440532013000" }),
 		);
 		expect(state.amount).toBe(100);
 		expect(state.formattedAmount).toBe("1.00");

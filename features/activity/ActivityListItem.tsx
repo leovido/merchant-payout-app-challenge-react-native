@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { StyleSheet, type ViewStyle } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -31,8 +31,12 @@ export function ActivityListItem({
 	children,
 	customStyle,
 }: ActivityListItemProps) {
+	const activityContext = useMemo(() => {
+		return { ...activity };
+	}, [activity]);
+
 	return (
-		<ActivityContext.Provider value={activity}>
+		<ActivityContext.Provider value={activityContext}>
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>

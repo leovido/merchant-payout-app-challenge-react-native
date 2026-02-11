@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
@@ -29,8 +29,13 @@ const useBalanceSectionContext = () => {
 export function BalanceSection({ children }: { children: React.ReactNode }) {
 	const { data: balance, isLoading, isError } = useGetBalanceQuery();
 
+	const balanceContext = useMemo(
+		() => ({ balance, isLoading, isError }),
+		[balance, isLoading, isError],
+	);
+
 	return (
-		<BalanceSectionContext.Provider value={{ balance, isLoading, isError }}>
+		<BalanceSectionContext.Provider value={balanceContext}>
 			<ThemedView
 				accessibilityLabel="Account balance"
 				accessibilityRole="summary"

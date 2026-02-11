@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import {
 	Modal,
 	Pressable,
@@ -16,7 +24,12 @@ import {
 	Shadows,
 	Spacing,
 } from "@/constants/theme";
-import { setDeviceId, setPayout } from "@/features/payout/payoutSlice";
+import {
+	setDeviceId,
+	setAmount as setPayoutAmountAction,
+	setCurrency as setPayoutCurrencyAction,
+	setIban as setPayoutIbanAction,
+} from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
@@ -69,30 +82,57 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const dispatch = useAppDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
 
+	const setAmount = useCallback(
+		(amount: number | undefined) => {
+			dispatch(setPayoutAmountAction({ amount }));
+		},
+		[dispatch],
+	);
+
+	const setCurrency = useCallback(
+		(currency: Currency) => {
+			dispatch(setPayoutCurrencyAction({ currency }));
+		},
+		[dispatch],
+	);
+
+	const setIban = useCallback(
+		(iban: string) => {
+			dispatch(setPayoutIbanAction({ iban }));
+		},
+		[dispatch],
+	);
+
+	const payoutContext = useMemo(
+		() => ({
+			amount: payout.amount ?? undefined,
+			formattedAmount: payout.formattedAmount ?? "",
+			currency: payout.currency ?? "GBP",
+			iban: payout.iban ?? "",
+			deviceId: payout.device_id ?? "",
+			setAmount,
+			setCurrency,
+			setIban,
+			ibanInputRef,
+		}),
+		[
+			payout.amount,
+			payout.formattedAmount,
+			payout.currency,
+			payout.iban,
+			payout.device_id,
+			setAmount,
+			setCurrency,
+			setIban,
+		],
+	);
+
 	useEffect(() => {
 		dispatch(setDeviceId({ device_id: deviceId }));
 	}, [deviceId, dispatch]);
 
 	return (
-		<PayoutContext.Provider
-			value={{
-				amount: payout.amount || undefined,
-				formattedAmount: payout.formattedAmount || "",
-				currency: payout.currency || "GBP",
-				iban: payout.iban || "",
-				deviceId: payout.device_id || "",
-				setAmount: (amount: number | undefined) => {
-					dispatch(setPayout({ ...payout, amount }));
-				},
-				setCurrency: (currency: Currency) => {
-					dispatch(setPayout({ ...payout, currency }));
-				},
-				setIban: (iban: string) => {
-					dispatch(setPayout({ ...payout, iban }));
-				},
-				ibanInputRef,
-			}}
-		>
+		<PayoutContext.Provider value={payoutContext}>
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>
