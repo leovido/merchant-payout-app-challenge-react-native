@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import {
 	Modal,
 	Pressable,
@@ -10,13 +18,13 @@ import { Dropdown } from "react-native-element-dropdown";
 import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { BorderRadius, colors, Shadows, Spacing } from "@/constants/theme";
 import {
-	BorderRadius,
-	SemanticColors,
-	Shadows,
-	Spacing,
-} from "@/constants/theme";
-import { setDeviceId, setPayout } from "@/features/payout/payoutSlice";
+	setDeviceId,
+	setAmount as setPayoutAmountAction,
+	setCurrency as setPayoutCurrencyAction,
+	setIban as setPayoutIbanAction,
+} from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
@@ -69,35 +77,70 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const dispatch = useAppDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
 
+	const setAmount = useCallback(
+		(amount: number | undefined) => {
+			dispatch(setPayoutAmountAction({ amount }));
+		},
+		[dispatch],
+	);
+
+	const setCurrency = useCallback(
+		(currency: Currency) => {
+			dispatch(setPayoutCurrencyAction({ currency }));
+		},
+		[dispatch],
+	);
+
+	const setIban = useCallback(
+		(iban: string) => {
+			dispatch(setPayoutIbanAction({ iban }));
+		},
+		[dispatch],
+	);
+
+	const payoutContext = useMemo(
+		() => ({
+			amount: payout.amount ?? undefined,
+			formattedAmount: payout.formattedAmount ?? "",
+			currency: payout.currency ?? "GBP",
+			iban: payout.iban ?? "",
+			deviceId: payout.device_id ?? "",
+			setAmount,
+			setCurrency,
+			setIban,
+			ibanInputRef,
+		}),
+		[
+			payout.amount,
+			payout.formattedAmount,
+			payout.currency,
+			payout.iban,
+			payout.device_id,
+			setAmount,
+			setCurrency,
+			setIban,
+		],
+	);
+
 	useEffect(() => {
 		dispatch(setDeviceId({ device_id: deviceId }));
 	}, [deviceId, dispatch]);
 
 	return (
-		<PayoutContext.Provider
-			value={{
-				amount: payout.amount || undefined,
-				formattedAmount: payout.formattedAmount || "",
-				currency: payout.currency || "GBP",
-				iban: payout.iban || "",
-				deviceId: payout.device_id || "",
-				setAmount: (amount: number | undefined) => {
-					dispatch(setPayout({ ...payout, amount }));
-				},
-				setCurrency: (currency: Currency) => {
-					dispatch(setPayout({ ...payout, currency }));
-				},
-				setIban: (iban: string) => {
-					dispatch(setPayout({ ...payout, iban }));
-				},
-				ibanInputRef,
-			}}
-		>
+		<PayoutContext.Provider value={payoutContext}>
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>
 		</PayoutContext.Provider>
 	);
+};
+
+PayoutScreen.HeaderContainer = function HeaderContainer({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return <ThemedView style={styles.headerContainer}>{children}</ThemedView>;
 };
 
 PayoutScreen.Title = function Title() {
@@ -229,7 +272,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 				ref={ibanInputRef}
 				style={[styles.input, showIbanError && styles.inputError]}
 				placeholder="FR1212345123451234567A12310131231231231"
-				placeholderTextColor={SemanticColors.light.textPlaceholder}
+				placeholderTextColor={colors.textPlaceholder}
 				autoCapitalize="characters"
 				autoCorrect={false}
 				value={iban}
@@ -259,9 +302,9 @@ interface ConfirmButtonProps {
 PayoutScreen.ConfirmButton = function ConfirmButton({
 	setIsModalVisible,
 }: ConfirmButtonProps) {
-	const { amount } = usePayoutContext();
+	const { amount, iban } = usePayoutContext();
 
-	const isDisabled = amount == null || amount <= 0;
+	const isDisabled = iban.length === 0 || amount === undefined || amount <= 0;
 
 	const onPressConfirm = async () => {
 		setIsModalVisible(true);
@@ -368,20 +411,24 @@ PayoutScreen.PayoutModal = function PayoutModal({
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: Spacing.screenPaddingHorizontal,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
+	},
+	headerContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		backgroundColor: colors.backgroundPrimary,
+		width: "100%",
 	},
 	title: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 	},
 	modalOverlay: {
 		flex: 1,
-		backgroundColor: c.overlay,
+		backgroundColor: colors.overlay,
 		justifyContent: "center",
 		alignItems: "center",
 		padding: Spacing.modalPadding,
@@ -394,22 +441,22 @@ const styles = StyleSheet.create({
 	modalCancelButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: c.buttonSecondaryBackground,
+		backgroundColor: colors.buttonSecondaryBackground,
 		padding: Spacing.labelInputGap,
 		borderRadius: BorderRadius.button,
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	modalCancelButtonText: {
-		color: c.textPrimary,
+		color: colors.textPrimary,
 		fontSize: 16,
 		fontWeight: "600",
 	},
 	modalConfirmButton: {
 		width: "50%",
 		height: 50,
-		backgroundColor: c.primary,
-		color: c.backgroundSecondary,
+		backgroundColor: colors.primary,
+		color: colors.backgroundSecondary,
 		fontSize: 16,
 		fontWeight: "600",
 		padding: Spacing.labelInputGap,
@@ -421,7 +468,7 @@ const styles = StyleSheet.create({
 	modalBox: {
 		width: "100%",
 		maxHeight: "90%",
-		backgroundColor: c.backgroundSecondary,
+		backgroundColor: colors.backgroundSecondary,
 		borderRadius: BorderRadius.modal,
 		padding: Spacing.labelInputGap,
 		...Shadows.modal,
@@ -429,16 +476,16 @@ const styles = StyleSheet.create({
 	input: {
 		height: 50,
 		borderWidth: 1,
-		borderColor: c.border,
+		borderColor: colors.border,
 		padding: Spacing.labelInputGap,
 		borderRadius: BorderRadius.input,
-		backgroundColor: c.backgroundSecondary,
-		color: c.textPrimary,
+		backgroundColor: colors.backgroundSecondary,
+		color: colors.textPrimary,
 		fontSize: 18,
 	},
 	amountTextFieldSection: {
 		paddingVertical: Spacing.sectionPaddingVertical,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		minWidth: "70%",
 		maxWidth: "80%",
 	},
@@ -447,7 +494,7 @@ const styles = StyleSheet.create({
 	},
 	currencyDropdownSection: {
 		paddingVertical: Spacing.sectionPaddingVertical,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		minWidth: "20%",
 		maxWidth: "50%",
 	},
@@ -456,7 +503,7 @@ const styles = StyleSheet.create({
 	},
 	ibanTextFieldSection: {
 		paddingVertical: Spacing.sectionPaddingVertical,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		width: "100%",
 	},
 	ibanTextFieldTitle: {
@@ -466,25 +513,25 @@ const styles = StyleSheet.create({
 		paddingTop: Spacing.labelInputGap,
 		fontSize: 12,
 		fontWeight: "400",
-		color: c.textSecondary,
+		color: colors.textSecondary,
 	},
 	inputError: {
-		borderColor: c.error,
+		borderColor: colors.error,
 		borderWidth: 1.5,
 	},
 	ibanErrorText: {
 		paddingTop: 6,
 		fontSize: 12,
-		color: c.error,
+		color: colors.error,
 	},
 	confirmButtonSection: {
 		paddingVertical: Spacing.sectionPaddingVertical,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		width: "100%",
 	},
 	confirmButton: {
-		backgroundColor: c.primary,
-		color: c.backgroundSecondary,
+		backgroundColor: colors.primary,
+		color: colors.backgroundSecondary,
 		padding: Spacing.sectionPaddingVertical,
 		borderRadius: BorderRadius.button,
 		textAlign: "center",
@@ -494,15 +541,15 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	confirmButtonDisabled: {
-		backgroundColor: c.buttonDisabledBackground,
+		backgroundColor: colors.buttonDisabledBackground,
 	},
 	confirmButtonText: {
-		color: c.backgroundSecondary,
+		color: colors.backgroundSecondary,
 		fontSize: 16,
 		fontWeight: "600",
 	},
 	confirmButtonDisabledText: {
-		color: c.buttonDisabledText,
+		color: colors.buttonDisabledText,
 		fontWeight: "400",
 	},
 });

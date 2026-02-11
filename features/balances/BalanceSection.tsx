@@ -1,9 +1,9 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { SemanticColors, Spacing, Typography } from "@/constants/theme";
+import { colors, Spacing, Typography } from "@/constants/theme";
 import type { BalanceResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 
@@ -29,8 +29,13 @@ const useBalanceSectionContext = () => {
 export function BalanceSection({ children }: { children: React.ReactNode }) {
 	const { data: balance, isLoading, isError } = useGetBalanceQuery();
 
+	const balanceContext = useMemo(
+		() => ({ balance, isLoading, isError }),
+		[balance, isLoading, isError],
+	);
+
 	return (
-		<BalanceSectionContext.Provider value={{ balance, isLoading, isError }}>
+		<BalanceSectionContext.Provider value={balanceContext}>
 			<ThemedView
 				accessibilityLabel="Account balance"
 				accessibilityRole="summary"
@@ -119,18 +124,16 @@ BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	accountBalanceSection: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		paddingLeft: Spacing.screenPaddingHorizontal,
 	},
 	balanceTypeContainer: {
 		flexDirection: "row",
 		width: "100%",
 		paddingVertical: Spacing.sectionPaddingVertical,
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		marginBottom: Spacing.sectionGap,
 	},
 	balanceTypeContainerError: {
@@ -138,17 +141,17 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontSize: Typography.label.fontSize,
 		fontWeight: Typography.label.fontWeight,
-		color: c.error,
+		color: colors.error,
 	},
 	balanceType: {
-		backgroundColor: c.backgroundPrimary,
+		backgroundColor: colors.backgroundPrimary,
 		width: "50%",
 	},
 	balanceLabel: {
-		color: c.textSecondary,
+		color: colors.textSecondary,
 	},
 	balanceAmount: {
 		fontWeight: Typography.balance.fontWeight,
-		color: c.textPrimary,
+		color: colors.textPrimary,
 	},
 });

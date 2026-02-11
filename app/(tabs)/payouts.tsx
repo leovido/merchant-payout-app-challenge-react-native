@@ -9,8 +9,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
-import { ThemedView } from "@/components/themed-view";
-import { SemanticColors } from "@/constants/theme";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
 import {
 	resetPayoutState,
@@ -71,7 +69,6 @@ export default function PayoutsScreen() {
 	};
 
 	const onPressCreateAnotherPayout = async () => {
-		dispatch(setPayout({ payoutResponse: undefined }));
 		dispatch(resetPayoutState());
 	};
 
@@ -101,13 +98,13 @@ export default function PayoutsScreen() {
 					<ScrollView keyboardShouldPersistTaps="handled">
 						<PayoutScreen>
 							<PayoutScreen.Title />
-							<ThemedView style={styles.headerContainer}>
+							<PayoutScreen.HeaderContainer>
 								<PayoutScreen.AmountTextField />
 								<PayoutScreen.CurrencyDropdown />
-							</ThemedView>
-							<ThemedView style={styles.headerContainer}>
+							</PayoutScreen.HeaderContainer>
+							<PayoutScreen.HeaderContainer>
 								<PayoutScreen.IBANTextField />
-							</ThemedView>
+							</PayoutScreen.HeaderContainer>
 							<PayoutScreen.ConfirmButton
 								setIsModalVisible={setIsModalVisible}
 							/>
@@ -142,12 +139,6 @@ export default function PayoutsScreen() {
 const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
-	},
-	headerContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		backgroundColor: SemanticColors.light.backgroundPrimary,
-		width: "100%",
 	},
 	keyboardAvoidingView: {
 		flex: 1,

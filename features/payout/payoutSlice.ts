@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type {
 	CreatePayoutRequest,
+	Currency,
 	PayoutResponse,
 	PayoutStatus,
 } from "@/types/api";
@@ -57,12 +58,42 @@ export const payoutSlice = createSlice({
 			return {
 				...nextState,
 				formattedAmount:
-					nextState.amount != null && nextState.amount !== undefined
-						? formatCurrencyForInput(nextState.amount)
+					action.payload.amount != null && action.payload.amount !== undefined
+						? formatCurrencyForInput(action.payload.amount)
 						: "",
-				payoutResponse: action.payload.payoutResponse,
-				errorMessage: action.payload.errorMessage,
 			};
+		},
+		setAmount: (
+			state: typeof initialState,
+			action: PayloadAction<{
+				amount: number | undefined;
+			}>,
+		) => {
+			const amount = action.payload.amount;
+			return {
+				...state,
+				amount,
+				formattedAmount:
+					amount != null && amount !== undefined
+						? formatCurrencyForInput(amount)
+						: "",
+			};
+		},
+		setCurrency: (
+			state: typeof initialState,
+			action: PayloadAction<{
+				currency: Currency;
+			}>,
+		) => {
+			return { ...state, currency: action.payload.currency };
+		},
+		setIban: (
+			state: typeof initialState,
+			action: PayloadAction<{
+				iban: string;
+			}>,
+		) => {
+			return { ...state, iban: action.payload.iban };
 		},
 		setPayoutResponse: (
 			state: typeof initialState,
@@ -89,6 +120,9 @@ export const {
 	setFailurePayoutState,
 	setPayoutResponse,
 	setDeviceId,
+	setAmount,
+	setCurrency,
+	setIban,
 } = payoutSlice.actions;
 
 export default payoutSlice.reducer;

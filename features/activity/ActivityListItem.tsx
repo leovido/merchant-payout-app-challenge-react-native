@@ -1,9 +1,9 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { StyleSheet, type ViewStyle } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
-import { SemanticColors, Spacing, Typography } from "@/constants/theme";
+import { colors, Spacing, Typography } from "@/constants/theme";
 import type { ActivityItem } from "@/types/api";
 import { dateFormatter } from "@/utils/dateFormatter";
 import { formatCurrency } from "@/utils/formatter";
@@ -31,8 +31,12 @@ export function ActivityListItem({
 	children,
 	customStyle,
 }: ActivityListItemProps) {
+	const activityContext = useMemo(() => {
+		return { ...activity };
+	}, [activity]);
+
 	return (
-		<ActivityContext.Provider value={activity}>
+		<ActivityContext.Provider value={activityContext}>
 			<ThemedView style={[styles.container, customStyle]}>
 				{children}
 			</ThemedView>
@@ -124,8 +128,6 @@ ActivityListItem.Date = function ActivityDate() {
 	);
 };
 
-const c = SemanticColors.light;
-
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
@@ -133,26 +135,26 @@ const styles = StyleSheet.create({
 		paddingVertical: Spacing.sectionPaddingVertical,
 	},
 	amount: {
-		color: c.textPrimary,
+		color: colors.textPrimary,
 	},
 	positiveAmount: {
-		color: c.success,
+		color: colors.success,
 	},
 	negativeAmount: {
-		color: c.error,
+		color: colors.error,
 	},
 	status: {
-		color: c.textSecondary,
+		color: colors.textSecondary,
 		fontSize: Typography.hint.fontSize,
 		fontWeight: Typography.hint.fontWeight,
 	},
 	date: {
-		color: c.textSecondary,
+		color: colors.textSecondary,
 		fontSize: Typography.hint.fontSize,
 		fontWeight: Typography.hint.fontWeight,
 	},
 	activityType: {
-		color: c.textPrimary,
+		color: colors.textPrimary,
 		fontSize: 18,
 		fontWeight: "600",
 		paddingBottom: 4,
