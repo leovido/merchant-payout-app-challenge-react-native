@@ -302,9 +302,9 @@ interface ConfirmButtonProps {
 PayoutScreen.ConfirmButton = function ConfirmButton({
 	setIsModalVisible,
 }: ConfirmButtonProps) {
-	const { amount } = usePayoutContext();
+	const { amount, iban } = usePayoutContext();
 
-	const isDisabled = amount == null || amount <= 0;
+	const isDisabled = iban.length === 0 || amount === undefined || amount <= 0;
 
 	const onPressConfirm = async () => {
 		setIsModalVisible(true);

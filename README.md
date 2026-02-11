@@ -32,7 +32,7 @@ Your task is to build a merchant dashboard and payout flow that allows users to:
 
 The project comes with the following pre-configured technologies:
 
-* **Expo (SDK 52+)** - Framework for React Native
+* **Expo (SDK 54+)** - Framework for React Native
 * **TypeScript** - For type safety
 * **Expo Router** - File-based routing
 * **Jest & React Native Testing Library** - For testing
