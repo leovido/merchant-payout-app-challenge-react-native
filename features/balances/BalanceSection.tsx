@@ -1,11 +1,14 @@
+import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
 import { StyleSheet } from "react-native";
+import Skeleton from "react-native-reanimated-skeleton";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { colors, Spacing, Typography } from "@/constants/theme";
 import type { BalanceResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
+import { BALANCE_SKELETON_LAYOUT } from "./BalanceSkeletonLayout";
 
 const BalanceSectionContext = createContext<{
 	balance?: BalanceResponse;
@@ -26,7 +29,25 @@ const useBalanceSectionContext = () => {
 	return context;
 };
 
-export function BalanceSection({ children }: { children: React.ReactNode }) {
+function BalanceSectionSkeleton({ children }: { children?: ReactNode }) {
+	const { isLoading } = useBalanceSectionContext();
+
+	return (
+		<Skeleton
+			isLoading={isLoading}
+			layout={BALANCE_SKELETON_LAYOUT}
+			containerStyle={styles.skeletonContainer}
+			boneColor={colors.border}
+			highlightColor={colors.backgroundSecondary}
+			animationType="shiver"
+			animationDirection="horizontalLeft"
+		>
+			{children}
+		</Skeleton>
+	);
+}
+
+export function BalanceSection({ children }: { children: ReactNode }) {
 	const { data: balance, isLoading, isError } = useGetBalanceQuery();
 
 	const balanceContext = useMemo(
@@ -36,13 +57,15 @@ export function BalanceSection({ children }: { children: React.ReactNode }) {
 
 	return (
 		<BalanceSectionContext.Provider value={balanceContext}>
-			<ThemedView
-				accessibilityLabel="Account balance"
-				accessibilityRole="summary"
-				style={styles.accountBalanceSection}
-			>
-				{children}
-			</ThemedView>
+			<BalanceSectionSkeleton>
+				<ThemedView
+					accessibilityLabel="Account balance"
+					accessibilityRole="summary"
+					style={styles.accountBalanceSection}
+				>
+					{children}
+				</ThemedView>
+			</BalanceSectionSkeleton>
 		</BalanceSectionContext.Provider>
 	);
 }
@@ -64,7 +87,7 @@ BalanceSection.Title = function Title() {
 BalanceSection.BalanceTypeContainer = function BalanceTypeContainer({
 	children,
 }: {
-	children: React.ReactNode;
+	children: ReactNode;
 }) {
 	const { isError } = useBalanceSectionContext();
 
@@ -125,9 +148,12 @@ BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
 };
 
 const styles = StyleSheet.create({
+	skeletonContainer: {
+		padding: Spacing.sm,
+	},
 	accountBalanceSection: {
 		backgroundColor: colors.backgroundPrimary,
-		paddingLeft: Spacing.screenPaddingHorizontal,
+		paddingLeft: Spacing.lg,
 	},
 	balanceTypeContainer: {
 		flexDirection: "row",

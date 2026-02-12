@@ -1,4 +1,6 @@
 PODS:
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - EXConstants (18.0.13):
     - ExpoModulesCore
   - EXJSONUtils (0.15.0)
@@ -2226,6 +2228,7 @@ PODS:
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - "BVLinearGradient (from `../node_modules/.pnpm/react-native-linear-gradient@2.8.3_react-native@0.81.5_@babel+core@7.28.5_@types+react@_658a24aaf25b9ff881b38e8470265051/node_modules/react-native-linear-gradient`)"
   - "EXConstants (from `../node_modules/.pnpm/expo-constants@18.0.13_expo@54.0.32_react-native@0.81.5_@babel+core@7.28.5_@types+react@19.1.17_react@19.1.0_/node_modules/expo-constants/ios`)"
   - "EXJSONUtils (from `../node_modules/.pnpm/expo-json-utils@0.15.0/node_modules/expo-json-utils/ios`)"
   - "EXManifests (from `../node_modules/.pnpm/expo-manifests@1.0.10_expo@54.0.32/node_modules/expo-manifests/ios`)"
@@ -2321,7 +2324,7 @@ DEPENDENCIES:
   - "RNReanimated (from `../node_modules/.pnpm/react-native-reanimated@4.1.5_@babel+core@7.28.5_react-native-worklets@0.5.1_@babel+cor_a9b7b7312721a04be8092a525693b6c2/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../node_modules/.pnpm/react-native-screens@4.16.0_react-native@0.81.5_@babel+core@7.28.5_@types+react@19.1.17_react@19.1.0__react@19.1.0/node_modules/react-native-screens`)"
   - "RNWorklets (from `../node_modules/.pnpm/react-native-worklets@0.5.1_@babel+core@7.28.5_react-native@0.81.5_@babel+core@7.28.5_@_475598bffd18458016f257ef2eebee20/node_modules/react-native-worklets`)"
-  - "ScreenSecurity (from `../node_modules/.pnpm/screen-security@file+screen-security_expo@54.0.32_react-native@0.81.5_@babel+core@7.28._e67fba2766f548ac145991cb446e6e31/node_modules/screen-security/ios`)"
+  - "ScreenSecurity (from `../node_modules/.pnpm/screen-security@file+screen-security_expo-modules-core@3.0.29_react-native@0.81.5_@babe_1fdbc904e2b819957d1e7651d283a3b9/node_modules/screen-security/ios`)"
   - "Yoga (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.28.5_@types+react@19.1.17_react@19.1.0/node_modules/react-native/ReactCommon/yoga`)"
 
 SPEC REPOS:
@@ -2335,6 +2338,8 @@ SPEC REPOS:
     - SDWebImageWebPCoder
 
 EXTERNAL SOURCES:
+  BVLinearGradient:
+    :path: "../node_modules/.pnpm/react-native-linear-gradient@2.8.3_react-native@0.81.5_@babel+core@7.28.5_@types+react@_658a24aaf25b9ff881b38e8470265051/node_modules/react-native-linear-gradient"
   EXConstants:
     :path: "../node_modules/.pnpm/expo-constants@18.0.13_expo@54.0.32_react-native@0.81.5_@babel+core@7.28.5_@types+react@19.1.17_react@19.1.0_/node_modules/expo-constants/ios"
   EXJSONUtils:
@@ -2525,11 +2530,12 @@ EXTERNAL SOURCES:
   RNWorklets:
     :path: "../node_modules/.pnpm/react-native-worklets@0.5.1_@babel+core@7.28.5_react-native@0.81.5_@babel+core@7.28.5_@_475598bffd18458016f257ef2eebee20/node_modules/react-native-worklets"
   ScreenSecurity:
-    :path: "../node_modules/.pnpm/screen-security@file+screen-security_expo@54.0.32_react-native@0.81.5_@babel+core@7.28._e67fba2766f548ac145991cb446e6e31/node_modules/screen-security/ios"
+    :path: "../node_modules/.pnpm/screen-security@file+screen-security_expo-modules-core@3.0.29_react-native@0.81.5_@babe_1fdbc904e2b819957d1e7651d283a3b9/node_modules/screen-security/ios"
   Yoga:
     :path: "../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.28.5_@types+react@19.1.17_react@19.1.0/node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   EXConstants: fce59a631a06c4151602843667f7cfe35f81e271
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: a8d97683e5c7a3b026ffbd58559c64dc655b747b
