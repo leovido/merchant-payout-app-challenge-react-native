@@ -1,15 +1,20 @@
 import { Alert, Linking } from "react-native";
 import { isBiometricAuthenticated } from "screen-security";
-import { isBiometricsNotEnrolledError } from "@/utils/errorHandler";
+import extractErrorMessage, {
+	isBiometricsNotEnrolledError,
+} from "@/utils/errorHandler";
 
 export const useBiometrics = () => {
 	const validateBiometricAuthentication = async (amount: number) => {
 		const requiresBiometricAuthentication = amount >= 100000;
 
 		if (requiresBiometricAuthentication) {
-			const isAuthenticated = await isBiometricAuthenticated();
-
-			return isAuthenticated;
+			try {
+				const isAuthenticated = await isBiometricAuthenticated();
+				return isAuthenticated;
+			} catch (error) {
+				throw new Error(extractErrorMessage(error));
+			}
 		} else {
 			return true;
 		}

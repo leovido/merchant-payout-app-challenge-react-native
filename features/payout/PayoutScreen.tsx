@@ -20,9 +20,9 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, colors, Shadows, Spacing } from "@/constants/theme";
 import {
-	setDeviceId,
 	setAmount as setPayoutAmountAction,
 	setCurrency as setPayoutCurrencyAction,
+	setDeviceId as setPayoutDeviceIdAction,
 	setIban as setPayoutIbanAction,
 } from "@/features/payout/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
@@ -73,7 +73,7 @@ interface PayoutScreenProps {
 
 export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	const payout = useAppSelector((state) => state.payout);
-	const deviceId = ScreenSecurityModule.getDeviceId();
+	const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
 	const dispatch = useAppDispatch();
 	const ibanInputRef = useRef<TextInput | null>(null);
 
@@ -123,8 +123,22 @@ export const PayoutScreen = ({ children, customStyle }: PayoutScreenProps) => {
 	);
 
 	useEffect(() => {
-		dispatch(setDeviceId({ device_id: deviceId }));
+		dispatch(setPayoutDeviceIdAction({ device_id: deviceId }));
 	}, [deviceId, dispatch]);
+
+	useEffect(() => {
+		const fetchDeviceId = () => {
+			try {
+				const deviceId = ScreenSecurityModule.getDeviceId();
+				setDeviceId(deviceId || "");
+			} catch (error) {
+				console.error(error);
+				setDeviceId("");
+			}
+		};
+
+		fetchDeviceId();
+	}, []);
 
 	return (
 		<PayoutContext.Provider value={payoutContext}>
