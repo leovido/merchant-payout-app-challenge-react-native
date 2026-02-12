@@ -109,6 +109,7 @@ ActivitySection.List = function List() {
 			</ActivityListItem>
 		);
 	}, []);
+
 	return (
 		<FlatList
 			accessibilityLabel="Recent activity list"

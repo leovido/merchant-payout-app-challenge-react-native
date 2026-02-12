@@ -56,20 +56,23 @@ export const ActivityModal = ({
 		}
 	}, [cursor, isActivityFetching, refetch]);
 
-	const renderItem = (item: ListRenderItemInfo<ActivityItem>) => (
-		<ActivityListItem activity={item.item}>
-			<ThemedView style={styles.activityContainer}>
-				<ThemedView style={styles.descriptionContainer}>
-					<ActivityListItem.ActivityType />
-					<ActivityListItem.Description />
-					<ActivityListItem.Date />
+	const renderItem = useCallback(
+		(item: ListRenderItemInfo<ActivityItem>) => (
+			<ActivityListItem activity={item.item}>
+				<ThemedView style={styles.activityContainer}>
+					<ThemedView style={styles.descriptionContainer}>
+						<ActivityListItem.ActivityType />
+						<ActivityListItem.Description />
+						<ActivityListItem.Date />
+					</ThemedView>
+					<ThemedView style={styles.amountContainer}>
+						<ActivityListItem.Amount />
+						<ActivityListItem.Status />
+					</ThemedView>
 				</ThemedView>
-				<ThemedView style={styles.amountContainer}>
-					<ActivityListItem.Amount />
-					<ActivityListItem.Status />
-				</ThemedView>
-			</ThemedView>
-		</ActivityListItem>
+			</ActivityListItem>
+		),
+		[],
 	);
 
 	const onEndReached = useCallback(() => {
