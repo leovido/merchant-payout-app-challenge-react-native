@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Skeleton from "react-native-reanimated-skeleton";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
@@ -29,24 +29,6 @@ const useBalanceSectionContext = () => {
 	return context;
 };
 
-function BalanceSectionSkeleton({ children }: { children?: ReactNode }) {
-	const { isLoading } = useBalanceSectionContext();
-
-	return (
-		<Skeleton
-			isLoading={isLoading}
-			layout={BALANCE_SKELETON_LAYOUT}
-			containerStyle={styles.skeletonContainer}
-			boneColor={colors.border}
-			highlightColor={colors.backgroundSecondary}
-			animationType="shiver"
-			animationDirection="horizontalLeft"
-		>
-			{children}
-		</Skeleton>
-	);
-}
-
 export function BalanceSection({ children }: { children: ReactNode }) {
 	const { data: balance, isLoading, isError } = useGetBalanceQuery();
 
@@ -57,15 +39,31 @@ export function BalanceSection({ children }: { children: ReactNode }) {
 
 	return (
 		<BalanceSectionContext.Provider value={balanceContext}>
-			<BalanceSectionSkeleton>
-				<ThemedView
-					accessibilityLabel="Account balance"
-					accessibilityRole="summary"
-					style={styles.accountBalanceSection}
+			<ThemedView
+				accessibilityLabel="Account balance"
+				accessibilityRole="summary"
+				style={styles.accountBalanceSection}
+			>
+				<View
+					style={isLoading ? styles.contentVisuallyHidden : undefined}
+					pointerEvents={isLoading ? "none" : "auto"}
 				>
 					{children}
-				</ThemedView>
-			</BalanceSectionSkeleton>
+				</View>
+				{isLoading && (
+					<View style={styles.skeletonOverlay} pointerEvents="none">
+						<Skeleton
+							isLoading
+							layout={BALANCE_SKELETON_LAYOUT}
+							containerStyle={styles.skeletonContainer}
+							boneColor={colors.border}
+							highlightColor={colors.backgroundSecondary}
+							animationType="shiver"
+							animationDirection="horizontalLeft"
+						/>
+					</View>
+				)}
+			</ThemedView>
 		</BalanceSectionContext.Provider>
 	);
 }
@@ -148,12 +146,24 @@ BalanceSection.BalanceType = function BalanceType({ type }: BalanceTypeProps) {
 };
 
 const styles = StyleSheet.create({
-	skeletonContainer: {
-		padding: Spacing.sm,
-	},
 	accountBalanceSection: {
 		backgroundColor: colors.backgroundPrimary,
 		paddingLeft: Spacing.lg,
+		position: "relative",
+	},
+	contentVisuallyHidden: {
+		opacity: 0,
+	},
+	skeletonOverlay: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		zIndex: 1,
+	},
+	skeletonContainer: {
+		padding: Spacing.sm,
 	},
 	balanceTypeContainer: {
 		flexDirection: "row",
