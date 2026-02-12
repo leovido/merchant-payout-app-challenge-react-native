@@ -1,24 +1,29 @@
 /**
- * Formats a date string in DD/MM/YYYY to "DD Mon YYYY" (e.g. "31/01/2003" → "31 Jan 2003").
- * Date.parse() does not reliably handle DD/MM/YYYY, so we parse it explicitly.
+ * Formats a date string (DD/MM/YYYY or ISO) to numeric "DD MM YYYY" (e.g. "12 02 2026").
  */
 export const dateFormatter = (value: string): string => {
-	const [dayPart, monthPart, yearPart] = value.split("/");
-	if (!dayPart || !monthPart || !yearPart) {
-		return value;
+	// Accept DD/MM/YYYY
+	const slashParts = value.split("/");
+	if (slashParts.length === 3) {
+		const [dayPart, monthPart, yearPart] = slashParts;
+		if (dayPart && monthPart && yearPart) {
+			const date = new Date(
+				Number.parseInt(yearPart, 10),
+				Number.parseInt(monthPart, 10) - 1,
+				Number.parseInt(dayPart, 10),
+			);
+			if (!Number.isNaN(date.getTime())) {
+				const day = dayPart.padStart(2, "0");
+				const month = monthPart.padStart(2, "0");
+				return `${day} ${month} ${yearPart}`;
+			}
+		}
 	}
-	// new Date(year, monthIndex, day): month is 0-indexed
-	const date = new Date(
-		Number.parseInt(yearPart, 10),
-		Number.parseInt(monthPart, 10) - 1,
-		Number.parseInt(dayPart, 10),
-	);
-	if (Number.isNaN(date.getTime())) {
-		return value;
+	// Accept ISO (YYYY-MM-DD)
+	const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+	if (isoMatch) {
+		const [, y, m, d] = isoMatch;
+		return `${d} ${m} ${y}`;
 	}
-	const day = date.toLocaleString("default", { day: "2-digit" });
-	const month = date.toLocaleString("default", { month: "short" });
-	const year = date.toLocaleString("default", { year: "numeric" });
-
-	return `${day} ${month} ${year}`;
+	return value;
 };

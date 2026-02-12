@@ -26,6 +26,8 @@ export const ActivityModal = ({
 	setIsModalOpen: (isModalOpen: boolean) => void;
 }) => {
 	const [cursor, setCursor] = useState<string | null>(null);
+	const lastFetchedCursorRef = useRef<string | null>(null);
+
 	const {
 		data: activityData,
 		isLoading: isActivityLoading,
@@ -35,8 +37,6 @@ export const ActivityModal = ({
 		{ limit: 15, cursor: cursor ?? undefined },
 		{ refetchOnMountOrArgChange: true },
 	);
-
-	const lastFetchedCursorRef = useRef<string | null>(null);
 
 	useEffect(() => {
 		if (!isModalOpen) {
