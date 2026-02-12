@@ -45,10 +45,16 @@ export const apiSlice = createApi({
 			transformResponse: (response: PaginatedActivityResponse) => {
 				return {
 					...response,
-					items: response.items.map((item) => ({
-						...item,
-						date: new Date(item.date).toLocaleDateString(),
-					})),
+					items: response.items.map((item) => {
+						const d = new Date(item.date);
+						const day = String(d.getDate()).padStart(2, "0");
+						const month = String(d.getMonth() + 1).padStart(2, "0");
+						const year = d.getFullYear();
+						return {
+							...item,
+							date: `${day}/${month}/${year}`,
+						};
+					}),
 				};
 			},
 			providesTags: ["Activity"],
