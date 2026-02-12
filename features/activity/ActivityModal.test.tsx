@@ -68,8 +68,9 @@ describe("ActivityModal", () => {
 			{ data: undefined, isLoading: true },
 		);
 
-		expect(screen.queryByText("Recent Activity")).not.toBeOnTheScreen();
-		expect(screen.queryByLabelText("Done button")).not.toBeOnTheScreen();
+		expect(
+			screen.getByTestId("activity-modal-skeleton-overlay"),
+		).toBeOnTheScreen();
 	});
 
 	it("when open with data, shows modal and header with accessibility labels", () => {

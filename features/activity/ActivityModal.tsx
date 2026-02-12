@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -6,13 +6,16 @@ import {
 	Modal,
 	Pressable,
 	StyleSheet,
+	View,
 } from "react-native";
+import Skeleton from "react-native-reanimated-skeleton";
 import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Divider } from "@/components/ui/Divider";
 import { colors, Spacing, Typography } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
+import { ACTIVITY_MODAL_SKELETON_LAYOUT } from "@/features/activity/ActivitySkeletonLayout";
 import type { ActivityItem } from "@/types/api";
 
 export const ActivityModal = ({
@@ -28,7 +31,30 @@ export const ActivityModal = ({
 		isLoading: isActivityLoading,
 		isFetching: isActivityFetching,
 		refetch,
-	} = useGetPaginatedActivityQuery({ cursor: cursor ?? undefined });
+	} = useGetPaginatedActivityQuery(
+		{ limit: 15, cursor: cursor ?? undefined },
+		{ refetchOnMountOrArgChange: true },
+	);
+
+	const lastFetchedCursorRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (!isModalOpen) {
+			setCursor(null);
+			lastFetchedCursorRef.current = null;
+		}
+	}, [isModalOpen]);
+
+	useEffect(() => {
+		if (
+			cursor != null &&
+			cursor !== lastFetchedCursorRef.current &&
+			!isActivityFetching
+		) {
+			lastFetchedCursorRef.current = cursor;
+			refetch();
+		}
+	}, [cursor, isActivityFetching, refetch]);
 
 	const renderItem = (item: ListRenderItemInfo<ActivityItem>) => (
 		<ActivityListItem activity={item.item}>
@@ -47,15 +73,16 @@ export const ActivityModal = ({
 	);
 
 	const onEndReached = useCallback(() => {
-		if (activityData?.has_more && activityData?.next_cursor) {
+		if (
+			activityData?.has_more &&
+			activityData?.next_cursor &&
+			!isActivityFetching
+		) {
 			setCursor(activityData.next_cursor);
-			refetch();
 		}
-	}, [activityData?.has_more, activityData?.next_cursor, refetch]);
+	}, [activityData?.has_more, activityData?.next_cursor, isActivityFetching]);
 
-	if (!activityData && isActivityLoading) {
-		return <ActivityIndicator size="large" color="blue" />;
-	}
+	const isInitialLoading = !activityData && isActivityLoading;
 
 	return (
 		<Modal
@@ -67,53 +94,84 @@ export const ActivityModal = ({
 			onRequestClose={() => setIsModalOpen(false)}
 		>
 			<ThemedView style={styles.modalContainer}>
-				<ThemedView>
-					<ThemedView
-						accessibilityLabel="Recent activity modal header"
-						accessibilityRole="header"
-						style={styles.header}
-					>
-						<ThemedText
-							accessibilityLabel="Recent activity"
-							accessibilityRole="text"
-							type="title"
+				<View
+					style={[
+						styles.contentWrapper,
+						isInitialLoading && styles.contentVisuallyHidden,
+					]}
+					pointerEvents={isInitialLoading ? "none" : "auto"}
+				>
+					<ThemedView>
+						<ThemedView
+							accessibilityLabel="Recent activity modal header"
+							accessibilityRole="header"
+							style={styles.header}
 						>
-							Recent Activity
-						</ThemedText>
-
-						<Pressable
-							accessibilityLabel="Done"
-							accessibilityRole="button"
-							style={styles.doneButton}
-							onPress={() => setIsModalOpen(false)}
-						>
-							<ThemedText type="defaultSemiBold" style={styles.doneButtonText}>
-								Done
+							<ThemedText
+								accessibilityLabel="Recent activity"
+								accessibilityRole="text"
+								type="title"
+							>
+								Recent Activity
 							</ThemedText>
-						</Pressable>
+
+							<Pressable
+								accessibilityLabel="Done"
+								accessibilityRole="button"
+								style={styles.doneButton}
+								onPress={() => setIsModalOpen(false)}
+							>
+								<ThemedText
+									type="defaultSemiBold"
+									style={styles.doneButtonText}
+								>
+									Done
+								</ThemedText>
+							</Pressable>
+						</ThemedView>
+						<Divider />
 					</ThemedView>
-					<Divider />
-				</ThemedView>
-				<FlatList
-					accessibilityLabel="Activity list"
-					accessibilityRole="list"
-					data={activityData?.items}
-					renderItem={renderItem}
-					keyExtractor={(item, index) => `${item.id}-${index}`}
-					initialNumToRender={10}
-					onEndReached={onEndReached}
-				/>
-				{isActivityFetching && (
-					<ThemedView style={styles.loadingContainer}>
-						<ActivityIndicator size="small" />
-						<ThemedText
-							accessibilityLabel="Loading more"
-							accessibilityRole="text"
-							style={styles.loadingText}
-						>
-							{"Loading more..."}
-						</ThemedText>
-					</ThemedView>
+					<FlatList
+						style={styles.list}
+						contentContainerStyle={styles.listContent}
+						accessibilityLabel="Activity list"
+						accessibilityRole="list"
+						data={activityData?.items ?? []}
+						renderItem={renderItem}
+						keyExtractor={(item, index) => `${item.id}-${index}`}
+						initialNumToRender={10}
+						onEndReached={onEndReached}
+						onEndReachedThreshold={0.2}
+					/>
+					{isActivityFetching && (
+						<ThemedView style={styles.loadingContainer}>
+							<ActivityIndicator size="small" />
+							<ThemedText
+								accessibilityLabel="Loading more"
+								accessibilityRole="text"
+								style={styles.loadingText}
+							>
+								{"Loading more..."}
+							</ThemedText>
+						</ThemedView>
+					)}
+				</View>
+				{isInitialLoading && (
+					<View
+						style={styles.skeletonOverlay}
+						pointerEvents="none"
+						testID="activity-modal-skeleton-overlay"
+					>
+						<Skeleton
+							isLoading
+							layout={ACTIVITY_MODAL_SKELETON_LAYOUT}
+							containerStyle={styles.skeletonContainer}
+							boneColor={colors.border}
+							highlightColor={colors.backgroundSecondary}
+							animationType="shiver"
+							animationDirection="horizontalLeft"
+						/>
+					</View>
 				)}
 			</ThemedView>
 		</Modal>
@@ -124,6 +182,31 @@ const styles = StyleSheet.create({
 	modalContainer: {
 		flex: 1,
 		padding: Spacing.screenPaddingHorizontal,
+		position: "relative",
+	},
+	contentWrapper: {
+		flex: 1,
+	},
+	contentVisuallyHidden: {
+		opacity: 0,
+	},
+	list: {
+		flex: 1,
+	},
+	listContent: {
+		flexGrow: 1,
+		paddingBottom: Spacing.sectionPaddingVertical,
+	},
+	skeletonOverlay: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		zIndex: 1,
+	},
+	skeletonContainer: {
+		padding: Spacing.sm,
 	},
 	header: {
 		flexDirection: "row",

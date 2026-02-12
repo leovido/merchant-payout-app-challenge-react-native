@@ -95,3 +95,143 @@ export const ACTIVITY_SKELETON_LAYOUT = [
 		borderRadius: BorderRadius.button,
 	},
 ] as ISkeletonProps["layout"];
+
+/**
+ * Skeleton layout matching ActivityModal structure:
+ * Header (title + Done button), divider, then list rows with left (type/description/date) and right (amount/status).
+ */
+export const ACTIVITY_MODAL_SKELETON_LAYOUT = [
+	{
+		key: "modal-header",
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		width: "100%",
+		minHeight: 32,
+		marginBottom: Spacing.sectionPaddingVertical,
+		children: [
+			{
+				key: "modal-title",
+				width: "60%",
+				height: "70%",
+				minHeight: 24,
+				borderRadius: BorderRadius.input,
+			},
+			{
+				key: "modal-done",
+				width: "18%",
+				height: "60%",
+				minHeight: 28,
+				borderRadius: BorderRadius.button,
+			},
+		],
+	},
+	{
+		key: "modal-divider",
+		width: "100%",
+		height: 1,
+		minHeight: 1,
+		marginBottom: Spacing.sm,
+		borderRadius: 0,
+	},
+	{
+		key: "modal-row-1",
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		width: "100%",
+		minHeight: 56,
+		marginBottom: Spacing.sm,
+		children: [
+			{
+				key: "modal-left-1",
+				width: "72%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+			{
+				key: "modal-right-1",
+				width: "25%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+		],
+	},
+	{
+		key: "modal-row-2",
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		width: "100%",
+		minHeight: 56,
+		marginBottom: Spacing.sm,
+		children: [
+			{
+				key: "modal-left-2",
+				width: "72%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+			{
+				key: "modal-right-2",
+				width: "25%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+		],
+	},
+	{
+		key: "modal-row-3",
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		width: "100%",
+		minHeight: 56,
+		marginBottom: Spacing.sm,
+		children: [
+			{
+				key: "modal-left-3",
+				width: "72%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+			{
+				key: "modal-right-3",
+				width: "25%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+		],
+	},
+	{
+		key: "modal-row-4",
+		flexDirection: "row" as const,
+		justifyContent: "space-between" as const,
+		alignItems: "center" as const,
+		width: "100%",
+		minHeight: 56,
+		marginBottom: Spacing.md,
+		children: [
+			{
+				key: "modal-left-4",
+				width: "72%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+			{
+				key: "modal-right-4",
+				width: "25%",
+				height: "70%",
+				minHeight: 40,
+				borderRadius: BorderRadius.input,
+			},
+		],
+	},
+] as ISkeletonProps["layout"];
