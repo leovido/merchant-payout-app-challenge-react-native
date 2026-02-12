@@ -69,9 +69,9 @@ describe("useBiometrics", () => {
 	});
 
 	describe("validateBiometricAuthentication", () => {
-		describe("when amount is below threshold (< £1,000)", () => {
+		describe("when amount is at or below threshold (≤ £1,000)", () => {
 			it.each<number>([
-				0, 50_000, 99_999,
+				0, 50_000, 99_999, 100_000,
 			])("returns true without prompting biometrics (amount: %s)", async (amount) => {
 				const spy = setBiometricSpy();
 				renderHook();
@@ -83,12 +83,13 @@ describe("useBiometrics", () => {
 			});
 		});
 
-		describe("when amount is at or above threshold (≥ £1,000)", () => {
+		describe("when amount is over threshold (> £1,000)", () => {
 			it("prompts biometrics and returns true when user authenticates", async () => {
 				const spy = setBiometricSpy();
 
-				const result =
-					await validateBiometricAuthentication(BIOMETRIC_THRESHOLD);
+				const result = await validateBiometricAuthentication(
+					BIOMETRIC_THRESHOLD + 1,
+				);
 
 				expect(spy).toHaveBeenCalledTimes(1);
 				expect(result).toBe(true);
@@ -97,8 +98,9 @@ describe("useBiometrics", () => {
 			it("prompts biometrics and returns false when auth fails", async () => {
 				setBiometricResult(false);
 
-				const result =
-					await validateBiometricAuthentication(BIOMETRIC_THRESHOLD);
+				const result = await validateBiometricAuthentication(
+					BIOMETRIC_THRESHOLD + 1,
+				);
 
 				expect(result).toBe(false);
 			});
@@ -125,7 +127,7 @@ describe("useBiometrics", () => {
 				errorHandler.default.mockReturnValue("Too many failed attempts.");
 
 				await expect(
-					validateBiometricAuthentication(BIOMETRIC_THRESHOLD),
+					validateBiometricAuthentication(BIOMETRIC_THRESHOLD + 1),
 				).rejects.toThrow("Too many failed attempts.");
 
 				expect(errorHandler.default).toHaveBeenCalledWith(nativeError);

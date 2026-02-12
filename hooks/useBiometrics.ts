@@ -6,7 +6,7 @@ import extractErrorMessage, {
 
 export const useBiometrics = () => {
 	const validateBiometricAuthentication = async (amount: number) => {
-		const requiresBiometricAuthentication = amount >= 100000;
+		const requiresBiometricAuthentication = amount > 100_000;
 
 		if (requiresBiometricAuthentication) {
 			try {
