@@ -1,3 +1,5 @@
+jest.mock("react-native-reanimated-skeleton");
+
 // Only set up MSW when available so unit tests can run without it
 let server;
 try {
