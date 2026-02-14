@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ActivitySection } from "@/features/activity/ActivitySection";
-import type { ActivityItem, PaginatedActivityResponse } from "@/types/api";
+import type { UsePaginatedActivityReturn } from "@/hooks/useActivityModal";
+import {
+	createActivityItem,
+	defaultPaginatedActivity,
+	defaultPaginatedData,
+} from "./test-fixtures";
 
 const mockUseGetPaginatedActivityQuery = jest.fn();
 
@@ -9,37 +14,18 @@ jest.mock("@/api/apiSlice", () => ({
 		mockUseGetPaginatedActivityQuery(args),
 }));
 
-const defaultActivityData: PaginatedActivityResponse = {
-	items: [],
-	next_cursor: null,
-	has_more: false,
-};
-
-function createActivityItem(overrides?: Partial<ActivityItem>): ActivityItem {
-	return {
-		id: "act-1",
-		type: "payout",
-		amount: -1000,
-		currency: "GBP",
-		date: "07/02/2025",
-		description: "Payout to bank",
-		status: "completed",
-		...overrides,
-	};
-}
-
 function renderActivitySection(
-	overrides?: Partial<{
-		data: PaginatedActivityResponse | undefined;
-		isLoading: boolean;
-	}>,
+	paginatedActivity: Partial<UsePaginatedActivityReturn>,
 ) {
-	const state = {
-		data: defaultActivityData,
-		isLoading: false,
-		...overrides,
+	const data = {
+		data: { ...paginatedActivity.activityData, ...paginatedActivity },
+		isLoading: paginatedActivity.isActivityLoading,
+		isFetching: paginatedActivity.isActivityFetching,
+		refetch: paginatedActivity.refetch,
+		cursor: paginatedActivity.cursor,
+		setCursor: paginatedActivity.setCursor,
 	};
-	mockUseGetPaginatedActivityQuery.mockReturnValue(state);
+	mockUseGetPaginatedActivityQuery.mockReturnValue(data);
 
 	return render(
 		<ActivitySection>
@@ -61,7 +47,7 @@ describe("ActivitySection", () => {
 	});
 
 	it("renders section with accessibility label and summary role", () => {
-		renderActivitySection();
+		renderActivitySection(defaultPaginatedActivity);
 
 		const section = screen.getByLabelText("Recent activity section");
 		expect(section).toBeOnTheScreen();
@@ -69,7 +55,7 @@ describe("ActivitySection", () => {
 	});
 
 	it("renders title with Recent activity label and text role", () => {
-		renderActivitySection();
+		renderActivitySection(defaultPaginatedActivity);
 
 		const title = screen.getByLabelText("Recent activity");
 		expect(title).toBeOnTheScreen();
@@ -78,7 +64,7 @@ describe("ActivitySection", () => {
 	});
 
 	it("renders Show more button with label and button role", () => {
-		renderActivitySection();
+		renderActivitySection(defaultPaginatedActivity);
 
 		const button = screen.getByLabelText("Show more activity");
 		expect(button).toBeOnTheScreen();
@@ -86,7 +72,7 @@ describe("ActivitySection", () => {
 	});
 
 	it("renders activity list with accessibility label and list role", () => {
-		renderActivitySection();
+		renderActivitySection(defaultPaginatedActivity);
 
 		const list = screen.getByLabelText("Recent activity list");
 		expect(list).toBeOnTheScreen();
@@ -94,7 +80,10 @@ describe("ActivitySection", () => {
 	});
 
 	it("when activity is empty, section and button are visible", () => {
-		renderActivitySection({ data: { ...defaultActivityData, items: [] } });
+		renderActivitySection({
+			...defaultPaginatedActivity,
+			activityData: { ...defaultPaginatedData, items: [] },
+		});
 
 		expect(screen.getByLabelText("Recent activity section")).toBeOnTheScreen();
 		expect(screen.getByLabelText("Show more activity")).toBeOnTheScreen();
@@ -106,11 +95,16 @@ describe("ActivitySection", () => {
 				id: "a1",
 				description: "Payout to bank",
 				amount: -500,
-				currency: "GBP",
 			}),
 		];
 		renderActivitySection({
-			data: { items, next_cursor: null, has_more: false },
+			...defaultPaginatedActivity,
+			activityData: {
+				...defaultPaginatedData,
+				items,
+				next_cursor: null,
+				has_more: false,
+			},
 		});
 
 		expect(screen.getByLabelText("Payout to bank")).toBeOnTheScreen();
@@ -118,7 +112,7 @@ describe("ActivitySection", () => {
 	});
 
 	it("when Show more is pressed, modal opens and shows Done button", () => {
-		renderActivitySection();
+		renderActivitySection(defaultPaginatedActivity);
 
 		const button = screen.getByLabelText("Show more activity");
 		fireEvent.press(button);

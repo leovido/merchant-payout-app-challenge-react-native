@@ -7,10 +7,11 @@ import {
 	View,
 } from "react-native";
 import Skeleton from "react-native-reanimated-skeleton";
-import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Divider } from "@/components/ui/Divider";
 import { BorderRadius, colors, Spacing } from "@/constants/theme";
+import { usePaginatedActivity } from "@/hooks/useActivityModal";
 import type { ActivityItem } from "@/types/api";
 import { ActivityListItem } from "./ActivityListItem";
 import { ActivityModal } from "./ActivityModal";
@@ -40,9 +41,8 @@ const useActivitySectionContext = () => {
 
 export function ActivitySection({ children }: { children: React.ReactNode }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const { data: activityData, isLoading } = useGetPaginatedActivityQuery({
+	const { activityData, isActivityLoading: isLoading } = usePaginatedActivity({
 		limit: 3,
-		cursor: "",
 	});
 
 	return (
@@ -141,9 +141,23 @@ ActivitySection.Button = function Button() {
 
 ActivitySection.Modal = function Modal() {
 	const { isModalOpen, setIsModalOpen } = useActivitySectionContext();
+	const paginatedActivity = usePaginatedActivity({
+		limit: 15,
+	});
 
 	return (
-		<ActivityModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+		<ActivityModal
+			paginatedActivity={paginatedActivity}
+			isModalOpen={isModalOpen}
+			setIsModalOpen={setIsModalOpen}
+		>
+			<ActivityModal.Content>
+				<ActivityModal.Header />
+				<Divider />
+				<ActivityModal.List />
+				<ActivityModal.LoadingMore />
+			</ActivityModal.Content>
+		</ActivityModal>
 	);
 };
 

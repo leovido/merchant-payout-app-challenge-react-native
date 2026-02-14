@@ -1,83 +1,60 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { Divider } from "@/components/ui/Divider";
 import { ActivityModal } from "@/features/activity/ActivityModal";
-import type { ActivityItem, PaginatedActivityResponse } from "@/types/api";
+import {
+	createActivityItem,
+	defaultPaginatedActivity,
+} from "@/features/activity/test-fixtures";
+import type { UsePaginatedActivityReturn } from "@/hooks/useActivityModal";
 
-const mockUseGetPaginatedActivityQuery = jest.fn();
-
-jest.mock("@/api/apiSlice", () => ({
-	useGetPaginatedActivityQuery: (args?: { cursor?: string }) =>
-		mockUseGetPaginatedActivityQuery(args),
-}));
-
-function createActivityItem(overrides?: Partial<ActivityItem>): ActivityItem {
-	return {
-		id: "act-1",
-		type: "payout",
-		amount: -500,
-		currency: "GBP",
-		date: "07/02/2025",
-		description: "Payout to bank",
-		status: "completed",
-		...overrides,
-	};
-}
-
-const defaultPaginatedData: PaginatedActivityResponse = {
-	items: [],
-	next_cursor: null,
-	has_more: false,
-};
-
-function renderActivityModal(
-	props: { isModalOpen: boolean; setIsModalOpen: (open: boolean) => void },
-	queryOverrides?: Partial<{
-		data: PaginatedActivityResponse | undefined;
-		isLoading: boolean;
-		isFetching: boolean;
-	}>,
-) {
-	const queryState = {
-		data: defaultPaginatedData,
-		isLoading: false,
-		isFetching: false,
-		refetch: jest.fn(),
-		...queryOverrides,
-	};
-	mockUseGetPaginatedActivityQuery.mockReturnValue(queryState);
-
+function renderActivityModal({
+	paginatedActivity,
+	isModalOpen,
+	setIsModalOpen,
+}: {
+	paginatedActivity: UsePaginatedActivityReturn;
+	isModalOpen: boolean;
+	setIsModalOpen: (isModalOpen: boolean) => void;
+}) {
 	return render(
 		<ActivityModal
-			isModalOpen={props.isModalOpen}
-			setIsModalOpen={props.setIsModalOpen}
-		/>,
+			paginatedActivity={paginatedActivity}
+			isModalOpen={isModalOpen}
+			setIsModalOpen={setIsModalOpen}
+		>
+			<ActivityModal.Content>
+				<ActivityModal.LoadingSkeleton
+					isLoading={paginatedActivity.isActivityLoading}
+				/>
+				<ActivityModal.Header />
+				<Divider />
+				<ActivityModal.List />
+				<ActivityModal.LoadingMore />
+			</ActivityModal.Content>
+		</ActivityModal>,
 	);
 }
 
 describe("ActivityModal", () => {
-	beforeEach(() => {
-		mockUseGetPaginatedActivityQuery.mockReset();
-	});
-
-	afterEach(() => {
-		jest.restoreAllMocks();
-	});
-
 	it("shows loading state when data is loading", () => {
-		renderActivityModal(
-			{ isModalOpen: true, setIsModalOpen: jest.fn() },
-			{ data: undefined, isLoading: true },
-		);
+		renderActivityModal({
+			paginatedActivity: {
+				...defaultPaginatedActivity,
+				isActivityLoading: true,
+			},
+			isModalOpen: true,
+			setIsModalOpen: jest.fn(),
+		});
 
-		expect(
-			screen.getByTestId("activity-modal-skeleton-overlay"),
-		).toBeOnTheScreen();
+		expect(screen.getByTestId("skeleton-placeholder")).toBeOnTheScreen();
 	});
 
 	it("when open with data, shows modal and header with accessibility labels", () => {
-		renderActivityModal(
-			{ isModalOpen: true, setIsModalOpen: jest.fn() },
-			{ data: defaultPaginatedData },
-		);
+		renderActivityModal({
+			paginatedActivity: defaultPaginatedActivity,
+			isModalOpen: true,
+			setIsModalOpen: jest.fn(),
+		});
 
 		expect(screen.getByLabelText("Recent activity modal")).toBeOnTheScreen();
 		expect(screen.getByLabelText("Recent activity")).toBeOnTheScreen();
@@ -91,15 +68,17 @@ describe("ActivityModal", () => {
 				type: "refund",
 				description: "Refund",
 				amount: 1000,
-				currency: "GBP",
-				date: "07/02/2025",
-				status: "completed",
 			}),
 		];
-		renderActivityModal(
-			{ isModalOpen: true, setIsModalOpen: jest.fn() },
-			{ data: { items, next_cursor: null, has_more: false } },
-		);
+
+		renderActivityModal({
+			paginatedActivity: {
+				...defaultPaginatedActivity,
+				activityData: { items, next_cursor: null, has_more: false },
+			},
+			isModalOpen: true,
+			setIsModalOpen: jest.fn(),
+		});
 
 		expect(screen.getByLabelText("Refund")).toBeOnTheScreen();
 		expect(screen.getByLabelText("Amount, £10.00")).toBeOnTheScreen();
@@ -107,10 +86,11 @@ describe("ActivityModal", () => {
 
 	it("when Done is pressed, calls setIsModalOpen with false", () => {
 		const setIsModalOpen = jest.fn();
-		renderActivityModal(
-			{ isModalOpen: true, setIsModalOpen },
-			{ data: defaultPaginatedData },
-		);
+		renderActivityModal({
+			paginatedActivity: defaultPaginatedActivity,
+			isModalOpen: true,
+			setIsModalOpen,
+		});
 
 		fireEvent.press(screen.getByLabelText("Done"));
 
@@ -118,10 +98,16 @@ describe("ActivityModal", () => {
 	});
 
 	it("when fetching more, shows Loading more text", () => {
-		renderActivityModal(
-			{ isModalOpen: true, setIsModalOpen: jest.fn() },
-			{ data: defaultPaginatedData, isFetching: true },
-		);
+		renderActivityModal({
+			paginatedActivity: {
+				...defaultPaginatedActivity,
+				isActivityFetching: true,
+				isActivityLoading: false,
+				activityData: undefined,
+			},
+			isModalOpen: true,
+			setIsModalOpen: jest.fn(),
+		});
 
 		expect(screen.getByText("Loading more...")).toBeOnTheScreen();
 	});
