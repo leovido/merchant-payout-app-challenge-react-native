@@ -5,7 +5,7 @@ import {
 	createActivityItem,
 	defaultPaginatedActivity,
 } from "@/features/activity/test-fixtures";
-import type { UsePaginatedActivityReturn } from "@/hooks/useActivityModal";
+import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 
 function renderActivityModal({
 	paginatedActivity,

@@ -14,7 +14,7 @@ import { ThemedView } from "@/components/themed-view";
 import { colors, Spacing, Typography } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
 import { ACTIVITY_MODAL_SKELETON_LAYOUT } from "@/features/activity/ActivitySkeletonLayout";
-import type { UsePaginatedActivityReturn } from "@/hooks/useActivityModal";
+import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import type { ActivityItem } from "@/types/api";
 
 export interface ActivityModalProps {

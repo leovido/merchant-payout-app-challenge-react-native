@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ActivitySection } from "@/features/activity/ActivitySection";
-import type { UsePaginatedActivityReturn } from "@/hooks/useActivityModal";
+import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import {
 	createActivityItem,
 	defaultPaginatedActivity,
