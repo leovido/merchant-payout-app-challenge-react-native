@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
@@ -9,52 +9,134 @@ import {
 	View,
 } from "react-native";
 import Skeleton from "react-native-reanimated-skeleton";
-import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Divider } from "@/components/ui/Divider";
 import { colors, Spacing, Typography } from "@/constants/theme";
 import { ActivityListItem } from "@/features/activity/ActivityListItem";
 import { ACTIVITY_MODAL_SKELETON_LAYOUT } from "@/features/activity/ActivitySkeletonLayout";
+import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import type { ActivityItem } from "@/types/api";
 
-export const ActivityModal = ({
-	isModalOpen,
-	setIsModalOpen,
-}: {
+export interface ActivityModalProps {
+	paginatedActivity: UsePaginatedActivityReturn;
 	isModalOpen: boolean;
 	setIsModalOpen: (isModalOpen: boolean) => void;
-}) => {
-	const [cursor, setCursor] = useState<string | null>(null);
-	const lastFetchedCursorRef = useRef<string | null>(null);
+	children: React.ReactNode;
+}
 
-	const {
-		data: activityData,
-		isLoading: isActivityLoading,
-		isFetching: isActivityFetching,
-		refetch,
-	} = useGetPaginatedActivityQuery(
-		{ limit: 15, cursor: cursor ?? undefined },
-		{ refetchOnMountOrArgChange: true },
+interface ActivityModalContextType {
+	paginatedActivity: UsePaginatedActivityReturn;
+	isModalOpen: boolean;
+	setIsModalOpen: (isModalOpen: boolean) => void;
+}
+
+const ActivityModalContext = createContext<
+	ActivityModalContextType | undefined
+>(undefined);
+
+const useActivityModalContext = () => {
+	const context = useContext(ActivityModalContext);
+	if (!context) {
+		throw new Error(
+			"useActivityModalContext must be used within an ActivityModal",
+		);
+	}
+	return context;
+};
+
+export const ActivityModal = ({
+	paginatedActivity,
+	isModalOpen,
+	setIsModalOpen,
+	children,
+}: ActivityModalProps) => {
+	return (
+		<ActivityModalContext.Provider
+			value={{
+				paginatedActivity,
+				isModalOpen,
+				setIsModalOpen,
+			}}
+		>
+			{children}
+		</ActivityModalContext.Provider>
 	);
+};
 
-	useEffect(() => {
-		if (!isModalOpen) {
-			setCursor(null);
-			lastFetchedCursorRef.current = null;
-		}
-	}, [isModalOpen]);
+ActivityModal.Content = function Content({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const {
+		paginatedActivity: { activityData, isActivityLoading },
+		isModalOpen,
+		setIsModalOpen,
+	} = useActivityModalContext();
 
-	useEffect(() => {
-		if (
-			cursor != null &&
-			cursor !== lastFetchedCursorRef.current &&
-			!isActivityFetching
-		) {
-			lastFetchedCursorRef.current = cursor;
-			refetch();
-		}
-	}, [cursor, isActivityFetching, refetch]);
+	const isInitialLoading =
+		activityData !== undefined && !activityData?.items && isActivityLoading;
+
+	return (
+		<Modal
+			accessibilityLabel="Recent activity modal"
+			presentationStyle="formSheet"
+			visible={isModalOpen}
+			animationType="slide"
+			onRequestClose={() => setIsModalOpen(false)}
+		>
+			<ThemedView style={styles.modalContainer}>
+				<View
+					style={[
+						styles.contentWrapper,
+						isInitialLoading && styles.contentVisuallyHidden,
+					]}
+					pointerEvents={isInitialLoading ? "none" : "auto"}
+				>
+					{children}
+				</View>
+				<ActivityModal.LoadingSkeleton isLoading={isInitialLoading} />
+			</ThemedView>
+		</Modal>
+	);
+};
+
+ActivityModal.Header = function Header() {
+	return (
+		<ThemedView style={styles.header}>
+			<ThemedText
+				accessibilityLabel="Recent activity"
+				accessibilityRole="text"
+				type="title"
+			>
+				Recent Activity
+			</ThemedText>
+			<ActivityModal.DoneButton />
+		</ThemedView>
+	);
+};
+
+ActivityModal.DoneButton = function DoneButton() {
+	const { setIsModalOpen } = useActivityModalContext();
+
+	return (
+		<Pressable
+			accessibilityLabel="Done"
+			accessibilityRole="button"
+			style={styles.doneButton}
+			onPress={() => setIsModalOpen(false)}
+		>
+			<ThemedText type="defaultSemiBold" style={styles.doneButtonText}>
+				Done
+			</ThemedText>
+		</Pressable>
+	);
+};
+
+ActivityModal.List = function List() {
+	const {
+		paginatedActivity: { activityData, isActivityFetching, setCursor },
+	} = useActivityModalContext();
 
 	const renderItem = useCallback(
 		(item: ListRenderItemInfo<ActivityItem>) => (
@@ -81,103 +163,69 @@ export const ActivityModal = ({
 			activityData?.next_cursor &&
 			!isActivityFetching
 		) {
-			setCursor(activityData.next_cursor);
+			setCursor(activityData?.next_cursor);
 		}
-	}, [activityData?.has_more, activityData?.next_cursor, isActivityFetching]);
-
-	const isInitialLoading = !activityData && isActivityLoading;
+	}, [
+		activityData?.has_more,
+		activityData?.next_cursor,
+		isActivityFetching,
+		setCursor,
+	]);
 
 	return (
-		<Modal
-			accessibilityLabel="Recent activity modal"
-			accessibilityRole="none"
-			presentationStyle="formSheet"
-			visible={isModalOpen}
-			animationType="slide"
-			onRequestClose={() => setIsModalOpen(false)}
-		>
-			<ThemedView style={styles.modalContainer}>
-				<View
-					style={[
-						styles.contentWrapper,
-						isInitialLoading && styles.contentVisuallyHidden,
-					]}
-					pointerEvents={isInitialLoading ? "none" : "auto"}
-				>
-					<ThemedView>
-						<ThemedView
-							accessibilityLabel="Recent activity modal header"
-							accessibilityRole="header"
-							style={styles.header}
-						>
-							<ThemedText
-								accessibilityLabel="Recent activity"
-								accessibilityRole="text"
-								type="title"
-							>
-								Recent Activity
-							</ThemedText>
+		<FlatList
+			style={styles.list}
+			contentContainerStyle={styles.listContent}
+			accessibilityLabel="Activity list"
+			accessibilityRole="list"
+			data={activityData?.items}
+			renderItem={renderItem}
+			keyExtractor={(item, index) => `${item.id}-${index}`}
+			initialNumToRender={10}
+			onEndReached={onEndReached}
+			onEndReachedThreshold={0.2}
+		/>
+	);
+};
 
-							<Pressable
-								accessibilityLabel="Done"
-								accessibilityRole="button"
-								style={styles.doneButton}
-								onPress={() => setIsModalOpen(false)}
-							>
-								<ThemedText
-									type="defaultSemiBold"
-									style={styles.doneButtonText}
-								>
-									Done
-								</ThemedText>
-							</Pressable>
-						</ThemedView>
-						<Divider />
-					</ThemedView>
-					<FlatList
-						style={styles.list}
-						contentContainerStyle={styles.listContent}
-						accessibilityLabel="Activity list"
-						accessibilityRole="list"
-						data={activityData?.items ?? []}
-						renderItem={renderItem}
-						keyExtractor={(item, index) => `${item.id}-${index}`}
-						initialNumToRender={10}
-						onEndReached={onEndReached}
-						onEndReachedThreshold={0.2}
-					/>
-					{isActivityFetching && (
-						<ThemedView style={styles.loadingContainer}>
-							<ActivityIndicator size="small" />
-							<ThemedText
-								accessibilityLabel="Loading more"
-								accessibilityRole="text"
-								style={styles.loadingText}
-							>
-								{"Loading more..."}
-							</ThemedText>
-						</ThemedView>
-					)}
-				</View>
-				{isInitialLoading && (
-					<View
-						style={styles.skeletonOverlay}
-						pointerEvents="none"
-						testID="activity-modal-skeleton-overlay"
-					>
-						<Skeleton
-							isLoading
-							layout={ACTIVITY_MODAL_SKELETON_LAYOUT}
-							containerStyle={styles.skeletonContainer}
-							boneColor={colors.border}
-							highlightColor={colors.backgroundSecondary}
-							animationType="shiver"
-							animationDirection="horizontalLeft"
-						/>
-					</View>
-				)}
+ActivityModal.LoadingSkeleton = function LoadingSkeleton({
+	isLoading,
+}: {
+	isLoading: boolean;
+}) {
+	return (
+		<View style={styles.skeletonOverlay} pointerEvents="none">
+			<Skeleton
+				isLoading={isLoading}
+				layout={ACTIVITY_MODAL_SKELETON_LAYOUT}
+				containerStyle={styles.skeletonContainer}
+				boneColor={colors.border}
+				highlightColor={colors.backgroundSecondary}
+				animationType="shiver"
+				animationDirection="horizontalLeft"
+			/>
+		</View>
+	);
+};
+
+ActivityModal.LoadingMore = function LoadingMore() {
+	const {
+		paginatedActivity: { isActivityFetching },
+	} = useActivityModalContext();
+
+	return (
+		isActivityFetching && (
+			<ThemedView style={styles.loadingContainer}>
+				<ActivityIndicator size="small" />
+				<ThemedText
+					accessibilityLabel="Loading more"
+					accessibilityRole="text"
+					style={styles.loadingText}
+				>
+					{"Loading more..."}
+				</ThemedText>
 			</ThemedView>
-		</Modal>
+		)
 	);
 };
 
