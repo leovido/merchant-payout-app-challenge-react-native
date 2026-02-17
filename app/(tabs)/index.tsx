@@ -45,14 +45,8 @@ const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
 	},
-	activityListItem: {
-		backgroundColor: colors.backgroundPrimary,
-	},
 	headerTitle: {
 		backgroundColor: colors.backgroundPrimary,
-	},
-	separator: {
-		backgroundColor: colors.textPrimary,
 	},
 	container: {
 		flex: 1,
