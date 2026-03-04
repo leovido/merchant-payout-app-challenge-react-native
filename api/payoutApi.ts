@@ -2,7 +2,7 @@ import { API_ROUTES } from "@/constants";
 import type { CreatePayoutRequest, PayoutResponse } from "@/types/api";
 import { apiSlice } from "./apiSlice";
 
-const extendedApi = apiSlice.injectEndpoints({
+export const payoutApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		createPayout: builder.mutation<PayoutResponse, CreatePayoutRequest>({
 			query: (body) => ({
@@ -15,4 +15,4 @@ const extendedApi = apiSlice.injectEndpoints({
 	}),
 });
 
-export const { useCreatePayoutMutation } = extendedApi;
+export const { useCreatePayoutMutation } = payoutApi;

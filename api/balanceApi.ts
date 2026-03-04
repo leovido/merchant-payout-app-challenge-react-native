@@ -2,7 +2,7 @@ import { API_ROUTES } from "@/constants";
 import type { BalanceResponse } from "@/types/api";
 import { apiSlice } from "./apiSlice";
 
-const extendedApi = apiSlice.injectEndpoints({
+export const balanceApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		getBalance: builder.query<BalanceResponse, void>({
 			query: () => API_ROUTES.balance,
@@ -11,4 +11,4 @@ const extendedApi = apiSlice.injectEndpoints({
 	}),
 });
 
-export const { useGetBalanceQuery } = extendedApi;
+export const { useGetBalanceQuery } = balanceApi;

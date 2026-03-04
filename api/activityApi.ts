@@ -2,7 +2,7 @@ import { API_ROUTES } from "@/constants";
 import type { PaginatedActivityResponse } from "@/types/api";
 import { apiSlice } from "./apiSlice";
 
-const extendedApi = apiSlice.injectEndpoints({
+export const activityApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		getPaginatedActivity: builder.query<
 			PaginatedActivityResponse,
@@ -48,4 +48,4 @@ const extendedApi = apiSlice.injectEndpoints({
 	}),
 });
 
-export const { useGetPaginatedActivityQuery } = extendedApi;
+export const { useGetPaginatedActivityQuery } = activityApi;
