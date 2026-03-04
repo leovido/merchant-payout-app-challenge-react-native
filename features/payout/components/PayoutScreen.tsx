@@ -18,21 +18,23 @@ import { Dropdown } from "react-native-element-dropdown";
 import ScreenSecurityModule from "screen-security/src/ScreenSecurityModule";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { IBAN_REGEX } from "@/constants";
 import { BorderRadius, colors, Shadows, Spacing } from "@/constants/theme";
 import {
 	setAmount as setPayoutAmountAction,
 	setCurrency as setPayoutCurrencyAction,
 	setDeviceId as setPayoutDeviceIdAction,
 	setIban as setPayoutIbanAction,
-} from "@/features/payout/payoutSlice";
+} from "@/features/payout/data/payoutSlice";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
-import { PayoutModalContent } from "./PayoutModal";
-
-/** IBAN REGEX: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
-const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
+import {
+	IBANInputValidator,
+	type InputValidator,
+} from "@/utils/InputValidator";
+import { PayoutModalContent } from "../components/PayoutModal";
 
 interface PayoutItem {
 	amount?: number;
@@ -264,17 +266,19 @@ PayoutScreen.CurrencyDropdown = function CurrencyDropdown() {
 PayoutScreen.IBANTextField = function IBANTextField() {
 	const { Keyboard } = useKeyboard();
 	const { iban, setIban, ibanInputRef } = usePayoutContext();
+	const validator: InputValidator = useMemo(() => new IBANInputValidator(), []);
+	const showIbanError = !validator.validateInput(iban);
 
 	const handleIbanChange = (text: string) => {
-		const cleaned = text
-			.replace(/\s/g, "")
-			.toUpperCase()
-			.replace(/[^A-Z0-9]/g, "")
-			.slice(0, 34);
-		setIban(cleaned);
+		if (validator.validateInput(text, IBAN_REGEX)) {
+			const cleaned = text
+				.replace(/\s/g, "")
+				.toUpperCase()
+				.replace(/[^A-Z0-9]/g, "")
+				.slice(0, 34);
+			setIban(cleaned);
+		}
 	};
-
-	const showIbanError = iban.length > 0 && !IBAN_REGEX.test(iban);
 
 	return (
 		<ThemedView style={styles.ibanTextFieldSection}>

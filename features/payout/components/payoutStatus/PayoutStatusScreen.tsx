@@ -43,11 +43,11 @@ export const PayoutStatusScreen = ({
 	);
 };
 
-PayoutStatusScreen.IconStatus = ({
+PayoutStatusScreen.IconStatus = function IconStatus({
 	customStyle,
 }: {
 	customStyle?: TextStyle | TextStyle[];
-}) => {
+}) {
 	const payout = usePayoutStatusContext();
 
 	return (
@@ -65,7 +65,10 @@ interface PayoutStatusTitleProps {
 	customStyle?: TextStyle | TextStyle[];
 }
 
-PayoutStatusScreen.Title = ({ title, customStyle }: PayoutStatusTitleProps) => {
+PayoutStatusScreen.Title = function Title({
+	title,
+	customStyle,
+}: PayoutStatusTitleProps) {
 	return (
 		<ThemedText style={[styles.title, customStyle]} type="subtitle">
 			{title}
@@ -78,10 +81,10 @@ interface PayoutStatusDescriptionProps {
 	customStyle?: TextStyle | TextStyle[];
 }
 
-PayoutStatusScreen.Description = ({
+PayoutStatusScreen.Description = function Description({
 	description,
 	customStyle,
-}: PayoutStatusDescriptionProps) => {
+}: PayoutStatusDescriptionProps) {
 	return (
 		<ThemedText style={[styles.description, customStyle]} type="default">
 			{description}
@@ -95,11 +98,11 @@ interface PayoutStatusButtonProps {
 	customStyle?: ViewStyle | ViewStyle[];
 }
 
-PayoutStatusScreen.Button = ({
+PayoutStatusScreen.Button = function Button({
 	title,
 	onPress,
 	customStyle,
-}: PayoutStatusButtonProps) => {
+}: PayoutStatusButtonProps) {
 	return (
 		<Pressable
 			accessibilityRole="button"
