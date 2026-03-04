@@ -3,8 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { colors, Spacing } from "@/constants/theme";
-import { ActivitySection } from "@/features/activity/ActivitySection";
-import { BalanceSection } from "@/features/balances/BalanceSection";
+import { ActivitySection } from "@/features/activity/components/ActivitySection";
+import { BalanceSection } from "@/features/balances/components/BalanceSection";
 
 export default function HomeScreen() {
 	return (

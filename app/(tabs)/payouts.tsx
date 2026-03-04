@@ -8,16 +8,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addScreenshotListener } from "screen-security";
-import { useCreatePayoutMutation } from "@/api/apiSlice";
-import { PayoutScreen } from "@/features/payout/PayoutScreen";
+import { useCreatePayoutMutation } from "@/api/payoutApi";
+import { PayoutScreen } from "@/features/payout/components/PayoutScreen";
+import { PayoutStatusCompletedScreen } from "@/features/payout/components/payoutStatus/PayoutStatusCompletedScreen";
+import { PayoutStatusFailedScreen } from "@/features/payout/components/payoutStatus/PayoutStatusFailedScreen";
 import {
 	resetPayoutState,
 	setFailurePayoutState,
 	setPayout,
 	setPayoutResponse,
-} from "@/features/payout/payoutSlice";
-import { PayoutStatusCompletedScreen } from "@/features/payout/payoutStatus/PayoutStatusCompletedScreen";
-import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutStatusFailedScreen";
+} from "@/features/payout/data/payoutSlice";
 import { useBiometrics } from "@/hooks/useBiometrics";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import extractErrorMessage from "@/utils/errorHandler";

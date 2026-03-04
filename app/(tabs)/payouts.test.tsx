@@ -4,9 +4,9 @@ import { Provider } from "react-redux";
 import screenSecurityMock from "screen-security";
 import { apiSlice } from "@/api/apiSlice";
 import PayoutsScreen from "@/app/(tabs)/payouts";
-import activityReducer from "@/features/activity/activitySlice";
-import balanceReducer from "@/features/balances/balanceSlice";
-import payoutReducer from "@/features/payout/payoutSlice";
+import activityReducer from "@/features/activity/data/activitySlice";
+import balanceReducer from "@/features/balances/data/balanceSlice";
+import payoutReducer from "@/features/payout/data/payoutSlice";
 import type { CreatePayoutRequest } from "@/types/api";
 
 const mockGetDeviceId = jest.fn();
@@ -14,26 +14,27 @@ let capturedPayoutBody: CreatePayoutRequest | undefined;
 
 const mockCreatePayout = jest.fn((body: CreatePayoutRequest) => {
 	capturedPayoutBody = body;
-	return Promise.resolve({
-		data: {
-			id: "1",
-			status: "completed",
-			amount: body.amount,
-			currency: body.currency,
-			iban: body.iban,
-			created_at: new Date().toISOString(),
-		},
-	});
+	const response = {
+		id: "1",
+		status: "completed" as const,
+		amount: body.amount,
+		currency: body.currency,
+		iban: body.iban,
+		created_at: new Date().toISOString(),
+	};
+	return { unwrap: () => Promise.resolve(response) };
 });
 
-jest.mock("@/api/apiSlice", () => {
-	const actual =
-		jest.requireActual<typeof import("@/api/apiSlice")>("@/api/apiSlice");
-	return {
-		...actual,
-		useCreatePayoutMutation: () => [mockCreatePayout, { isLoading: false }],
-	};
-});
+jest.mock("@/api/payoutApi", () => ({
+	useCreatePayoutMutation: () => [mockCreatePayout, { isLoading: false }],
+}));
+
+jest.mock("@/hooks/useBiometrics", () => ({
+	useBiometrics: () => ({
+		validateBiometricAuthentication: () => Promise.resolve(true),
+		handleBiometricsNotEnrolledError: () => Promise.resolve(),
+	}),
+}));
 
 const basePayoutState = {
 	amount: 100,

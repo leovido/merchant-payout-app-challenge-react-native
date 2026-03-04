@@ -81,9 +81,6 @@ if (typeof global.Event === "undefined") {
 				this.defaultPrevented = true;
 			}
 		}
-
-		stopPropagation() {}
-		stopImmediatePropagation() {}
 	};
 }
 
