@@ -1,8 +1,5 @@
-import { render } from "@testing-library/react-native";
-import { Divider } from "@/components/ui/Divider";
 import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import type { ActivityItem, PaginatedActivityResponse } from "@/types/api";
-import { ActivityModal } from "./ActivityModal";
 
 export function createActivityItem(
 	overrides?: Partial<ActivityItem>,

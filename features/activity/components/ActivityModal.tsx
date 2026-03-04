@@ -12,8 +12,8 @@ import Skeleton from "react-native-reanimated-skeleton";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { colors, Spacing, Typography } from "@/constants/theme";
-import { ActivityListItem } from "@/features/activity/ActivityListItem";
-import { ACTIVITY_MODAL_SKELETON_LAYOUT } from "@/features/activity/ActivitySkeletonLayout";
+import { ActivityListItem } from "@/features/activity/components/ActivityListItem";
+import { ACTIVITY_MODAL_SKELETON_LAYOUT } from "@/features/activity/constants/ActivitySkeletonLayout";
 import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import type { ActivityItem } from "@/types/api";
 

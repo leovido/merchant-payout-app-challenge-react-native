@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { Divider } from "@/components/ui/Divider";
-import { ActivityModal } from "@/features/activity/ActivityModal";
+import { ActivityModal } from "@/features/activity/components/ActivityModal";
 import {
 	createActivityItem,
 	defaultPaginatedActivity,
-} from "@/features/activity/test-fixtures";
+} from "@/features/activity/data/test-fixtures";
 import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 
 function renderActivityModal({

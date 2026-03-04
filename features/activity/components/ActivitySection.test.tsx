@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { ActivitySection } from "@/features/activity/ActivitySection";
+import { ActivitySection } from "@/features/activity/components/ActivitySection";
 import type { UsePaginatedActivityReturn } from "@/hooks/usePaginatedActivity";
 import {
 	createActivityItem,
 	defaultPaginatedActivity,
 	defaultPaginatedData,
-} from "./test-fixtures";
+} from "../data/test-fixtures";
 
 const mockUseGetPaginatedActivityQuery = jest.fn();
 
