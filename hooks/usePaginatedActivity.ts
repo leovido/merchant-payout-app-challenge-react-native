@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useGetPaginatedActivityQuery } from "@/api/apiSlice";
+import { useGetPaginatedActivityQuery } from "@/api/activityApi";
 
 export interface UsePaginatedActivityProps {
 	limit: number;

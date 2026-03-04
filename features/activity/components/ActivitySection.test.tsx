@@ -7,25 +7,21 @@ import {
 	defaultPaginatedData,
 } from "../data/test-fixtures";
 
-const mockUseGetPaginatedActivityQuery = jest.fn();
+const mockUsePaginatedActivity = jest.fn();
 
-jest.mock("@/api/apiSlice", () => ({
-	useGetPaginatedActivityQuery: (args?: { limit?: number; cursor?: string }) =>
-		mockUseGetPaginatedActivityQuery(args),
+jest.mock("@/hooks/usePaginatedActivity", () => ({
+	usePaginatedActivity: (_props: { limit?: number }) =>
+		mockUsePaginatedActivity(),
 }));
 
 function renderActivitySection(
 	paginatedActivity: Partial<UsePaginatedActivityReturn>,
 ) {
-	const data = {
-		data: { ...paginatedActivity.activityData, ...paginatedActivity },
-		isLoading: paginatedActivity.isActivityLoading,
-		isFetching: paginatedActivity.isActivityFetching,
-		refetch: paginatedActivity.refetch,
-		cursor: paginatedActivity.cursor,
-		setCursor: paginatedActivity.setCursor,
-	};
-	mockUseGetPaginatedActivityQuery.mockReturnValue(data);
+	const merged = {
+		...defaultPaginatedActivity,
+		...paginatedActivity,
+	} as UsePaginatedActivityReturn;
+	mockUsePaginatedActivity.mockReturnValue(merged);
 
 	return render(
 		<ActivitySection>
@@ -39,7 +35,7 @@ function renderActivitySection(
 
 describe("ActivitySection", () => {
 	beforeEach(() => {
-		mockUseGetPaginatedActivityQuery.mockReset();
+		mockUsePaginatedActivity.mockClear();
 	});
 
 	afterEach(() => {

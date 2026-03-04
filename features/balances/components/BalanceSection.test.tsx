@@ -1,12 +1,40 @@
 import { render, screen } from "@testing-library/react-native";
+import type { FetchState } from "@/app/types/types";
+import { FetchStatus } from "@/app/types/types";
 import { BalanceSection } from "@/features/balances/components/BalanceSection";
+import type { BalanceState } from "@/features/balances/data/balanceSlice";
+import { convertData } from "@/features/balances/helpers/convertData";
 import type { BalanceResponse } from "@/types/api";
 
-const mockUseGetBalanceQuery = jest.fn();
+const mockUseBalance = jest.fn();
 
-jest.mock("@/api/apiSlice", () => ({
-	useGetBalanceQuery: () => mockUseGetBalanceQuery(),
+jest.mock("@/hooks/useBalance", () => ({
+	useBalance: (_strategy: unknown) => mockUseBalance(),
 }));
+
+jest.mock("@/api/strategies/RTKFetchingStrategy", () => ({
+	RTKFetchingStrategy: jest.fn(),
+}));
+
+function toState(overrides: {
+	data?: BalanceResponse;
+	isLoading?: boolean;
+	isError?: boolean;
+}): FetchState<BalanceState> {
+	if (overrides.isLoading) return { status: FetchStatus.LOADING };
+	if (overrides.isError)
+		return { status: FetchStatus.ERROR, error: new Error() };
+	if (overrides.data != null)
+		return { status: FetchStatus.SUCCESS, data: convertData(overrides.data) };
+	return {
+		status: FetchStatus.SUCCESS,
+		data: convertData({
+			available_balance: 0,
+			pending_balance: 0,
+			currency: "GBP",
+		}),
+	};
+}
 
 function renderBalanceSection(
 	overrides?: Partial<{
@@ -15,13 +43,7 @@ function renderBalanceSection(
 		isError: boolean;
 	}>,
 ) {
-	const defaultState = {
-		data: undefined,
-		isLoading: false,
-		isError: false,
-		...overrides,
-	};
-	mockUseGetBalanceQuery.mockReturnValue(defaultState);
+	mockUseBalance.mockReturnValue({ state: toState(overrides ?? {}) });
 
 	return render(
 		<BalanceSection>
@@ -36,7 +58,7 @@ function renderBalanceSection(
 
 describe("BalanceSection", () => {
 	beforeEach(() => {
-		mockUseGetBalanceQuery.mockReset();
+		mockUseBalance.mockClear();
 	});
 
 	afterEach(() => {
@@ -57,20 +79,22 @@ describe("BalanceSection", () => {
 		expect(screen.getByText("Account Balance")).toBeOnTheScreen();
 	});
 
-	it("when loading, shows dash for both balance amounts", () => {
+	it("when loading, shows skeleton and does not render balance content", () => {
 		renderBalanceSection({ isLoading: true });
 
-		const availableAmounts = screen.getAllByText("-");
-		expect(availableAmounts.length).toBeGreaterThanOrEqual(2);
+		expect(screen.getByLabelText("Account balance")).toBeOnTheScreen();
+		expect(screen.queryByText("Account Balance")).not.toBeOnTheScreen();
 	});
 
-	it("when loading, exposes loading state in accessibility labels", () => {
+	it("when loading, BalanceType rows with loading labels are not rendered", () => {
 		renderBalanceSection({ isLoading: true });
 
 		expect(
-			screen.getByLabelText("Available balance, loading"),
-		).toBeOnTheScreen();
-		expect(screen.getByLabelText("Pending balance, loading")).toBeOnTheScreen();
+			screen.queryByLabelText("Available balance, loading"),
+		).not.toBeOnTheScreen();
+		expect(
+			screen.queryByLabelText("Pending balance, loading"),
+		).not.toBeOnTheScreen();
 	});
 
 	it("when error, BalanceTypeContainer shows error message", () => {

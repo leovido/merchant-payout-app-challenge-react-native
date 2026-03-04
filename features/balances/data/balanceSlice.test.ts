@@ -7,7 +7,6 @@ describe("balanceSlice", () => {
 				availableBalance: 10000,
 				pendingBalance: 500,
 				currency: "GBP" as const,
-				loading: "idle",
 			};
 
 			const state = balanceReducer(undefined, setBalance(payload));
@@ -22,7 +21,6 @@ describe("balanceSlice", () => {
 				availableBalance: 0,
 				pendingBalance: 0,
 				currency: "EUR" as const,
-				loading: "succeeded",
 			};
 
 			const state = balanceReducer(undefined, setBalance(payload));
@@ -37,14 +35,12 @@ describe("balanceSlice", () => {
 				availableBalance: 1000,
 				pendingBalance: 200,
 				currency: "GBP" as const,
-				loading: "succeeded",
 			};
 			const previousState = balanceReducer(undefined, setBalance(givenState));
 			const newPayload: BalanceState = {
 				availableBalance: 5000,
 				pendingBalance: 1000,
 				currency: "EUR" as const,
-				loading: "succeeded",
 			};
 
 			const state = balanceReducer(previousState, setBalance(newPayload));

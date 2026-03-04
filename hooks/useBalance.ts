@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import type { DataFetchingStrategy } from "@/api/strategies/DataFetchingStrategy";
 import type { FetchState } from "@/app/types/types";
-import { transition } from "@/app/types/types";
+import { FetchEventType, FetchStatus, transition } from "@/app/types/types";
 import type { BalanceState } from "@/features/balances/data/balanceSlice";
 import { convertData } from "@/features/balances/helpers/convertData";
 
 export function useBalance<S extends DataFetchingStrategy>(strategy: S) {
 	const [state, setState] = useState<FetchState<BalanceState>>({
-		status: "idle",
+		status: FetchStatus.IDLE,
 	});
 
 	useEffect(() => {
 		async function run() {
-			setState((prev) => transition(prev, { type: "FETCH" }));
+			setState((prev) => transition(prev, { type: FetchEventType.FETCH }));
 			try {
 				const data = await strategy.fetchBalance();
 				const convertedData = convertData(data);
 
-				setState({ status: "success", data: convertedData });
+				setState({ status: FetchStatus.SUCCESS, data: convertedData });
 			} catch (e) {
 				setState({
-					status: "error",
+					status: FetchStatus.ERROR,
 					error: e instanceof Error ? e : new Error(String(e)),
 				});
 			}

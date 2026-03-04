@@ -13,9 +13,9 @@ import { Divider } from "@/components/ui/Divider";
 import { BorderRadius, colors, Spacing } from "@/constants/theme";
 import { usePaginatedActivity } from "@/hooks/usePaginatedActivity";
 import type { ActivityItem } from "@/types/api";
+import { ACTIVITY_SKELETON_LAYOUT } from "../constants/ActivitySkeletonLayout";
 import { ActivityListItem } from "./ActivityListItem";
 import { ActivityModal } from "./ActivityModal";
-import { ACTIVITY_SKELETON_LAYOUT } from "./ActivitySkeletonLayout";
 
 const ActivitySectionContext = createContext<{
 	activity?: ActivityItem[];
