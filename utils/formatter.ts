@@ -1,4 +1,5 @@
 import type { Currency } from "@/types/api";
+import type { FormattedAmountWithCurrency } from "@/types/domain";
 
 export const currencyFormatter = (currency: Currency): string => {
 	switch (currency) {
@@ -14,7 +15,7 @@ export const currencyFormatter = (currency: Currency): string => {
 export const formatCurrency = (
 	amountInMinorUnits: number,
 	currency: Currency,
-): string => {
+): FormattedAmountWithCurrency => {
 	const amount = amountInMinorUnits
 		? amountInMinorUnits / 100
 		: amountInMinorUnits;
@@ -23,18 +24,18 @@ export const formatCurrency = (
 		return new Intl.NumberFormat("en-GB", {
 			style: "currency",
 			currency: "GBP",
-		}).format(amount);
+		}).format(amount) as FormattedAmountWithCurrency;
 	}
 	if (currency === "EUR") {
 		return new Intl.NumberFormat("en-EUR", {
 			style: "currency",
 			currency: "EUR",
-		}).format(amount);
+		}).format(amount) as FormattedAmountWithCurrency;
 	}
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: currency,
-	}).format(amount);
+	}).format(amount) as FormattedAmountWithCurrency;
 };
 
 export const formatCurrencyForInput = (amount: number): string => {
