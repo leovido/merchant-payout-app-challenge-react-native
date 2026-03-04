@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react-native";
-import { BalanceSection } from "@/features/balances/BalanceSection";
+import { BalanceSection } from "@/features/balances/components/BalanceSection";
 import type { BalanceResponse } from "@/types/api";
 
 const mockUseGetBalanceQuery = jest.fn();
