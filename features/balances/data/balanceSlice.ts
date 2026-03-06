@@ -36,15 +36,9 @@ export const balanceSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(fetchBalance.rejected, (state, _action) => {
-			state.status = "error";
-		});
-		builder.addCase(fetchBalance.fulfilled, (state, _action) => {
-			state.status = "success";
-		});
-		builder.addCase(fetchBalance.pending, (state, _action) => {
-			state.status = "loading";
-		});
+		builder.addCase(fetchBalance.rejected, (state, _action) => {});
+		builder.addCase(fetchBalance.fulfilled, (state, _action) => {});
+		builder.addCase(fetchBalance.pending, (state, _action) => {});
 	},
 });
 
