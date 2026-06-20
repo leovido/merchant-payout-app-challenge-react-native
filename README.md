@@ -157,7 +157,7 @@ Your solution will be evaluated based on:
 
 * Use a numeric input field for the payout amount.
 * Use a dropdown to select the currency (`GBP` or `EUR`). The currency can be different from the merchant's account currency.
-* Capture the destination IBAN (e.g., `FR1212345123451234567A12310131231231231`).
+* Capture the destination IBAN (e.g., `FR5417445072279J8QHG0NRDK69`).
 * Ensure the form remains usable when the keyboard is visible.
 * Ensure the "Confirm" button is disabled if the input is empty, zero, or negative.
 * Display a confirmation screen summarizing the transaction before execution (as shown in the reference images).
