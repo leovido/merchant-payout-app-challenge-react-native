@@ -285,7 +285,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 			<TextInput
 				ref={ibanInputRef}
 				style={[styles.input, showIbanError && styles.inputError]}
-				placeholder="FR1212345123451234567A12310131231231231"
+				placeholder="FR5417445072279J8QHG0NRDK69"
 				placeholderTextColor={colors.textPlaceholder}
 				autoCapitalize="characters"
 				autoCorrect={false}
