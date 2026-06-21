@@ -1,3 +1,5 @@
+reference/
+
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -8,6 +10,7 @@ yarn-error.log*
 .expo/
 .expo-shared/
 dist/
+dist-bundle-analysis/
 web-build/
 
 # Native
