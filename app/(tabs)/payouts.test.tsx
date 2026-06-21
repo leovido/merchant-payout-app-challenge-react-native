@@ -38,7 +38,7 @@ jest.mock("@/api/apiSlice", () => {
 const basePayoutState = {
 	amount: 100,
 	currency: "GBP" as const,
-	iban: "FR1212345123451234567A12310131231231",
+	iban: "FR1420041010050500013M02606",
 	formattedAmount: "1.00",
 	payoutResponse: undefined,
 	errorMessage: undefined,

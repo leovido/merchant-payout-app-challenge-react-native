@@ -24,7 +24,7 @@ const PayoutModalContext = createContext<PayoutModalProps>({
 	iban: "",
 });
 
-function usePayoutModalContext() {
+function _usePayoutModalContext() {
 	const context = useContext(PayoutModalContext);
 	if (!context) {
 		throw new Error("usePayoutModalContext must be used within a PayoutModal");

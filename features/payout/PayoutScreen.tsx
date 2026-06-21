@@ -29,10 +29,8 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
+import { IBAN_ERROR_MESSAGES, parseIban } from "@/utils/iban";
 import { PayoutModalContent } from "./PayoutModal";
-
-/** IBAN REGEX: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
-const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
 
 interface PayoutItem {
 	amount?: number;
@@ -274,7 +272,11 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 		setIban(cleaned);
 	};
 
-	const showIbanError = iban.length > 0 && !IBAN_REGEX.test(iban);
+	const ibanResult = parseIban(iban);
+	const showIbanError = iban.length > 0 && !ibanResult.ok;
+	const ibanErrorMessage = ibanResult.ok
+		? undefined
+		: IBAN_ERROR_MESSAGES[ibanResult.error];
 
 	return (
 		<ThemedView style={styles.ibanTextFieldSection}>
@@ -300,9 +302,9 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 			<ThemedText style={styles.ibanTextFieldHint} type="subtitle">
 				Enter the destination bank account IBAN.
 			</ThemedText>
-			{showIbanError && (
+			{showIbanError && ibanErrorMessage && (
 				<ThemedText style={styles.ibanErrorText} type="subtitle">
-					Enter a valid IBAN (e.g. GB82WEST12345698765432).
+					{ibanErrorMessage}
 				</ThemedText>
 			)}
 		</ThemedView>
@@ -318,9 +320,9 @@ PayoutScreen.ConfirmButton = function ConfirmButton({
 }: ConfirmButtonProps) {
 	const { amount, iban } = usePayoutContext();
 
-	const isDisabled = iban.length === 0 || amount === undefined || amount <= 0;
+	const isDisabled = !parseIban(iban).ok || amount === undefined || amount <= 0;
 
-	const onPressConfirm = async () => {
+	const onPressConfirm = () => {
 		setIsModalVisible(true);
 	};
 
