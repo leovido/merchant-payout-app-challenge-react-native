@@ -265,9 +265,8 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 
 	const handleIbanChange = (text: string) => {
 		const cleaned = text
-			.replace(/\s/g, "")
 			.toUpperCase()
-			.replace(/[^A-Z0-9]/g, "")
+			.replace(/[^A-Z0-9\s]/g, "")
 			.slice(0, 34);
 		setIban(cleaned);
 	};
@@ -287,7 +286,7 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 			<TextInput
 				ref={ibanInputRef}
 				style={[styles.input, showIbanError && styles.inputError]}
-				placeholder="FR5417445072279J8QHG0NRDK69"
+				placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
 				placeholderTextColor={colors.textPlaceholder}
 				autoCapitalize="characters"
 				autoCorrect={false}
