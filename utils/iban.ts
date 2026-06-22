@@ -93,7 +93,7 @@ const IBAN_COUNTRY_LENGTHS = {
 type IbanCountryCode = keyof typeof IBAN_COUNTRY_LENGTHS;
 
 /** Structural pattern: 2-letter country, 2 check digits, then alphanumeric BBAN. */
-const IBAN_STRUCTURE = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/;
+const IBAN_STRUCTURE = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
 
 declare const ibanBrand: unique symbol;
 
