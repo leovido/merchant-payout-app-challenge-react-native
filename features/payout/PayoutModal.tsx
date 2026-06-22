@@ -24,14 +24,6 @@ const PayoutModalContext = createContext<PayoutModalProps>({
 	iban: "",
 });
 
-function _usePayoutModalContext() {
-	const context = useContext(PayoutModalContext);
-	if (!context) {
-		throw new Error("usePayoutModalContext must be used within a PayoutModal");
-	}
-	return context;
-}
-
 interface PayoutModalContentProps {
 	payout: PayoutModalProps;
 	children: React.ReactNode;
