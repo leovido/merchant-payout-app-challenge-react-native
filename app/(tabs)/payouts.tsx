@@ -38,7 +38,7 @@ export default function PayoutsScreen() {
 	};
 
 	const requestPayout = async () => {
-		const result = parseIban(payout.iban);
+		const result = parseIban(payout.iban ?? "");
 		if (!result.ok) return;
 
 		const data = await createPayoutResponse({
