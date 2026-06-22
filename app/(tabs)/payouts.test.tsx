@@ -125,7 +125,7 @@ describe("PayoutsScreen device_id in request body", () => {
 	});
 
 	it("omits device_id when native module returns undefined (e.g. unavailable)", async () => {
-		mockGetDeviceId.mockReturnValue(undefined as unknown as string);
+		mockGetDeviceId.mockReturnValue(undefined);
 		const testStore = createTestStore(undefined);
 		renderPayoutsWithStore(testStore);
 

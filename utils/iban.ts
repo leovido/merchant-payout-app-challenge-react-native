@@ -161,19 +161,21 @@ const formatIban = (normalized: string): string =>
  */
 const mod97 = (iban: string): number => {
 	const rearranged = iban.slice(4) + iban.slice(0, 4);
-	let remainder = 0;
-	for (const char of rearranged) {
-		const code = char.charCodeAt(0);
-		// 0-9 → "0".."9", A-Z → "10".."35"
-		const value =
-			code >= 65 && code <= 90
-				? (code - 55).toString()
-				: String.fromCharCode(code);
-		for (const digit of value) {
-			remainder = (remainder * 10 + (digit.charCodeAt(0) - 48)) % 97;
-		}
-	}
-	return remainder;
+
+	const numeric = [...rearranged]
+		.map((char) => {
+			const code = char.codePointAt(0);
+			if (code === undefined) {
+				return undefined;
+			}
+			return code >= 65 && code <= 90 ? String(code - 55) : char;
+		})
+		.join("");
+
+	return [...numeric].reduce(
+		(remainder, digit) => (remainder * 10 + Number(digit)) % 97,
+		0,
+	);
 };
 
 /**
