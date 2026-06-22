@@ -21,6 +21,7 @@ import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutS
 import { useBiometrics } from "@/hooks/useBiometrics";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import extractErrorMessage from "@/utils/errorHandler";
+import { parseIban } from "@/utils/iban";
 
 export default function PayoutsScreen() {
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -37,10 +38,13 @@ export default function PayoutsScreen() {
 	};
 
 	const requestPayout = async () => {
+		const result = parseIban(payout.iban);
+		if (!result.ok) return;
+
 		const data = await createPayoutResponse({
 			amount: payout.amount ?? 0,
 			currency: payout.currency ?? "GBP",
-			iban: payout.iban ?? "",
+			iban: result.iban.value,
 			...(payout.device_id && { device_id: payout.device_id }),
 		}).unwrap();
 
