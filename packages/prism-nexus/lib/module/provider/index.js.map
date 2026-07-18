@@ -1,0 +1,1 @@
+{"version":3,"names":["createHydrationDispatch","HydratorProvider","useHydrator","useHydrationController"],"sourceRoot":"../../../src","sources":["provider/index.ts"],"mappings":";;AAKA,SAASA,uBAAuB,QAAQ,eAAY;AAKpD,SAASC,gBAAgB,EAAEC,WAAW,QAAQ,uBAAoB;AAKlE,SAASC,sBAAsB,QAAQ,6BAA0B","ignoreList":[]}

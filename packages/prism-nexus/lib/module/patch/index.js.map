@@ -1,0 +1,1 @@
+{"version":3,"names":["applyPatch","computeDiff","deepEqual","appendPointer","buildPointer","escapeToken","parsePointer","unescapeToken"],"sourceRoot":"../../../src","sources":["patch/index.ts"],"mappings":";;AAAA,SAASA,UAAU,QAAQ,iBAAc;AACzC,SAASC,WAAW,EAAEC,SAAS,QAAQ,WAAQ;AAC/C,SACEC,aAAa,EACbC,YAAY,EACZC,WAAW,EACXC,YAAY,EACZC,aAAa,QACR,kBAAe","ignoreList":[]}

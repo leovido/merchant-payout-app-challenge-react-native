@@ -9,13 +9,16 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!**/ios/",
-			"!**/android/",
-			"!**/node_modules/",
-			"!**/coverage/",
-			"!**/.expo/",
-			"!**/dist/",
-			"!**/web-build/"
+			"!**/ios",
+			"!**/android",
+			"!**/node_modules",
+			"!**/coverage",
+			"!**/.expo",
+			"!**/dist",
+			"!**/web-build",
+			"!!**/.pnpm-store",
+			"!!**/packages",
+			"!!**/screen-security"
 		]
 	},
 	"formatter": {

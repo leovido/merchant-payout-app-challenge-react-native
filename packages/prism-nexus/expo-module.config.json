@@ -1,0 +1,10 @@
+{
+  "platforms": ["android", "apple"],
+  "apple": {
+    "modules": ["PrismNexusHydratorModule"],
+    "podspecPath": "PrismNexus.podspec"
+  },
+  "android": {
+    "modules": ["com.prismnexus.hydrator.PrismNexusHydratorModule"]
+  }
+}
