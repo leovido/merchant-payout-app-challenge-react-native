@@ -1,36 +1,52 @@
+import { configureStore } from "@reduxjs/toolkit";
 import { render, screen } from "@testing-library/react-native";
+import { Provider } from "react-redux";
 import { BalanceSection } from "@/features/balances/BalanceSection";
+import balanceReducer from "@/features/balances/balanceSlice";
 import type { BalanceResponse } from "@/types/api";
 
 const mockUseGetBalanceQuery = jest.fn();
 
-jest.mock("@/api/apiSlice", () => ({
-	useGetBalanceQuery: () => mockUseGetBalanceQuery(),
-}));
+jest.mock("@/api/apiSlice", () => {
+	const actual = jest.requireActual("@/api/apiSlice");
+	return {
+		...actual,
+		useGetBalanceQuery: () => mockUseGetBalanceQuery(),
+	};
+});
 
 function renderBalanceSection(
 	overrides?: Partial<{
 		data: BalanceResponse | undefined;
 		isLoading: boolean;
 		isError: boolean;
+		hydratedBalance?: BalanceResponse;
 	}>,
 ) {
+	const { hydratedBalance, ...queryOverrides } = overrides ?? {};
 	const defaultState = {
 		data: undefined,
 		isLoading: false,
 		isError: false,
-		...overrides,
+		...queryOverrides,
 	};
 	mockUseGetBalanceQuery.mockReturnValue(defaultState);
 
+	const store = configureStore({
+		reducer: { balance: balanceReducer },
+		preloadedState: hydratedBalance ? { balance: hydratedBalance } : undefined,
+	});
+
 	return render(
-		<BalanceSection>
-			<BalanceSection.Title />
-			<BalanceSection.BalanceTypeContainer>
-				<BalanceSection.BalanceType type="Available" />
-				<BalanceSection.BalanceType type="Pending" />
-			</BalanceSection.BalanceTypeContainer>
-		</BalanceSection>,
+		<Provider store={store}>
+			<BalanceSection>
+				<BalanceSection.Title />
+				<BalanceSection.BalanceTypeContainer>
+					<BalanceSection.BalanceType type="Available" />
+					<BalanceSection.BalanceType type="Pending" />
+				</BalanceSection.BalanceTypeContainer>
+			</BalanceSection>
+		</Provider>,
 	);
 }
 
@@ -57,20 +73,37 @@ describe("BalanceSection", () => {
 		expect(screen.getByText("Account Balance")).toBeOnTheScreen();
 	});
 
-	it("when loading, shows dash for both balance amounts", () => {
+	it("when loading without hydrated balance, shows dash for both balance amounts", () => {
 		renderBalanceSection({ isLoading: true });
 
 		const availableAmounts = screen.getAllByText("-");
 		expect(availableAmounts.length).toBeGreaterThanOrEqual(2);
 	});
 
-	it("when loading, exposes loading state in accessibility labels", () => {
+	it("when loading without hydrated balance, exposes loading state in accessibility labels", () => {
 		renderBalanceSection({ isLoading: true });
 
 		expect(
 			screen.getByLabelText("Available balance, loading"),
 		).toBeOnTheScreen();
 		expect(screen.getByLabelText("Pending balance, loading")).toBeOnTheScreen();
+	});
+
+	it("when loading with hydrated balance, shows last-known amounts immediately", () => {
+		renderBalanceSection({
+			isLoading: true,
+			hydratedBalance: {
+				available_balance: 10000,
+				pending_balance: 500,
+				currency: "GBP",
+			},
+		});
+
+		expect(screen.getByText("£100.00")).toBeOnTheScreen();
+		expect(screen.getByText("£5.00")).toBeOnTheScreen();
+		expect(
+			screen.getByLabelText("Available balance, £100.00"),
+		).toBeOnTheScreen();
 	});
 
 	it("when error, BalanceTypeContainer shows error message", () => {

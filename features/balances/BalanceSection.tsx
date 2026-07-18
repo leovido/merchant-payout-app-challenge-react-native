@@ -1,14 +1,16 @@
 import type { ReactNode } from "react";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import Skeleton from "react-native-reanimated-skeleton";
 import { useGetBalanceQuery } from "@/api/apiSlice";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { colors, Spacing, Typography } from "@/constants/theme";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { BalanceResponse } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { BALANCE_SKELETON_LAYOUT } from "./BalanceSkeletonLayout";
+import { setBalance } from "./balanceSlice";
 
 const BalanceSectionContext = createContext<{
 	balance?: BalanceResponse;
@@ -29,12 +31,33 @@ const useBalanceSectionContext = () => {
 	return context;
 };
 
+function hasHydratedBalance(balance: BalanceResponse): boolean {
+	return (
+		balance.available_balance !== 0 ||
+		balance.pending_balance !== 0 ||
+		balance.currency !== "GBP"
+	);
+}
+
 export function BalanceSection({ children }: { children: ReactNode }) {
-	const { data: balance, isLoading, isError } = useGetBalanceQuery();
+	const dispatch = useAppDispatch();
+	const hydratedBalance = useAppSelector((state) => state.balance);
+	const { data: queryBalance, isLoading, isError } = useGetBalanceQuery();
+
+	useEffect(() => {
+		if (queryBalance) {
+			dispatch(setBalance(queryBalance));
+		}
+	}, [dispatch, queryBalance]);
+
+	const balance =
+		queryBalance ??
+		(hasHydratedBalance(hydratedBalance) ? hydratedBalance : undefined);
+	const showSkeleton = isLoading && !balance;
 
 	const balanceContext = useMemo(
-		() => ({ balance, isLoading, isError }),
-		[balance, isLoading, isError],
+		() => ({ balance, isLoading: showSkeleton, isError }),
+		[balance, showSkeleton, isError],
 	);
 
 	return (
@@ -45,12 +68,12 @@ export function BalanceSection({ children }: { children: ReactNode }) {
 				style={styles.accountBalanceSection}
 			>
 				<View
-					style={isLoading ? styles.contentVisuallyHidden : undefined}
-					pointerEvents={isLoading ? "none" : "auto"}
+					style={showSkeleton ? styles.contentVisuallyHidden : undefined}
+					pointerEvents={showSkeleton ? "none" : "auto"}
 				>
 					{children}
 				</View>
-				{isLoading && (
+				{showSkeleton && (
 					<View style={styles.skeletonOverlay} pointerEvents="none">
 						<Skeleton
 							isLoading
