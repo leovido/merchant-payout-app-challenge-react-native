@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
+import { BalanceHydrationProvider } from "@/features/hydration/BalanceHydrationProvider";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useMSW } from "@/mocks/useMSW";
 import { store } from "@/store/store";
@@ -34,12 +35,16 @@ export default function RootLayout() {
 
 	return (
 		<Provider store={store}>
-			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<SafeAreaProvider>
-					<RootNavigator />
-				</SafeAreaProvider>
-				<StatusBar style="auto" />
-			</ThemeProvider>
+			<BalanceHydrationProvider>
+				<ThemeProvider
+					value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+				>
+					<SafeAreaProvider>
+						<RootNavigator />
+					</SafeAreaProvider>
+					<StatusBar style="auto" />
+				</ThemeProvider>
+			</BalanceHydrationProvider>
 		</Provider>
 	);
 }
