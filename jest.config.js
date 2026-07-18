@@ -1,5 +1,6 @@
 module.exports = {
 	preset: "jest-expo",
+	testPathIgnorePatterns: ["/node_modules/", "/packages/", "/screen-security/"],
 	moduleNameMapper: {
 		// Force msw/node in Jest (jest-expo resolves with "react-native" and msw/node is null there)
 		"^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
@@ -7,6 +8,9 @@ module.exports = {
 		"^screen-security$": "<rootDir>/__mocks__/screen-security.js",
 		"^screen-security/src/ScreenSecurityModule$":
 			"<rootDir>/__mocks__/screen-security.js",
+		// Avoid TurboModuleRegistry.getEnforcing('PrismNexus') in Jest
+		"^.*/NativePrismNexus(\\.(ts|js))?$":
+			"<rootDir>/__mocks__/NativePrismNexus.js",
 	},
 	transformIgnorePatterns: [
 		// Match both flat node_modules and pnpm's .pnpm store; allow ESM deps (immer, @reduxjs/toolkit, msw, react-redux, prism-nexus) to be transformed
