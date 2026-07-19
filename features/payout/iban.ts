@@ -1,13 +1,3 @@
-/**
- * IBAN parsing following the "parse, don't validate" principle.
- *
- * Rather than answering a yes/no question about a raw string, `parseIban` turns
- * untrusted input into a branded `Iban` value (plus its structural parts). Once
- * you hold an `Iban`, the type system guarantees it already passed ISO 13616
- * structure, the per-country length table, and the ISO 7064 mod-97-10 checksum —
- * so downstream code never has to re-check it.
- */
-
 const IBAN_COUNTRY_LENGTHS = {
 	AD: 24,
 	AE: 23,
@@ -92,17 +82,10 @@ const IBAN_COUNTRY_LENGTHS = {
 
 type IbanCountryCode = keyof typeof IBAN_COUNTRY_LENGTHS;
 
-/** Structural pattern: 2-letter country, 2 check digits, then alphanumeric BBAN. */
 const IBAN_STRUCTURE = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
 
 declare const ibanBrand: unique symbol;
 
-/**
- * A string proven to be a normalized, valid IBAN.
- *
- * The brand makes this type unconstructable outside this module: the only way
- * to obtain an `Iban` is through `parseIban`, so holding one is proof of validity.
- */
 export type Iban = string & { readonly [ibanBrand]: true };
 
 export const IbanParseError = {
@@ -129,13 +112,10 @@ export const IBAN_ERROR_MESSAGES: Record<IbanParseError, string> = {
 };
 
 export interface ParsedIban {
-	/** Normalized (spaces removed, upper-cased), branded IBAN. */
 	readonly value: Iban;
 	readonly countryCode: IbanCountryCode;
 	readonly checkDigits: string;
-	/** Basic Bank Account Number — the country-specific remainder. */
 	readonly bban: string;
-	/** Display form grouped in blocks of four, e.g. "GB82 WEST 1234 5698 7654 32". */
 	readonly formatted: string;
 }
 
@@ -143,22 +123,12 @@ export type IbanParseResult =
 	| { readonly ok: true; readonly iban: ParsedIban }
 	| { readonly ok: false; readonly error: IbanParseError };
 
-/**
- * Removes spaces and upper-cases the input so user-friendly formats
- * (e.g. "GB82 WEST 1234 5698 7654 32") can be parsed.
- */
 export const normalizeIban = (input: string): string =>
 	input.replace(/\s/g, "").toUpperCase();
 
-/** Groups a normalized IBAN into blocks of four for display. */
 const formatIban = (normalized: string): string =>
 	normalized.replace(/(.{4})/g, "$1 ").trim();
 
-/**
- * Computes the ISO 7064 mod-97-10 remainder for a normalized IBAN.
- * Moves the first four characters to the end, converts letters to digits
- * (A=10 … Z=35), then takes mod 97 in chunks to avoid BigInt/overflow.
- */
 const mod97 = (iban: string): number => {
 	const rearranged = iban.slice(4) + iban.slice(0, 4);
 
@@ -178,12 +148,6 @@ const mod97 = (iban: string): number => {
 	);
 };
 
-/**
- * Parses untrusted input into a `ParsedIban`, or reports why it could not.
- *
- * This is the single entry point for turning a string into an `Iban`. Prefer
- * passing the parsed result around over re-checking the raw string.
- */
 export const parseIban = (input: string): IbanParseResult => {
 	const normalized = normalizeIban(input);
 

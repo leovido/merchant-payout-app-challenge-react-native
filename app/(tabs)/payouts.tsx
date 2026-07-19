@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
+import { parseIban } from "@/features/payout/iban";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
 import {
 	resetPayoutState,
@@ -21,7 +22,6 @@ import { PayoutStatusFailedScreen } from "@/features/payout/payoutStatus/PayoutS
 import { useBiometrics } from "@/hooks/useBiometrics";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import extractErrorMessage from "@/utils/errorHandler";
-import { parseIban } from "@/utils/iban";
 
 export default function PayoutsScreen() {
 	const [isModalVisible, setIsModalVisible] = useState(false);

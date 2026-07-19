@@ -20,6 +20,11 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, colors, Shadows, Spacing } from "@/constants/theme";
 import {
+	IBAN_ERROR_MESSAGES,
+	type IbanParseError,
+	parseIban,
+} from "@/features/payout/iban";
+import {
 	setAmount as setPayoutAmountAction,
 	setCurrency as setPayoutCurrencyAction,
 	setDeviceId as setPayoutDeviceIdAction,
@@ -29,11 +34,6 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
-import {
-	IBAN_ERROR_MESSAGES,
-	type IbanParseError,
-	parseIban,
-} from "@/utils/iban";
 import { PayoutModalContent } from "./PayoutModal";
 
 interface PayoutItem {
