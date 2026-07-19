@@ -20,6 +20,11 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, colors, Shadows, Spacing } from "@/constants/theme";
 import {
+	IBAN_ERROR_MESSAGES,
+	type IbanParseError,
+	parseIban,
+} from "@/features/payout/iban";
+import {
 	setAmount as setPayoutAmountAction,
 	setCurrency as setPayoutCurrencyAction,
 	setDeviceId as setPayoutDeviceIdAction,
@@ -30,9 +35,6 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import type { Currency } from "@/types/api";
 import { formatCurrency } from "@/utils/formatter";
 import { PayoutModalContent } from "./PayoutModal";
-
-/** IBAN REGEX: 2 letters (country) + 2 digits (check) + 4–30 alphanumeric (no spaces) */
-const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
 
 interface PayoutItem {
 	amount?: number;
@@ -264,17 +266,48 @@ PayoutScreen.CurrencyDropdown = function CurrencyDropdown() {
 PayoutScreen.IBANTextField = function IBANTextField() {
 	const { Keyboard } = useKeyboard();
 	const { iban, setIban, ibanInputRef } = usePayoutContext();
+	const [ibanError, setIbanError] = useState<IbanParseError | undefined>(
+		undefined,
+	);
+
+	const ibanValueRef = useRef(iban);
+	ibanValueRef.current = iban;
+	const isFieldFocusedRef = useRef(false);
 
 	const handleIbanChange = (text: string) => {
 		const cleaned = text
-			.replace(/\s/g, "")
 			.toUpperCase()
-			.replace(/[^A-Z0-9]/g, "")
+			.replace(/[^A-Z0-9\s]/g, "")
 			.slice(0, 34);
 		setIban(cleaned);
+		if (ibanError) {
+			setIbanError(undefined);
+		}
 	};
 
-	const showIbanError = iban.length > 0 && !IBAN_REGEX.test(iban);
+	const validateIban = useCallback(() => {
+		const value = ibanValueRef.current;
+		if (value.length === 0) {
+			setIbanError(undefined);
+			return;
+		}
+		const result = parseIban(value);
+		setIbanError(result.ok ? undefined : result.error);
+	}, []);
+
+	useEffect(() => {
+		const subscription = Keyboard.addListener("keyboardDidHide", () => {
+			if (isFieldFocusedRef.current) {
+				isFieldFocusedRef.current = false;
+				validateIban();
+			}
+		});
+		return () => subscription.remove();
+	}, [Keyboard, validateIban]);
+
+	const ibanErrorMessage = ibanError
+		? IBAN_ERROR_MESSAGES[ibanError]
+		: undefined;
 
 	return (
 		<ThemedView style={styles.ibanTextFieldSection}>
@@ -284,25 +317,33 @@ PayoutScreen.IBANTextField = function IBANTextField() {
 
 			<TextInput
 				ref={ibanInputRef}
-				style={[styles.input, showIbanError && styles.inputError]}
-				placeholder="FR1212345123451234567A12310131231231231"
+				style={[styles.input, ibanErrorMessage && styles.inputError]}
+				placeholder="e.g. GB29 NWBK 6016 1331 9268 19"
 				placeholderTextColor={colors.textPlaceholder}
 				autoCapitalize="characters"
 				autoCorrect={false}
 				value={iban}
 				onChangeText={handleIbanChange}
+				onFocus={() => {
+					isFieldFocusedRef.current = true;
+				}}
+				onBlur={() => {
+					isFieldFocusedRef.current = false;
+					validateIban();
+				}}
 				clearButtonMode="while-editing"
 				returnKeyType="done"
 				onSubmitEditing={() => {
 					Keyboard.dismiss();
+					validateIban();
 				}}
 			/>
 			<ThemedText style={styles.ibanTextFieldHint} type="subtitle">
 				Enter the destination bank account IBAN.
 			</ThemedText>
-			{showIbanError && (
+			{ibanErrorMessage && (
 				<ThemedText style={styles.ibanErrorText} type="subtitle">
-					Enter a valid IBAN (e.g. GB82WEST12345698765432).
+					{ibanErrorMessage}
 				</ThemedText>
 			)}
 		</ThemedView>
@@ -318,9 +359,9 @@ PayoutScreen.ConfirmButton = function ConfirmButton({
 }: ConfirmButtonProps) {
 	const { amount, iban } = usePayoutContext();
 
-	const isDisabled = iban.length === 0 || amount === undefined || amount <= 0;
+	const isDisabled = !parseIban(iban).ok || amount === undefined || amount <= 0;
 
-	const onPressConfirm = async () => {
+	const onPressConfirm = () => {
 		setIsModalVisible(true);
 	};
 

@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addScreenshotListener } from "screen-security";
 import { useCreatePayoutMutation } from "@/api/apiSlice";
+import { parseIban } from "@/features/payout/iban";
 import { PayoutScreen } from "@/features/payout/PayoutScreen";
 import {
 	resetPayoutState,
@@ -37,10 +38,13 @@ export default function PayoutsScreen() {
 	};
 
 	const requestPayout = async () => {
+		const result = parseIban(payout.iban ?? "");
+		if (!result.ok) return;
+
 		const data = await createPayoutResponse({
 			amount: payout.amount ?? 0,
 			currency: payout.currency ?? "GBP",
-			iban: payout.iban ?? "",
+			iban: result.iban.value,
 			...(payout.device_id && { device_id: payout.device_id }),
 		}).unwrap();
 

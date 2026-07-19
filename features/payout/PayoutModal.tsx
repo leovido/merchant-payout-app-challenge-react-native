@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import {
 	ActivityIndicator,
 	Pressable,
@@ -23,14 +23,6 @@ const PayoutModalContext = createContext<PayoutModalProps>({
 	currency: "GBP",
 	iban: "",
 });
-
-function usePayoutModalContext() {
-	const context = useContext(PayoutModalContext);
-	if (!context) {
-		throw new Error("usePayoutModalContext must be used within a PayoutModal");
-	}
-	return context;
-}
 
 interface PayoutModalContentProps {
 	payout: PayoutModalProps;

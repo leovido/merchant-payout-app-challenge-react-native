@@ -38,7 +38,7 @@ jest.mock("@/api/apiSlice", () => {
 const basePayoutState = {
 	amount: 100,
 	currency: "GBP" as const,
-	iban: "FR1212345123451234567A12310131231231",
+	iban: "FR1420041010050500013M02606",
 	formattedAmount: "1.00",
 	payoutResponse: undefined,
 	errorMessage: undefined,
@@ -125,7 +125,7 @@ describe("PayoutsScreen device_id in request body", () => {
 	});
 
 	it("omits device_id when native module returns undefined (e.g. unavailable)", async () => {
-		mockGetDeviceId.mockReturnValue(undefined as unknown as string);
+		mockGetDeviceId.mockReturnValue(undefined);
 		const testStore = createTestStore(undefined);
 		renderPayoutsWithStore(testStore);
 
