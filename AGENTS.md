@@ -22,3 +22,21 @@ Before verifying your work, start with a fresh Metro instance. Once you have sta
 - Use React Compound components pattern for UI.
 - Only use `useEffect` when required. Prefer refactoring or creating custom hooks.
 - Everything must have its own passing unit testing file for each function. Cover happy and unhappy paths. Ignore edge cases unless you're told to write them.
+
+## PROGRESS
+Keep track of your progress in an `PROGRESS.md` file.
+Leave a trail of what you have worked on in a TODO list.
+Include work that is left as well. This will allow other agents to pick up the work.
+
+## Tools
+You are allowed to use:
+- `pnpm`
+- `git`
+- `xcrun`
+- `xcodebuild`
+- Bash
+- `./verify.sh`
+- `rg`
+- `adb`
+- `gh` (requires a token)
+- `npx`
